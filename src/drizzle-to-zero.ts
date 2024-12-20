@@ -1,4 +1,4 @@
-type ColumnDataType =
+type DrizzleDataType =
   | "number"
   | "bigint"
   | "boolean"
@@ -13,6 +13,14 @@ export const drizzleDataTypeToZeroType = {
   date: "string",
   string: "string",
   json: "json",
-} as const satisfies Record<ColumnDataType, string>;
+} as const satisfies Record<DrizzleDataType, string>;
 
 export type DrizzleDataTypeToZeroType = typeof drizzleDataTypeToZeroType;
+
+type DrizzleColumnType = "PgNumeric";
+
+export const drizzleColumnTypeToZeroType = {
+  PgNumeric: "number",
+} as const satisfies Record<DrizzleColumnType, string>;
+
+export type DrizzleColumnTypeToZeroType = typeof drizzleColumnTypeToZeroType;

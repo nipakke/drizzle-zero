@@ -1,5 +1,7 @@
 import { getTableColumns, getTableName, type Table } from "drizzle-orm";
 import {
+  type DrizzleColumnTypeToZeroType,
+  drizzleColumnTypeToZeroType,
   type DrizzleDataTypeToZeroType,
   drizzleDataTypeToZeroType,
 } from "./drizzle-to-zero";
@@ -10,21 +12,19 @@ import type {
   ZeroColumns,
   ZeroTypeToTypescriptType,
 } from "./types";
+import { getTableConfig } from "drizzle-orm/pg-core";
 
 function typedEntries<T extends object>(obj: T): [keyof T, T[keyof T]][] {
   return Object.entries(obj) as [keyof T, T[keyof T]][];
 }
 
-const drizzleToZero = <
-  T extends Table,
-  C extends ColumnsConfig<T, FindPrimaryKeyFromTable<T>>,
->(
+const drizzleToZero = <T extends Table, C extends ColumnsConfig<T>>(
   table: T,
   columns: C,
 ): DrizzleToZeroResult<T, C> => {
   const tableColumns = getTableColumns(table);
 
-  let primaryKey: FindPrimaryKeyFromTable<T> = null as any;
+  let primaryKey: FindPrimaryKeyFromTable<T> | undefined;
 
   const columnsMapped = typedEntries(tableColumns).reduce(
     (acc, [key, column]) => {
@@ -33,21 +33,26 @@ const drizzleToZero = <
       }
 
       const type =
+        drizzleColumnTypeToZeroType[
+          column.columnType as keyof DrizzleColumnTypeToZeroType
+        ] ??
         drizzleDataTypeToZeroType[
           column.dataType as keyof DrizzleDataTypeToZeroType
         ];
+
+      if (!type) {
+        throw new Error(`Unsupported column type: ${column.dataType}`);
+      }
+
       const schemaValue = {
         optional: !column.notNull,
         type,
         customType: null as unknown as ZeroTypeToTypescriptType[typeof type],
+        ...(column.enumValues ? { kind: "enum" } : {}),
       };
 
       if (column.primary) {
         primaryKey = key as FindPrimaryKeyFromTable<T>;
-      }
-
-      if (!schemaValue) {
-        throw new Error(`Unsupported column type: ${column.dataType}`);
       }
 
       return {
@@ -60,16 +65,30 @@ const drizzleToZero = <
 
   const tableName = getTableName(table);
 
+  let primaryKeys = [] as unknown as [string, ...string[]];
+
   if (!primaryKey) {
-    throw new Error("No primary key found in table");
+    primaryKeys = getTableConfig(table).primaryKeys.flatMap((k) =>
+      k.columns.map((c) => c.name),
+    ) as unknown as [string, ...string[]];
   }
 
-  return { tableName, columns: columnsMapped, primaryKey } as const;
+  if (!primaryKey && !primaryKeys.length) {
+    throw new Error("No primary keys found in table");
+  }
+
+  return {
+    tableName,
+    columns: columnsMapped,
+    primaryKey: (primaryKey
+      ? primaryKey
+      : primaryKeys) as FindPrimaryKeyFromTable<T>,
+  } as const;
 };
 
 type DrizzleToZeroResult<
   T extends Table,
-  C extends ColumnsConfig<T, FindPrimaryKeyFromTable<T>>,
+  C extends ColumnsConfig<T>,
 > = Flatten<{
   readonly tableName: T["_"]["name"];
   readonly primaryKey: FindPrimaryKeyFromTable<T>;
