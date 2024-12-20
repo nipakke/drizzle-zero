@@ -17,10 +17,10 @@ function typedEntries<T extends object>(obj: T): [keyof T, T[keyof T]][] {
 
 const drizzleToZero = <
   T extends Table,
-  C extends ColumnsConfig<T, FindPrimaryKeyFromTable<T>>
+  C extends ColumnsConfig<T, FindPrimaryKeyFromTable<T>>,
 >(
   table: T,
-  columns: C
+  columns: C,
 ): DrizzleToZeroResult<T, C> => {
   const tableColumns = getTableColumns(table);
 
@@ -55,7 +55,7 @@ const drizzleToZero = <
         [key]: schemaValue,
       };
     },
-    {} as ZeroColumns<T, C>
+    {} as ZeroColumns<T, C>,
   );
 
   const tableName = getTableName(table);
@@ -69,7 +69,7 @@ const drizzleToZero = <
 
 type DrizzleToZeroResult<
   T extends Table,
-  C extends ColumnsConfig<T, FindPrimaryKeyFromTable<T>>
+  C extends ColumnsConfig<T, FindPrimaryKeyFromTable<T>>,
 > = Flatten<{
   readonly tableName: T["_"]["name"];
   readonly primaryKey: FindPrimaryKeyFromTable<T>;

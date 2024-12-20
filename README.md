@@ -17,9 +17,9 @@ pnpm add drizzle-zero
 Here's a simple example of how to convert a Drizzle schema to a Zero schema:
 
 ```ts
-import { pgTable, text } from 'drizzle-orm/pg-core';
-import { createSchema, createTableSchema } from '@rocicorp/zero';
-import { drizzleToZero } from 'drizzle-zero';
+import { pgTable, text } from "drizzle-orm/pg-core";
+import { createSchema, createTableSchema } from "@rocicorp/zero";
+import { drizzleToZero } from "drizzle-zero";
 
 // Define your Drizzle table
 const userTable = pgTable("user", {
@@ -32,7 +32,7 @@ const userSchema = createTableSchema(
   drizzleToZero(userTable, {
     id: true,
     name: true,
-  })
+  }),
 );
 
 // Create your Zero schema

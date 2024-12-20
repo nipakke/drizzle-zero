@@ -9,12 +9,12 @@ export type ZeroTableSchema = TableSchema;
 export function expectDeepEqual<
   S extends ZeroTableSchema,
   T extends Table,
-  C extends ColumnsConfig<T, FindPrimaryKeyFromTable<T>>
+  C extends ColumnsConfig<T, FindPrimaryKeyFromTable<T>>,
 >(actual: DrizzleToZeroResult<T, C>) {
   return {
     toEqual(expected: S) {
       expect(Object.keys(actual.columns)).toStrictEqual(
-        Object.keys(expected.columns)
+        Object.keys(expected.columns),
       );
 
       for (const key of Object.keys(actual.columns)) {
@@ -28,10 +28,9 @@ export function expectDeepEqual<
 }
 export function Expect<T extends true>() {}
 
-export type Equal<X, Y extends X> = (<T>() => T extends X ? 1 : 2) extends <
-  T
->() => T extends Y ? 1 : 2
-  ? true
-  : false;
+export type Equal<X, Y extends X> =
+  (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2
+    ? true
+    : false;
 
 export type NotEqual<X, Y extends X> = Equal<X, Y> extends true ? false : true;

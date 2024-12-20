@@ -6,7 +6,7 @@ type Columns<T extends Table> = T["_"]["columns"];
 type ColumnNames<T extends Table> = keyof Columns<T>;
 type ColumnDefinition<
   T extends Table,
-  K extends ColumnNames<T>
+  K extends ColumnNames<T>,
 > = Columns<T>[K];
 
 export type FindPrimaryKeyFromTable<TTable extends Table> = {
@@ -23,7 +23,7 @@ type TypeOverride<TCustomType> = {
 
 export type ColumnsConfig<
   T extends Table,
-  PK extends FindPrimaryKeyFromTable<T>
+  PK extends FindPrimaryKeyFromTable<T>,
 > = {
   readonly [K in ColumnNames<T>]?:
     | boolean
@@ -62,14 +62,14 @@ type ZeroColumnDefinition<T extends Table, K extends ColumnNames<T>> = {
 
 export type ZeroColumns<
   T extends Table,
-  C extends ColumnsConfig<T, FindPrimaryKeyFromTable<T>>
+  C extends ColumnsConfig<T, FindPrimaryKeyFromTable<T>>,
 > = {
   [K in keyof C]: K extends ColumnNames<T>
     ? C[K] extends TypeOverride<any>
       ? C[K]
       : C[K] extends true
-      ? ZeroColumnDefinition<T, K>
-      : never
+        ? ZeroColumnDefinition<T, K>
+        : never
     : never;
 };
 
