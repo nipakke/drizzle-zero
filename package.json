@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "tsup src/index.ts --format cjs,esm --dts",
-		"test:types": "cd tests && tsc",
+		"test:types": "cd test && tsc",
 		"test": "vitest run"
 	},
   "main": "dist/index.cjs",
