@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2020",
+    "verbatimModuleSyntax": true,
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "declaration": true,
+    "noEmit": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": true,
+    "preserveSymlinks": true,
+    "types": [],
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "lib": ["dom", "es2022"],
+    "jsx": "react-jsx",
+    "outDir": "out"
+  },
+  "include": ["src/**/*.ts"]
+}

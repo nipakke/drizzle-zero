@@ -1,0 +1,52 @@
+{
+	"name": "drizzle-zero",
+	"version": "0.0.1-alpha.1",
+	"description": "Generate Zero schemas from Drizzle ORM schemas",
+	"type": "module",
+	"scripts": {
+		"build": "tsup src/index.ts --format cjs,esm --dts",
+		"test:types": "cd tests && tsc",
+		"publish": "npm publish package.tgz",
+		"test": "vitest run"
+	},
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/BriefHQ/drizzle-zero.git"
+	},
+	"keywords": [
+		"zero",
+		"sync",
+		"schema",
+		"drizzle",
+		"orm",
+		"pg",
+		"postgresql",
+		"postgres",
+		"database",
+		"typescript",
+		"ts"
+	],
+	"author": "Brief",
+	"license": "Apache-2.0",
+	"peerDependencies": {
+		"@rocicorp/zero": ">=0.8.2024121204",
+		"drizzle-orm": ">=0.36.0"
+	},
+	"devDependencies": {
+		"@types/node": "^22.10.2",
+		"tsup": "^8.0.2",
+		"typescript": "^5.7.2",
+		"vite-tsconfig-paths": "^5.1.4",
+		"vitest": "^2.1.8",
+		"zod": "^3.20.2"
+	}
+}
