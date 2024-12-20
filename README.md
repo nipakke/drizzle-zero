@@ -27,7 +27,7 @@ const userTable = pgTable("user", {
   name: text("name").notNull(),
 });
 
-// Convert to Zero schema
+// Convert to Zero table schema and select columns
 const userSchema = createTableSchema(
   drizzleToZero(userTable, {
     id: true,
