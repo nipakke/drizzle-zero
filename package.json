@@ -6,7 +6,6 @@
 	"scripts": {
 		"build": "tsup src/index.ts --format cjs,esm --dts",
 		"test:types": "cd tests && tsc",
-		"publish": "npm publish package.tgz",
 		"test": "vitest run"
 	},
   "main": "dist/index.cjs",
