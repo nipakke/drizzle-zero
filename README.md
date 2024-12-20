@@ -1,6 +1,6 @@
 # drizzle-zero
 
-Generate [Zero](https://github.com/rocicorp/mono) schemas from [Drizzle ORM](https://orm.drizzle.team) schemas.
+Generate [Zero](https://zero.rocicorp.dev/) schemas from [Drizzle ORM](https://orm.drizzle.team) schemas.
 
 ## Installation
 
