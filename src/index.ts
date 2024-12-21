@@ -18,10 +18,10 @@ function typedEntries<T extends object>(obj: T): [keyof T, T[keyof T]][] {
   return Object.entries(obj) as [keyof T, T[keyof T]][];
 }
 
-const tableToZero = <T extends Table, C extends ColumnsConfig<T>>(
+const createZeroSchema = <T extends Table, C extends ColumnsConfig<T>>(
   table: T,
   columns: C,
-): TableToZeroResult<T, C> => {
+): CreateZeroSchema<T, C> => {
   const tableColumns = getTableColumns(table);
 
   let primaryKey: FindPrimaryKeyFromTable<T> | undefined;
@@ -86,15 +86,15 @@ const tableToZero = <T extends Table, C extends ColumnsConfig<T>>(
   } as const;
 };
 
-type TableToZeroResult<T extends Table, C extends ColumnsConfig<T>> = Flatten<{
+type CreateZeroSchema<T extends Table, C extends ColumnsConfig<T>> = Flatten<{
   readonly tableName: T["_"]["name"];
   readonly primaryKey: FindPrimaryKeyFromTable<T>;
   readonly columns: ZeroColumns<T, C>;
 }>;
 
 export {
-  tableToZero,
+  createZeroSchema,
+  type CreateZeroSchema,
   type ColumnsConfig,
-  type TableToZeroResult,
   type ZeroColumns,
 };

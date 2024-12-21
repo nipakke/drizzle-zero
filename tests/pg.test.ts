@@ -23,7 +23,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { expect, test } from "vitest";
 
-import { tableToZero } from "../src";
+import { createZeroSchema } from "../src";
 
 import { column, type JSONValue } from "@rocicorp/zero";
 import {
@@ -40,7 +40,7 @@ test("pg - basic", () => {
     json: jsonb().notNull(),
   });
 
-  const result = tableToZero(table, {
+  const result = createZeroSchema(table, {
     id: true,
     name: true,
     json: true,
@@ -66,7 +66,7 @@ test("pg - custom types", () => {
     json: jsonb().$type<{ foo: string }>().notNull(),
   });
 
-  const result = tableToZero(table, {
+  const result = createZeroSchema(table, {
     id: column.string(),
     json: true,
   });
@@ -92,7 +92,7 @@ test("pg - optional fields", () => {
     metadata: jsonb(), // optional
   });
 
-  const result = tableToZero(table, {
+  const result = createZeroSchema(table, {
     id: true,
     name: true,
     description: true,
@@ -122,7 +122,7 @@ test("pg - array types", () => {
   });
 
   expect(() =>
-    tableToZero(table, {
+    createZeroSchema(table, {
       id: true,
       tags: true,
       scores: true,
@@ -145,7 +145,7 @@ test("pg - complex custom types", () => {
     settings: jsonb().$type<Record<string, boolean>>(),
   });
 
-  const result = tableToZero(table, {
+  const result = createZeroSchema(table, {
     id: true,
     metadata: true,
     settings: true,
@@ -173,7 +173,7 @@ test("pg - partial column selection", () => {
     metadata: jsonb().notNull(),
   });
 
-  const result = tableToZero(table, {
+  const result = createZeroSchema(table, {
     id: true,
     metadata: true,
     name: false,
@@ -201,7 +201,7 @@ test("pg - partial column selection", () => {
     metadata: jsonb().notNull(),
   });
 
-  const result = tableToZero(table, {
+  const result = createZeroSchema(table, {
     id: true,
     metadata: true,
     name: false,
@@ -232,7 +232,7 @@ test("pg - composite primary key", () => {
     (t) => [primaryKey({ columns: [t.userId, t.orgId] })],
   );
 
-  const result = tableToZero(table, {
+  const result = createZeroSchema(table, {
     userId: true,
     orgId: true,
     role: true,
@@ -261,7 +261,7 @@ test("pg - timestamp fields", () => {
     scheduledFor: timestamp().notNull(),
   });
 
-  const result = tableToZero(table, {
+  const result = createZeroSchema(table, {
     id: true,
     createdAt: true,
     updatedAt: true,
@@ -294,7 +294,7 @@ test("pg - custom column mapping", () => {
     }>(),
   });
 
-  const result = tableToZero(table, {
+  const result = createZeroSchema(table, {
     id: true,
     firstName: true,
     lastName: true,
@@ -328,7 +328,7 @@ test("pg - enum field", () => {
     backupRole: roleEnum(),
   });
 
-  const result = tableToZero(table, {
+  const result = createZeroSchema(table, {
     id: true,
     role: true,
     backupRole: true,
@@ -357,7 +357,7 @@ test("pg - simple enum field", () => {
     mood: moodEnum().notNull(),
   });
 
-  const result = tableToZero(table, {
+  const result = createZeroSchema(table, {
     id: true,
     name: true,
     mood: true,
@@ -427,7 +427,7 @@ test("pg - all supported data types", () => {
     optionalEnum: statusEnum(),
   });
 
-  const result = tableToZero(table, {
+  const result = createZeroSchema(table, {
     id: true,
     smallint: true,
     integer: true,
@@ -524,7 +524,7 @@ test("pg - override column json type", () => {
     metadata: jsonb().notNull(),
   });
 
-  const result = tableToZero(table, {
+  const result = createZeroSchema(table, {
     id: true,
     metadata: column.json<{ amount: number; currency: string }>(),
   });

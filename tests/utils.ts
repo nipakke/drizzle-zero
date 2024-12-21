@@ -1,7 +1,7 @@
 import type { TableSchema } from "@rocicorp/zero";
 import { Table } from "drizzle-orm";
 import { expect } from "vitest";
-import type { ColumnsConfig, TableToZeroResult } from "../src";
+import type { ColumnsConfig, CreateZeroSchema } from "../src";
 
 export type ZeroTableSchema = TableSchema;
 
@@ -9,7 +9,7 @@ export function expectDeepEqual<
   S extends ZeroTableSchema,
   T extends Table,
   C extends ColumnsConfig<T>,
->(actual: TableToZeroResult<T, C>) {
+>(actual: CreateZeroSchema<T, C>) {
   return {
     toEqual(expected: S) {
       expect(Object.keys(actual.columns)).toStrictEqual(

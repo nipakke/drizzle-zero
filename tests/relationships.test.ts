@@ -19,12 +19,12 @@ test.skip("pg - basic", () => {
   //   }),
   // }));
   // const postResult = relationsToZero(postsRelations);
-  // const postResult = tableToZero(postTable, {
+  // const postResult = createZeroSchema(postTable, {
   //   id: true,
   //   text: true,
   //   userId: true,
   // });
-  // const userResult = tableToZero(userTable, {
+  // const userResult = createZeroSchema(userTable, {
   //   id: true,
   //   name: true,
   // });
