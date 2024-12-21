@@ -23,7 +23,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { expect, test } from "vitest";
 
-import { drizzleToZero } from "../src";
+import { tableToZero } from "../src";
 
 import { column, type JSONValue } from "@rocicorp/zero";
 import {
@@ -40,7 +40,7 @@ test("pg - basic", () => {
     json: jsonb().notNull(),
   });
 
-  const result = drizzleToZero(table, {
+  const result = tableToZero(table, {
     id: true,
     name: true,
     json: true,
@@ -66,7 +66,7 @@ test("pg - custom types", () => {
     json: jsonb().$type<{ foo: string }>().notNull(),
   });
 
-  const result = drizzleToZero(table, {
+  const result = tableToZero(table, {
     id: column.string(),
     json: true,
   });
@@ -92,7 +92,7 @@ test("pg - optional fields", () => {
     metadata: jsonb(), // optional
   });
 
-  const result = drizzleToZero(table, {
+  const result = tableToZero(table, {
     id: true,
     name: true,
     description: true,
@@ -122,7 +122,7 @@ test("pg - array types", () => {
   });
 
   expect(() =>
-    drizzleToZero(table, {
+    tableToZero(table, {
       id: true,
       tags: true,
       scores: true,
@@ -145,7 +145,7 @@ test("pg - complex custom types", () => {
     settings: jsonb().$type<Record<string, boolean>>(),
   });
 
-  const result = drizzleToZero(table, {
+  const result = tableToZero(table, {
     id: true,
     metadata: true,
     settings: true,
@@ -173,7 +173,7 @@ test("pg - partial column selection", () => {
     metadata: jsonb().notNull(),
   });
 
-  const result = drizzleToZero(table, {
+  const result = tableToZero(table, {
     id: true,
     metadata: true,
     name: false,
@@ -201,7 +201,7 @@ test("pg - partial column selection", () => {
     metadata: jsonb().notNull(),
   });
 
-  const result = drizzleToZero(table, {
+  const result = tableToZero(table, {
     id: true,
     metadata: true,
     name: false,
@@ -232,7 +232,7 @@ test("pg - composite primary key", () => {
     (t) => [primaryKey({ columns: [t.userId, t.orgId] })],
   );
 
-  const result = drizzleToZero(table, {
+  const result = tableToZero(table, {
     userId: true,
     orgId: true,
     role: true,
@@ -261,7 +261,7 @@ test("pg - timestamp fields", () => {
     scheduledFor: timestamp().notNull(),
   });
 
-  const result = drizzleToZero(table, {
+  const result = tableToZero(table, {
     id: true,
     createdAt: true,
     updatedAt: true,
@@ -294,7 +294,7 @@ test("pg - custom column mapping", () => {
     }>(),
   });
 
-  const result = drizzleToZero(table, {
+  const result = tableToZero(table, {
     id: true,
     firstName: true,
     lastName: true,
@@ -328,7 +328,7 @@ test("pg - enum field", () => {
     backupRole: roleEnum(),
   });
 
-  const result = drizzleToZero(table, {
+  const result = tableToZero(table, {
     id: true,
     role: true,
     backupRole: true,
@@ -357,7 +357,7 @@ test("pg - simple enum field", () => {
     mood: moodEnum().notNull(),
   });
 
-  const result = drizzleToZero(table, {
+  const result = tableToZero(table, {
     id: true,
     name: true,
     mood: true,
@@ -386,7 +386,7 @@ test("pg - all supported data types", () => {
     smallint: smallint("smallint").notNull(),
     integer: integer("integer").notNull(),
     bigint: bigint("bigint", { mode: "number" }).notNull(),
-    
+
     // Serial types
     smallSerial: smallserial("smallserial").notNull(),
     regularSerial: serial("regular_serial").notNull(),
@@ -395,7 +395,7 @@ test("pg - all supported data types", () => {
     // Arbitrary precision types
     numeric: numeric("numeric", { precision: 10, scale: 2 }).notNull(),
     decimal: numeric("decimal", { precision: 10, scale: 2 }).notNull(),
-    
+
     // Floating-point types
     real: real("real").notNull(),
     doublePrecision: doublePrecision("double_precision").notNull(),
@@ -427,7 +427,7 @@ test("pg - all supported data types", () => {
     optionalEnum: statusEnum(),
   });
 
-  const result = drizzleToZero(table, {
+  const result = tableToZero(table, {
     id: true,
     smallint: true,
     integer: true,
@@ -471,7 +471,7 @@ test("pg - all supported data types", () => {
       smallint: column.number(),
       integer: column.number(),
       bigint: column.number(),
-      
+
       // Serial types
       smallSerial: column.number(),
       regularSerial: column.number(),
@@ -480,7 +480,7 @@ test("pg - all supported data types", () => {
       // Arbitrary precision types
       numeric: column.number(),
       decimal: column.number(),
-      
+
       // Floating-point types
       real: column.number(),
       doublePrecision: column.number(),
@@ -510,6 +510,30 @@ test("pg - all supported data types", () => {
       optionalDate: column.string(true),
       optionalJson: column.json<JSONValue>(true),
       optionalEnum: column.enumeration<"active" | "inactive" | "pending">(true),
+    },
+    primaryKey: "id",
+  } as const satisfies ZeroTableSchema;
+
+  expectDeepEqual(result).toEqual(expected);
+  Expect<Equal<typeof result, typeof expected>>;
+});
+
+test("pg - override column json type", () => {
+  const table = pgTable("metrics", {
+    id: serial().primaryKey(),
+    metadata: jsonb().notNull(),
+  });
+
+  const result = tableToZero(table, {
+    id: true,
+    metadata: column.json<{ amount: number; currency: string }>(),
+  });
+
+  const expected = {
+    tableName: "metrics",
+    columns: {
+      id: column.number(),
+      metadata: column.json<{ amount: number; currency: string }>(),
     },
     primaryKey: "id",
   } as const satisfies ZeroTableSchema;

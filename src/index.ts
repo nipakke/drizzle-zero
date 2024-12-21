@@ -1,4 +1,5 @@
 import { getTableColumns, getTableName, type Table } from "drizzle-orm";
+import { getTableConfig } from "drizzle-orm/pg-core";
 import {
   type DrizzleColumnTypeToZeroType,
   drizzleColumnTypeToZeroType,
@@ -12,16 +13,15 @@ import type {
   ZeroColumns,
   ZeroTypeToTypescriptType,
 } from "./types";
-import { getTableConfig } from "drizzle-orm/pg-core";
 
 function typedEntries<T extends object>(obj: T): [keyof T, T[keyof T]][] {
   return Object.entries(obj) as [keyof T, T[keyof T]][];
 }
 
-const drizzleToZero = <T extends Table, C extends ColumnsConfig<T>>(
+const tableToZero = <T extends Table, C extends ColumnsConfig<T>>(
   table: T,
   columns: C,
-): DrizzleToZeroResult<T, C> => {
+): TableToZeroResult<T, C> => {
   const tableColumns = getTableColumns(table);
 
   let primaryKey: FindPrimaryKeyFromTable<T> | undefined;
@@ -86,18 +86,15 @@ const drizzleToZero = <T extends Table, C extends ColumnsConfig<T>>(
   } as const;
 };
 
-type DrizzleToZeroResult<
-  T extends Table,
-  C extends ColumnsConfig<T>,
-> = Flatten<{
+type TableToZeroResult<T extends Table, C extends ColumnsConfig<T>> = Flatten<{
   readonly tableName: T["_"]["name"];
   readonly primaryKey: FindPrimaryKeyFromTable<T>;
   readonly columns: ZeroColumns<T, C>;
 }>;
 
 export {
-  drizzleToZero,
-  type DrizzleToZeroResult,
+  tableToZero,
   type ColumnsConfig,
+  type TableToZeroResult,
   type ZeroColumns,
 };

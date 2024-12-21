@@ -19,7 +19,7 @@ Here's a simple example of how to convert a Drizzle schema to a Zero schema:
 ```ts
 import { pgTable, text } from "drizzle-orm/pg-core";
 import { createSchema, createTableSchema } from "@rocicorp/zero";
-import { drizzleToZero } from "drizzle-zero";
+import { tableToZero } from "drizzle-zero";
 
 // Define your Drizzle table
 const userTable = pgTable("user", {
@@ -29,7 +29,7 @@ const userTable = pgTable("user", {
 
 // Convert to Zero table schema and select columns
 const userSchema = createTableSchema(
-  drizzleToZero(userTable, {
+  tableToZero(userTable, {
     id: true,
     name: true,
   }),

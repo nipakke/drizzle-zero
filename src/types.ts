@@ -79,7 +79,9 @@ type ZeroColumnDefinition<T extends Table, K extends ColumnNames<T>> = Readonly<
 >;
 
 export type ZeroColumns<T extends Table, C extends ColumnsConfig<T>> = {
-  readonly [K in keyof C as C[K] extends true | TypeOverride<any> ? K : never]: K extends ColumnNames<T>
+  readonly [K in keyof C as C[K] extends true | TypeOverride<any>
+    ? K
+    : never]: K extends ColumnNames<T>
     ? C[K] extends TypeOverride<any>
       ? C[K]
       : C[K] extends true
