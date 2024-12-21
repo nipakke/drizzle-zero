@@ -176,6 +176,8 @@ test("pg - partial column selection", () => {
   const result = drizzleToZero(table, {
     id: true,
     metadata: true,
+    name: false,
+    age: false,
   });
 
   const expected = {
@@ -202,6 +204,8 @@ test("pg - partial column selection", () => {
   const result = drizzleToZero(table, {
     id: true,
     metadata: true,
+    name: false,
+    age: false,
   });
 
   const expected = {
