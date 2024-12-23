@@ -122,10 +122,6 @@ export const startPostgresAndZero = async () => {
       },
     ])
     .withStartupTimeout(60000)
-    // .withLogConsumer((logStream) => {
-    //   logStream.on("data", (line) => console.log("Zero:", line.toString()));
-    //   logStream.on("error", (err) => console.error("Zero log error:", err));
-    // })
     .start();
 
   return {

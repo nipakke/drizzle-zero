@@ -11,7 +11,7 @@ beforeAll(async () => {
   await startPostgresAndZero();
 }, 60000);
 
-test("can query users", async () => {
+test.concurrent("can query users", async () => {
   const zero = new Zero({
     server: "http://localhost:4949",
     userID: "1",
@@ -31,7 +31,7 @@ test("can query users", async () => {
   preloadedUsers.cleanup();
 });
 
-test("can query messages", async () => {
+test.concurrent("can query messages", async () => {
   const zero = new Zero({
     server: "http://localhost:4949",
     userID: "1",
