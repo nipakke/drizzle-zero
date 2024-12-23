@@ -1,30 +1,14 @@
 import { Zero } from "@rocicorp/zero";
-import { StartedPostgreSqlContainer } from "@testcontainers/postgresql";
-import { type StartedTestContainer } from "testcontainers";
-import { afterAll, beforeAll, expect, test } from "vitest";
-import { schema } from "../schema";
-import { shutdown, startPostgresAndZero } from "./utils";
+import { beforeAll, expect, test } from "vitest";
 import { WebSocket } from "ws";
+import { schema } from "../schema";
+import { startPostgresAndZero } from "./utils";
 
 // Provide WebSocket on the global scope
 globalThis.WebSocket = WebSocket as any;
 
-let globalPostgresContainer: StartedPostgreSqlContainer;
-let globalZeroContainer: StartedTestContainer;
-let globalZero: Zero<typeof schema>;
-
 beforeAll(async () => {
-  const { postgresContainer, zeroContainer } = await startPostgresAndZero();
-
-  globalPostgresContainer = postgresContainer;
-  globalZeroContainer = zeroContainer;
-
-  globalZero = new Zero({
-    server: "http://localhost:4949",
-    userID: "1",
-    schema: schema,
-    kvStore: "mem",
-  });
+  await startPostgresAndZero();
 }, 60000);
 
 test("can query users", async () => {
