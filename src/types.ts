@@ -1,28 +1,36 @@
 import type { JSONValue } from "@rocicorp/zero";
-import type { Table } from "drizzle-orm";
+import type { Column, Relations, Table } from "drizzle-orm";
 import type {
-  DrizzleDataTypeToZeroType,
   DrizzleColumnTypeToZeroType,
+  DrizzleDataTypeToZeroType,
 } from "./drizzle-to-zero";
 
+export type TableName<T extends Table> = T["_"]["name"];
+export type ColumnName<C extends Column> = C["_"]["name"];
+
 type Columns<T extends Table> = T["_"]["columns"];
-type ColumnNames<T extends Table> = keyof Columns<T>;
-type ColumnDefinition<
-  T extends Table,
-  K extends ColumnNames<T>,
-> = Columns<T>[K];
+export type ColumnNames<T extends Table> = ColumnName<Columns<T>[keyof Columns<T>]>;
+type ColumnDefinition<T extends Table, K extends ColumnNames<T>> = {
+  [C in keyof Columns<T>]: ColumnName<Columns<T>[C]> extends K
+    ? Columns<T>[C]
+    : never;
+}[keyof Columns<T>];
+
+export type RelationsForTable<T extends Table> = Relations<TableName<T>>;
 
 export type FindPrimaryKeyFromTable<TTable extends Table> = {
-  [K in ColumnNames<TTable>]: Columns<TTable>[K]["_"]["isPrimaryKey"] extends true
-    ? K
+  [K in keyof Columns<TTable>]: Columns<TTable>[K]["_"]["isPrimaryKey"] extends true
+    ? ColumnName<Columns<TTable>[K]>
     : never;
-}[ColumnNames<TTable>] extends never
+}[keyof Columns<TTable>] extends never
   ? readonly [string, ...string[]]
-  : {
-      [K in ColumnNames<TTable>]: Columns<TTable>[K]["_"]["isPrimaryKey"] extends true
-        ? K
-        : never;
-    }[ColumnNames<TTable>];
+  : readonly [
+      {
+        [K in keyof Columns<TTable>]: Columns<TTable>[K]["_"]["isPrimaryKey"] extends true
+          ? ColumnName<Columns<TTable>[K]>
+          : never;
+      }[keyof Columns<TTable>]
+    ];
 
 type TypeOverride<TCustomType> = {
   readonly type: "string" | "number" | "boolean" | "json";
@@ -48,7 +56,7 @@ export type ZeroTypeToTypescriptType = {
 
 type ZeroMappedColumnType<
   T extends Table,
-  K extends ColumnNames<T>,
+  K extends keyof Columns<T>,
 > = ColumnDefinition<T, K>["_"] extends {
   columnType: keyof DrizzleColumnTypeToZeroType;
 }
@@ -66,16 +74,17 @@ type ZeroMappedCustomType<
     ? ColumnDefinition<T, K>["_"]["$type"]
     : ZeroTypeToTypescriptType[ZeroMappedColumnType<T, K>];
 
-type ZeroColumnDefinition<T extends Table, K extends ColumnNames<T>> = Readonly<
-  {
-    optional: ColumnDefinition<T, K>["_"]["notNull"] extends true
-      ? boolean // false
-      : boolean; // true;
-    type: ZeroMappedColumnType<T, K>;
-    customType: ZeroMappedCustomType<T, K>;
-  } & (ColumnDefinition<T, K>["_"] extends { columnType: "PgEnumColumn" }
-    ? { kind: "enum" }
-    : {})
+type ZeroColumnDefinition<T extends Table, K extends ColumnNames<T>> = Readonly<{
+  readonly optional: ColumnDefinition<T, K>["_"]["notNull"] extends true
+    ? boolean // false
+    : boolean; // true;
+  readonly type: ZeroMappedColumnType<T, K>;
+  readonly customType: ZeroMappedCustomType<T, K>;
+  } & (
+    ColumnDefinition<T, K>["_"] extends { columnType: "PgEnumColumn" }
+      ? { readonly kind: "enum" }
+      : {}
+  )
 >;
 
 export type ZeroColumns<T extends Table, C extends ColumnsConfig<T>> = {

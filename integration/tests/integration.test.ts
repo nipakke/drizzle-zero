@@ -49,3 +49,22 @@ test.concurrent("can query messages", async () => {
 
   preloadedMessages.cleanup();
 });
+
+test.concurrent("can query messages with relationships", async () => {
+  const zero = new Zero({
+    server: "http://localhost:4949",
+    userID: "1",
+    schema: schema,
+    kvStore: "mem",
+  });
+
+  const preloadedMessages = await zero.query.message.related("medium").preload();
+  await preloadedMessages.complete;
+
+  const messages = await zero.query.message.related("medium").one().run();
+
+  expect(messages?.medium).toHaveLength(1);
+  expect(messages?.medium[0].name).toBe("email");
+
+  preloadedMessages.cleanup();
+});

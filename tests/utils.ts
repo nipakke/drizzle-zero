@@ -1,17 +1,19 @@
-import type { TableSchema } from "@rocicorp/zero";
-import { Table } from "drizzle-orm";
+import type { Schema, TableSchema } from "@rocicorp/zero";
 import { expect } from "vitest";
-import type { ColumnsConfig, CreateZeroSchema } from "../src";
 
 export type ZeroTableSchema = TableSchema;
+export type ZeroSchema = Schema;
 
-export function expectDeepEqual<
-  S extends ZeroTableSchema,
-  T extends Table,
-  C extends ColumnsConfig<T>,
->(actual: CreateZeroSchema<T, C>) {
+export function expectTableSchemaDeepEqual<S extends ZeroTableSchema>(
+  actual: S,
+) {
   return {
-    toEqual(expected: S) {
+    toEqual(expected: S, depth = 0) {
+      if (depth > 10) {
+        console.log("reached relationship depth > 10");
+        return;
+      }
+
       expect(Object.keys(actual.columns)).toStrictEqual(
         Object.keys(expected.columns),
       );
@@ -25,10 +27,82 @@ export function expectDeepEqual<
       expect(actual.primaryKey).toStrictEqual(expected.primaryKey);
       expect(actual.tableName).toStrictEqual(expected.tableName);
 
-      expect(actual).toStrictEqual(expected);
+      if (expected.relationships) {
+        for (const key of Object.keys(expected.relationships)) {
+          expect(
+            (
+              actual.relationships?.[
+                key as keyof typeof actual.relationships
+              ] as {
+                sourceField: string;
+              }
+            )?.sourceField,
+          ).toStrictEqual(
+            (
+              expected.relationships?.[
+                key as keyof typeof expected.relationships
+              ] as {
+                sourceField: string;
+              }
+            )?.sourceField,
+          );
+
+          expect(
+            (
+              actual.relationships?.[
+                key as keyof typeof actual.relationships
+              ] as {
+                destField: string;
+              }
+            )?.destField,
+          ).toStrictEqual(
+            (
+              expected.relationships?.[
+                key as keyof typeof expected.relationships
+              ] as {
+                destField: string;
+              }
+            )?.destField,
+          );
+
+          expectTableSchemaDeepEqual(
+            (
+              actual.relationships?.[
+                key as keyof typeof actual.relationships
+              ] as { destSchema: () => ZeroTableSchema }
+            )?.destSchema(),
+          ).toEqual(
+            (
+              expected.relationships?.[
+                key as keyof typeof expected.relationships
+              ] as { destSchema: () => ZeroTableSchema }
+            )?.destSchema(),
+            depth + 1,
+          );
+        }
+      }
     },
   };
 }
+
+export function expectSchemaDeepEqual<S extends ZeroSchema>(actual: S) {
+  return {
+    toEqual(expected: S) {
+      expect(actual.version).toStrictEqual(expected.version);
+
+      expect(Object.keys(actual.tables)).toStrictEqual(
+        Object.keys(expected.tables),
+      );
+
+      for (const key of Object.keys(actual.tables)) {
+        expectTableSchemaDeepEqual(
+          actual.tables[key as keyof typeof actual.tables],
+        ).toEqual(expected.tables[key as keyof typeof expected.tables]);
+      }
+    },
+  };
+}
+
 export function Expect<_ extends true>() {}
 
 export type Equal<X, Y extends X> =
