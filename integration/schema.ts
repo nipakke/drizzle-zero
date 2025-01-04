@@ -4,7 +4,7 @@ import {
   definePermissions,
   type ExpressionBuilder,
   type Row,
-  type TableSchema,
+  type TableSchema
 } from "@rocicorp/zero";
 import { createZeroSchema } from "drizzle-zero";
 import * as drizzleSchema from "./drizzle/schema";
@@ -48,10 +48,10 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
     { cmpLit }: ExpressionBuilder<TableSchema>,
   ) => cmpLit(authData.sub, "IS NOT", null);
 
-  // const allowIfMessageSender = (
-  //   authData: AuthData,
-  //   { cmp }: ExpressionBuilder<typeof schema.tables.message>,
-  // ) => cmp("senderId", "=", authData.sub ?? "");
+  const allowIfMessageSender = (
+    authData: AuthData,
+    { cmp }: ExpressionBuilder<typeof schema.tables.message>,
+  ) => cmp("senderId", "=", authData.sub ?? "");
 
   return {
     medium: {
@@ -74,10 +74,7 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
         insert: ANYONE_CAN,
         // only sender can edit their own messages
         update: {
-          preMutation: [
-            (_authData, d) =>
-              d.exists("medium", (q) => q.where("id", "=", "mediumId")),
-          ],
+          preMutation: [allowIfMessageSender],
         },
         // must be logged in to delete
         delete: [allowIfLoggedIn],

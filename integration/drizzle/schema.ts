@@ -1,6 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text } from "drizzle-orm/pg-core";
-import { boolean } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text } from "drizzle-orm/pg-core";
 
 export const userTable = pgTable("user", {
   id: text("id").primaryKey(),
@@ -8,10 +7,18 @@ export const userTable = pgTable("user", {
   partner: boolean("partner").notNull(),
 });
 
+export const userRelations = relations(userTable, ({ many }) => ({
+  messages: many(messageTable),
+}));
+
 export const mediumTable = pgTable("medium", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
 });
+
+export const mediumRelations = relations(mediumTable, ({ many }) => ({
+  messages: many(messageTable),
+}));
 
 export const messageTable = pgTable("message", {
   id: text("id").primaryKey(),

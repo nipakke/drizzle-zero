@@ -102,3 +102,5 @@ export type ZeroColumns<T extends Table, C extends ColumnsConfig<T>> = {
 export type Flatten<T> = {
   [K in keyof T]: T[K];
 } & {};
+
+export type AtLeastOne<T> = [T, ...T[]];

@@ -1,12 +1,15 @@
 import {
   column,
   createSchema,
-  createTableSchema,
-  type JSONValue,
-  type TableSchema,
+  type JSONValue
 } from "@rocicorp/zero";
 import { test } from "vitest";
-import { Expect, expectSchemaDeepEqual, type Equal } from "./utils";
+import {
+  Expect,
+  expectSchemaDeepEqual,
+  type AtLeastOne,
+  type Equal,
+} from "./utils";
 
 test("relationships - one-to-one self-referential", async () => {
   const { schema: oneToOneSelfZeroSchema } = await import(
@@ -23,8 +26,8 @@ test("relationships - one-to-one self-referential", async () => {
     primaryKey: ["id"],
     relationships: {
       invitee: {
-        sourceField: "invited_by" as "id" | "invited_by" | "name",
-        destField: "id" as "id" | "invited_by" | "name",
+        sourceField: ["invited_by"] as AtLeastOne<"id" | "name" | "invited_by">,
+        destField: ["id"] as AtLeastOne<"id" | "name" | "invited_by">,
         destSchema: () => expectedUsers,
       },
     },
@@ -53,7 +56,14 @@ test("relationships - one-to-one", async () => {
       name: column.string(true),
     },
     primaryKey: ["id"],
-  } as const satisfies TableSchema;
+    relationships: {
+      profileInfo: {
+        sourceField: ["id"] as AtLeastOne<"id" | "name">,
+        destField: ["user_id"] as AtLeastOne<"id" | "user_id" | "metadata">,
+        destSchema: () => expectedProfileInfo,
+      },
+    },
+  } as const;
 
   const expectedProfileInfo = {
     tableName: "profile_info",
@@ -65,12 +75,12 @@ test("relationships - one-to-one", async () => {
     primaryKey: ["id"],
     relationships: {
       user: {
-        sourceField: "user_id" as "id" | "user_id" | "metadata",
-        destField: "id" as "id" | "name",
+        sourceField: ["user_id"] as AtLeastOne<"id" | "user_id" | "metadata">,
+        destField: ["id"] as AtLeastOne<"id" | "name">,
         destSchema: () => expectedUsers,
       },
     },
-  } as const satisfies TableSchema;
+  } as const;
 
   const expected = createSchema({
     version: 1,
@@ -97,7 +107,16 @@ test("relationships - one-to-one-2", async () => {
       partner: column.boolean(),
     },
     primaryKey: ["id"],
-  } as const satisfies TableSchema;
+    relationships: {
+      messages: {
+        sourceField: ["id"] as AtLeastOne<"id" | "name" | "partner">,
+        destField: ["senderId"] as AtLeastOne<
+          "id" | "senderId" | "mediumId" | "body"
+        >,
+        destSchema: () => expectedMessage,
+      },
+    },
+  } as const;
 
   const expectedMedium = {
     tableName: "medium",
@@ -106,7 +125,16 @@ test("relationships - one-to-one-2", async () => {
       name: column.string(),
     },
     primaryKey: ["id"],
-  } as const satisfies TableSchema;
+    relationships: {
+      messages: {
+        sourceField: ["id"] as AtLeastOne<"id" | "name">,
+        destField: ["mediumId"] as AtLeastOne<
+          "id" | "mediumId" | "senderId" | "body"
+        >,
+        destSchema: () => expectedMessage,
+      },
+    },
+  } as const;
 
   const expectedMessage = {
     tableName: "message",
@@ -119,17 +147,21 @@ test("relationships - one-to-one-2", async () => {
     primaryKey: ["id"],
     relationships: {
       medium: {
-        sourceField: "mediumId" as "id" | "mediumId" | "senderId" | "body",
-        destField: "id" as "id" | "name",
+        sourceField: ["mediumId"] as AtLeastOne<
+          "id" | "mediumId" | "senderId" | "body"
+        >,
+        destField: ["id"] as AtLeastOne<"id" | "name">,
         destSchema: () => expectedMedium,
       },
       sender: {
-        sourceField: "senderId" as "id" | "senderId" | "mediumId" | "body",
-        destField: "id" as "id" | "name" | "partner",
+        sourceField: ["senderId"] as AtLeastOne<
+          "id" | "senderId" | "mediumId" | "body"
+        >,
+        destField: ["id"] as AtLeastOne<"id" | "name" | "partner">,
         destSchema: () => expectedUsers,
       },
     },
-  } as const satisfies TableSchema;
+  } as const;
 
   const expected = createSchema({
     version: 2.1,
@@ -156,9 +188,16 @@ test("relationships - one-to-many", async () => {
       name: column.string(true),
     },
     primaryKey: ["id"],
-  } as const satisfies TableSchema;
+    relationships: {
+      posts: {
+        sourceField: ["id"] as AtLeastOne<"id" | "name">,
+        destField: ["author_id"] as AtLeastOne<"id" | "author_id" | "content">,
+        destSchema: () => expectedPosts,
+      },
+    },
+  } as const;
 
-  const expectedPosts = createTableSchema({
+  const expectedPosts = {
     tableName: "post",
     columns: {
       id: column.number(),
@@ -168,14 +207,16 @@ test("relationships - one-to-many", async () => {
     primaryKey: ["id"],
     relationships: {
       author: {
-        sourceField: "author_id" as "id" | "content" | "author_id",
-        destField: "id" as "id" | "name",
+        sourceField: ["author_id"] as AtLeastOne<
+          "id" | "content" | "author_id"
+        >,
+        destField: ["id"] as AtLeastOne<"id" | "name">,
         destSchema: () => expectedUsers,
       },
     },
-  });
+  } as const;
 
-  const expectedComments = createTableSchema({
+  const expectedComments = {
     tableName: "comment",
     columns: {
       id: column.number(),
@@ -186,12 +227,21 @@ test("relationships - one-to-many", async () => {
     primaryKey: ["id"],
     relationships: {
       post: {
-        sourceField: "post_id" as "id" | "text" | "author_id" | "post_id",
-        destField: "id" as "id" | "content" | "author_id",
+        sourceField: ["post_id"] as AtLeastOne<
+          "id" | "text" | "author_id" | "post_id"
+        >,
+        destField: ["id"] as AtLeastOne<"id" | "content" | "author_id">,
         destSchema: () => expectedPosts,
       },
+      author: {
+        sourceField: ["author_id"] as AtLeastOne<
+          "id" | "text" | "author_id" | "post_id"
+        >,
+        destField: ["id"] as AtLeastOne<"id" | "name">,
+        destSchema: () => expectedUsers,
+      },
     },
-  });
+  } as const;
 
   const expected = createSchema({
     version: 1,
@@ -218,7 +268,14 @@ test("relationships - many-to-many", async () => {
       name: column.string(true),
     },
     primaryKey: ["id"],
-  } as const satisfies TableSchema;
+    relationships: {
+      usersToGroups: {
+        sourceField: ["id"] as AtLeastOne<"id" | "name">,
+        destField: ["user_id"] as AtLeastOne<"user_id" | "group_id">,
+        destSchema: () => expectedUsersToGroups,
+      },
+    },
+  } as const;
 
   const expectedUsersToGroups = {
     tableName: "users_to_group",
@@ -226,20 +283,20 @@ test("relationships - many-to-many", async () => {
       user_id: column.number(),
       group_id: column.number(),
     },
-    primaryKey: ["user_id", "group_id"] as readonly [string, ...string[]],
+    primaryKey: ["user_id", "group_id"] as Readonly<AtLeastOne<string>>,
     relationships: {
       group: {
-        sourceField: "group_id" as "user_id" | "group_id",
-        destField: "id" as "id" | "name",
+        sourceField: ["group_id"] as AtLeastOne<"user_id" | "group_id">,
+        destField: ["id"] as AtLeastOne<"id" | "name">,
         destSchema: () => expectedGroups,
       },
       user: {
-        sourceField: "user_id" as "user_id" | "group_id",
-        destField: "id" as "id" | "name",
+        sourceField: ["user_id"] as AtLeastOne<"user_id" | "group_id">,
+        destField: ["id"] as AtLeastOne<"id" | "name">,
         destSchema: () => expectedUsers,
       },
     },
-  } as const satisfies TableSchema;
+  } as const;
 
   const expectedGroups = {
     tableName: "group",
@@ -248,7 +305,14 @@ test("relationships - many-to-many", async () => {
       name: column.string(true),
     },
     primaryKey: ["id"],
-  } as const satisfies TableSchema;
+    relationships: {
+      usersToGroups: {
+        sourceField: ["id"] as AtLeastOne<"id" | "name">,
+        destField: ["group_id"] as AtLeastOne<"user_id" | "group_id">,
+        destSchema: () => expectedUsersToGroups,
+      },
+    },
+  } as const;
 
   const expected = createSchema({
     version: 1,

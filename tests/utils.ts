@@ -9,8 +9,8 @@ export function expectTableSchemaDeepEqual<S extends ZeroTableSchema>(
 ) {
   return {
     toEqual(expected: S, depth = 0) {
-      if (depth > 10) {
-        console.log("reached relationship depth > 10");
+      if (depth > 5) {
+        console.debug("reached relationship depth > 5");
         return;
       }
 
@@ -111,3 +111,5 @@ export type Equal<X, Y extends X> =
     : false;
 
 export type NotEqual<X, Y extends X> = Equal<X, Y> extends true ? false : true;
+
+export type AtLeastOne<T> = [T, ...T[]];

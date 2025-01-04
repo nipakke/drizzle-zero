@@ -6,9 +6,9 @@ export const users = pgTable("user", {
   name: text("name"),
 });
 
-// export const usersRelations = relations(users, ({ one }) => ({
-//   profileInfo: one(profileInfo),
-// }));
+export const usersRelations = relations(users, ({ one }) => ({
+  profileInfo: one(profileInfo),
+}));
 
 export const profileInfo = pgTable("profile_info", {
   id: serial("id").primaryKey(),

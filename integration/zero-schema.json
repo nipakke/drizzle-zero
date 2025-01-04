@@ -12,25 +12,7 @@
     },
     "message": {
       "row": {
-        "update": {},
-        "delete": [
-          [
-            "allow",
-            {
-              "type": "simple",
-              "left": {
-                "type": "static",
-                "anchor": "authData",
-                "field": "sub"
-              },
-              "right": {
-                "type": "literal",
-                "value": null
-              },
-              "op": "IS NOT"
-            }
-          ]
-        ]
+        "update": {}
       }
     }
   },
@@ -52,7 +34,17 @@
             "optional": false
           }
         },
-        "relationships": {}
+        "relationships": {
+          "messages": {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "mediumId"
+            ],
+            "destSchema": "message"
+          }
+        }
       },
       "message": {
         "tableName": "message",
@@ -78,6 +70,15 @@
           }
         },
         "relationships": {
+          "medium": {
+            "sourceField": [
+              "mediumId"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "medium"
+          },
           "sender": {
             "sourceField": [
               "senderId"
@@ -104,7 +105,17 @@
             "optional": false
           }
         },
-        "relationships": {}
+        "relationships": {
+          "messages": {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "senderId"
+            ],
+            "destSchema": "message"
+          }
+        }
       }
     }
   }

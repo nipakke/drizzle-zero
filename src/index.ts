@@ -7,7 +7,7 @@ import {
   Relations,
   Table,
 } from "drizzle-orm";
-import { getTableConfig } from "drizzle-orm/pg-core";
+import { ForeignKey, getTableConfig } from "drizzle-orm/pg-core";
 import {
   type DrizzleColumnTypeToZeroType,
   drizzleColumnTypeToZeroType,
@@ -15,6 +15,7 @@ import {
   drizzleDataTypeToZeroType,
 } from "./drizzle-to-zero";
 import type {
+  AtLeastOne,
   ColumnNames,
   ColumnsConfig,
   FindPrimaryKeyFromTable,
@@ -75,8 +76,8 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
       }
 
       const schemaValue = {
-        optional: !column.notNull,
         type,
+        optional: !column.notNull,
         customType: null as unknown as ZeroTypeToTypescriptType[typeof type],
         ...(column.enumValues ? { kind: "enum" } : {}),
       };
@@ -156,24 +157,28 @@ type ReferencedZeroSchemas<
         }
           ? TSchema[P] extends Table<any>
             ? {
-                readonly sourceField: {
-                  [P in keyof TSchema]: TSchema[P] extends {
-                    _: {
-                      name: TTableName;
-                    };
-                  }
-                    ? TSchema[P] extends Table<any>
-                      ? ColumnNames<TSchema[P]>
-                      : never
-                    : never;
-                }[keyof TSchema];
-                readonly destField: {
-                  [ColumnName in keyof TSchema[P]["_"]["columns"]]: TSchema[P]["_"]["columns"][ColumnName]["_"] extends {
-                    name: string;
-                  }
-                    ? TSchema[P]["_"]["columns"][ColumnName]["_"]["name"]
-                    : never;
-                }[keyof TSchema[P]["_"]["columns"]];
+                readonly sourceField: AtLeastOne<
+                  {
+                    [P in keyof TSchema]: TSchema[P] extends {
+                      _: {
+                        name: TTableName;
+                      };
+                    }
+                      ? TSchema[P] extends Table<any>
+                        ? ColumnNames<TSchema[P]>
+                        : never
+                      : never;
+                  }[keyof TSchema]
+                >;
+                readonly destField: AtLeastOne<
+                  {
+                    [ColumnName in keyof TSchema[P]["_"]["columns"]]: TSchema[P]["_"]["columns"][ColumnName]["_"] extends {
+                      name: string;
+                    }
+                      ? TSchema[P]["_"]["columns"][ColumnName]["_"]["name"]
+                      : never;
+                  }[keyof TSchema[P]["_"]["columns"]]
+                >;
                 readonly destSchema: () => ZeroSchemaWithRelations<
                   TSchema[P],
                   TColumns[TableName<TSchema[P]>],
@@ -242,20 +247,55 @@ const createZeroSchema = <
       ) as Record<string, One | Many<any>>;
 
       Object.values(relationsConfig).forEach((relation) => {
-        if (relation instanceof Many) {
-          throw new Error("Many relations are not supported");
+        let sourceFieldNames: string[] = [];
+        let destFieldNames: string[] = [];
+
+        if (relation instanceof One) {
+          sourceFieldNames =
+            relation?.config?.fields?.map((f) => f?.name) ?? [];
+          destFieldNames =
+            relation?.config?.references?.map((f) => f?.name) ?? [];
         }
 
-        const config = relation.config;
+        if (!sourceFieldNames.length || !destFieldNames.length) {
+          for (const tableOrRelations of Object.values(schema)) {
+            if (tableOrRelations instanceof Table) {
+              const tableName = getTableName(tableOrRelations);
 
-        const sourceFieldNames = config?.fields.map((f) => f.name) ?? [];
-        const destFieldNames = config?.references.map((f) => f.name) ?? [];
+              if (tableName === relation.referencedTableName) {
+                const foreignKeys = (tableOrRelations as any)?.[
+                  Symbol.for("drizzle:PgInlineForeignKeys")
+                ] as ForeignKey[];
+
+                for (const foreignKey of foreignKeys) {
+                  const reference = foreignKey.reference();
+
+                  const foreignTableName = getTableName(reference.foreignTable);
+                  const sourceTableName = getTableName(relation.sourceTable);
+
+                  if (foreignTableName === sourceTableName) {
+                    sourceFieldNames = reference.foreignColumns.map(
+                      (c) => c.name,
+                    );
+                    destFieldNames = reference.columns.map((c) => c.name);
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if (!sourceFieldNames.length || !destFieldNames.length) {
+          throw new Error(
+            `No source or dest field names found for: ${relation.fieldName}`,
+          );
+        }
 
         relationships[tableName as keyof typeof relationships] = {
           ...(relationships?.[tableName as keyof typeof relationships] ?? {}),
           [relation.fieldName]: {
-            sourceField: sourceFieldNames[0],
-            destField: destFieldNames[0],
+            sourceField: sourceFieldNames,
+            destField: destFieldNames,
             destSchemaTableName: relation.referencedTableName,
           },
         } as unknown as (typeof relationships)[keyof typeof relationships];
@@ -290,8 +330,6 @@ const createZeroSchema = <
         table,
         schemaConfig.tables[tableName as keyof TColumns],
       );
-
-      // console.log({ table });
 
       const relations = relationships[tableName as keyof typeof relationships];
 

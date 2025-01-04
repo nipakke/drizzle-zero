@@ -7,10 +7,18 @@ export const userTable = pgTable("user", {
   partner: boolean("partner").notNull(),
 });
 
+export const userRelations = relations(userTable, ({ many }) => ({
+  messages: many(messageTable),
+}));
+
 export const mediumTable = pgTable("medium", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
 });
+
+export const mediumRelations = relations(mediumTable, ({ many }) => ({
+  messages: many(messageTable),
+}));
 
 export const messageTable = pgTable("message", {
   id: text("id").primaryKey(),

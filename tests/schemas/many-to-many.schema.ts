@@ -12,9 +12,9 @@ export const users = pgTable("user", {
   name: text("name"),
 });
 
-// export const usersRelations = relations(users, ({ many }) => ({
-//   usersToGroups: many(usersToGroups),
-// }));
+export const usersRelations = relations(users, ({ many }) => ({
+  usersToGroups: many(usersToGroups),
+}));
 
 export const usersToGroups = pgTable(
   "users_to_group",
@@ -45,8 +45,6 @@ export const groups = pgTable("group", {
   name: text("name"),
 });
 
-// TODO this does not work because Zero does not support circular references
-//
-// export const groupsRelations = relations(groups, ({ many }) => ({
-//   usersToGroups: many(usersToGroups),
-// }));
+export const groupsRelations = relations(groups, ({ many }) => ({
+  usersToGroups: many(usersToGroups),
+}));
