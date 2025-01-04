@@ -4,7 +4,6 @@ import {
   definePermissions,
   type ExpressionBuilder,
   type Row,
-  type TableSchema,
 } from "@rocicorp/zero";
 import { createZeroSchema } from "drizzle-zero";
 import * as drizzleSchema from "./drizzle/schema";
