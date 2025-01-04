@@ -49,8 +49,6 @@ test("compile - one-to-one-self", async () => {
 test("compile - one-to-one-2", async () => {
   const result = await runZeroBuildSchema("one-to-one-2");
   expect(result.schema.tables.user).toBeTruthy();
-
-  console.log(JSON.stringify(result, null, 2));
 });
 
 test("compile - one-to-many", async () => {
