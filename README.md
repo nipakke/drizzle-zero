@@ -14,7 +14,7 @@ pnpm add drizzle-zero
 
 ## Usage
 
-Here's an example of how to convert a Drizzle schema to a Zero schema, complete with bidirectional relationships:
+Here's an example of how to convert a Drizzle schema to a Zero schema with bidirectional relationships:
 
 ```ts
 import { relations } from "drizzle-orm";
@@ -41,24 +41,6 @@ export const postsRelations = relations(posts, ({ one }) => ({
     references: [users.id],
   }),
 }));
-
-export const comments = pgTable("comment", {
-  id: serial("id").primaryKey(),
-  text: text("text"),
-  authorId: integer("author_id").references(() => users.id),
-  postId: integer("post_id").references(() => posts.id),
-});
-
-export const commentsRelations = relations(comments, ({ one }) => ({
-  post: one(posts, {
-    fields: [comments.postId],
-    references: [posts.id],
-  }),
-  author: one(users, {
-    fields: [comments.authorId],
-    references: [users.id],
-  }),
-}));
 ```
 
 You can then convert this Drizzle schema to a Zero schema:
@@ -82,15 +64,45 @@ export const schema = createSchema(
         content: true,
         author_id: true,
       },
-      comment: {
-        id: true,
-        text: true,
-        post_id: true,
-        author_id: true,
-      },
     },
   }),
 );
+```
+
+You can then use the generated Zero schema in a React component:
+
+```tsx
+import { useQuery, useZero } from "@rocicorp/zero/react";
+
+function PostList({ selectedAuthorId }: { selectedAuthorId?: number }) {
+  const z = useZero();
+  
+  // Build a query for posts with their authors
+  let postsQuery = z.query.post
+    .related('author')
+    .limit(100);
+
+  // Filter by author if selectedAuthorId is provided
+  if (selectedAuthorId) {
+    postsQuery = postsQuery.where('author_id', '=', selectedAuthorId);
+  }
+
+  const [posts, postsDetail] = useQuery(postsQuery);
+
+  return (
+    <div>
+      <div>{postsDetail.type === 'complete' ? 'Complete results' : 'Partial results'}</div>
+      <div>
+        {posts.map(post => (
+          <div key={post.id} className="post">
+            <h2>{post.content}</h2>
+            <p>By: {post.author?.name}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 ```
 
 ## Features
