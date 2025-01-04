@@ -5,9 +5,12 @@
   "scripts": {
     "build-schema": "zero-build-schema -p schema.ts",
     "db:generate": "drizzle-kit generate",
-    "test": "vitest run"
+    "test": "vitest run",
+    "postinstall": "pnpm run build-schema"
   },
   "dependencies": {
+    "@rocicorp/zero": "^0.10.2024122404",
+    "drizzle-orm": "^0.38.3",
     "drizzle-zero": "workspace:*"
   },
   "devDependencies": {

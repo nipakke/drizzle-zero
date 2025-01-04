@@ -76,7 +76,7 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
         update: {
           preMutation: [
             (_authData, d) =>
-              d.exists("medium", (q) => q.where("name", "=", "email")),
+              d.exists("medium", (q) => q.where("id", "=", "mediumId")),
           ],
         },
         // must be logged in to delete

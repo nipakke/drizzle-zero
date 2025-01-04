@@ -13,7 +13,7 @@ const runZeroBuildSchema = async (testName: string) => {
 
     const outputPath = path.join(tmpDir, "schema.json");
 
-    execSync(`npx zero-build-schema -p ${schemaPath} -o ${outputPath}`, {
+    execSync(`pnpm exec zero-build-schema -p ${schemaPath} -o ${outputPath}`, {
       encoding: "utf-8",
     });
 

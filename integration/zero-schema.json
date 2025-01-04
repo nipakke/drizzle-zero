@@ -2,44 +2,17 @@
   "permissions": {
     "medium": {
       "row": {
-        "insert": [],
-        "update": {
-          "preMutation": []
-        },
-        "delete": []
+        "update": {}
       }
     },
     "user": {
       "row": {
-        "insert": [],
-        "update": {
-          "preMutation": []
-        },
-        "delete": []
+        "update": {}
       }
     },
     "message": {
       "row": {
-        "update": {
-          "preMutation": [
-            [
-              "allow",
-              {
-                "type": "simple",
-                "left": {
-                  "type": "column",
-                  "name": "senderId"
-                },
-                "right": {
-                  "type": "static",
-                  "anchor": "authData",
-                  "field": "sub"
-                },
-                "op": "="
-              }
-            ]
-          ]
-        },
+        "update": {},
         "delete": [
           [
             "allow",
@@ -97,23 +70,14 @@
           },
           "mediumId": {
             "type": "string",
-            "optional": false
+            "optional": true
           },
           "senderId": {
             "type": "string",
-            "optional": false
+            "optional": true
           }
         },
         "relationships": {
-          "medium": {
-            "sourceField": [
-              "mediumId"
-            ],
-            "destField": [
-              "id"
-            ],
-            "destSchema": "medium"
-          },
           "sender": {
             "sourceField": [
               "senderId"
