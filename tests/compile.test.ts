@@ -46,7 +46,7 @@ test("compile - one-to-one-self", async () => {
   expect(result.schema.tables.user).toBeTruthy();
 });
 
-test.only("compile - one-to-one-2", async () => {
+test("compile - one-to-one-2", async () => {
   const result = await runZeroBuildSchema("one-to-one-2");
   expect(result.schema.tables.user).toBeTruthy();
 
