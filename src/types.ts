@@ -39,6 +39,17 @@ type TypeOverride<TCustomType> = {
 };
 
 export type ColumnsConfig<T extends Table> = {
+  /**
+   * Specify the columns to be included in sync.
+   *
+   * @example
+   * ```ts
+   * {
+   *   id: true,
+   *   name: true,
+   * }
+   * ```
+   */
   readonly [K in ColumnNames<T>]:
     | boolean
     | TypeOverride<
