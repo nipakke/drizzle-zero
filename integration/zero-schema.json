@@ -12,7 +12,59 @@
     },
     "message": {
       "row": {
-        "update": {}
+        "select": [
+          [
+            "allow",
+            {
+              "type": "simple",
+              "left": {
+                "type": "column",
+                "name": "senderId"
+              },
+              "right": {
+                "type": "literal",
+                "value": "1"
+              },
+              "op": "="
+            }
+          ]
+        ],
+        "update": {
+          "preMutation": [
+            [
+              "allow",
+              {
+                "type": "simple",
+                "left": {
+                  "type": "column",
+                  "name": "senderId"
+                },
+                "right": {
+                  "type": "literal",
+                  "value": "1"
+                },
+                "op": "="
+              }
+            ]
+          ]
+        },
+        "delete": [
+          [
+            "allow",
+            {
+              "type": "simple",
+              "left": {
+                "type": "column",
+                "name": "senderId"
+              },
+              "right": {
+                "type": "literal",
+                "value": "1"
+              },
+              "op": "="
+            }
+          ]
+        ]
       }
     }
   },

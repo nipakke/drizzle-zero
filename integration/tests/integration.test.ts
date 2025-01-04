@@ -7,17 +7,21 @@ import { startPostgresAndZero } from "./utils";
 // Provide WebSocket on the global scope
 globalThis.WebSocket = WebSocket as any;
 
-beforeAll(async () => {
-  await startPostgresAndZero();
-}, 60000);
-
-test.concurrent("can query users", async () => {
-  const zero = new Zero({
+const getNewZero = async () => {
+  return new Zero({
     server: "http://localhost:4949",
     userID: "1",
     schema: schema,
     kvStore: "mem",
   });
+};
+
+beforeAll(async () => {
+  await startPostgresAndZero();
+}, 60000);
+
+test("can query users", async () => {
+  const zero = await getNewZero();
 
   const preloadedUsers = await zero.query.user.preload();
   await preloadedUsers.complete;
@@ -31,40 +35,52 @@ test.concurrent("can query users", async () => {
   preloadedUsers.cleanup();
 });
 
-test.concurrent("can query messages", async () => {
-  const zero = new Zero({
-    server: "http://localhost:4949",
-    userID: "1",
-    schema: schema,
-    kvStore: "mem",
-  });
+test("can query messages", async () => {
+  const zero = await getNewZero();
 
   const preloadedMessages = await zero.query.message.preload();
   await preloadedMessages.complete;
 
   const messages = await zero.query.message.run();
 
-  expect(messages).toHaveLength(4);
+  expect(messages).toHaveLength(1);
   expect(messages[0].body).toBe("Hey, James!");
 
   preloadedMessages.cleanup();
 });
 
-test.concurrent("can query messages with relationships", async () => {
-  const zero = new Zero({
-    server: "http://localhost:4949",
-    userID: "1",
-    schema: schema,
-    kvStore: "mem",
-  });
+test("can query messages with relationships", async () => {
+  const zero = await getNewZero();
 
-  const preloadedMessages = await zero.query.message.related("medium").preload();
+  const preloadedMessages = await zero.query.message
+    .related("medium")
+    .preload();
   await preloadedMessages.complete;
 
   const messages = await zero.query.message.related("medium").one().run();
 
   expect(messages?.medium).toHaveLength(1);
   expect(messages?.medium[0].name).toBe("email");
+
+  preloadedMessages.cleanup();
+});
+
+test("can insert messages", async () => {
+  const zero = await getNewZero();
+
+  await zero.mutate.message.insert({
+    id: "99",
+    body: "Hello, James!",
+    senderId: "1",
+    mediumId: "1",
+  });
+
+  const preloadedMessages = await zero.query.message.preload();
+  await preloadedMessages.complete;
+
+  const messages = await zero.query.message.run();
+  expect(messages).toHaveLength(2);
+  expect(messages[1].id).toBe("99");
 
   preloadedMessages.cleanup();
 });

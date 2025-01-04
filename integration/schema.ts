@@ -4,7 +4,7 @@ import {
   definePermissions,
   type ExpressionBuilder,
   type Row,
-  type TableSchema
+  type TableSchema,
 } from "@rocicorp/zero";
 import { createZeroSchema } from "drizzle-zero";
 import * as drizzleSchema from "./drizzle/schema";
@@ -43,19 +43,15 @@ type AuthData = {
 };
 
 export const permissions = definePermissions<AuthData, Schema>(schema, () => {
-  const allowIfLoggedIn = (
-    authData: AuthData,
-    { cmpLit }: ExpressionBuilder<TableSchema>,
-  ) => cmpLit(authData.sub, "IS NOT", null);
-
-  const allowIfMessageSender = (
-    authData: AuthData,
+  const allowIfSender1 = (
+    _authData: AuthData,
     { cmp }: ExpressionBuilder<typeof schema.tables.message>,
-  ) => cmp("senderId", "=", authData.sub ?? "");
+  ) => cmp("senderId", "=", "1");
 
   return {
     medium: {
       row: {
+        select: ANYONE_CAN,
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
         delete: ANYONE_CAN,
@@ -63,6 +59,7 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
     },
     user: {
       row: {
+        select: ANYONE_CAN,
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
         delete: ANYONE_CAN,
@@ -70,14 +67,12 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
     },
     message: {
       row: {
-        // anyone can insert
+        select: [allowIfSender1],
         insert: ANYONE_CAN,
-        // only sender can edit their own messages
         update: {
-          preMutation: [allowIfMessageSender],
+          preMutation: [allowIfSender1],
         },
-        // must be logged in to delete
-        delete: [allowIfLoggedIn],
+        delete: [allowIfSender1],
       },
     },
   };
