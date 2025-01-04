@@ -93,6 +93,50 @@ export const schema = createSchema(
 );
 ```
 
+You can then use the generated Zero schema in a React component:
+
+```tsx
+import { useQuery, useZero } from "@rocicorp/zero/react";
+
+function PostList({ selectedAuthorId }: { selectedAuthorId?: number }) {
+  const z = useZero();
+  
+  // Build a query for posts with their authors and comments
+  let postsQuery = z.query.post
+    .related('author')
+    .related('comments')
+    .limit(100);
+
+  // Filter by author if selectedAuthorId is provided
+  if (selectedAuthorId) {
+    postsQuery = postsQuery.where('author_id', '=', selectedAuthorId);
+  }
+
+  const [posts, postsDetail] = useQuery(postsQuery);
+
+  return (
+    <div>
+      <div>{postsDetail.type === 'complete' ? 'Complete results' : 'Partial results'}</div>
+      <div>
+        {posts.map(post => (
+          <div key={post.id} className="post">
+            <h2>{post.content}</h2>
+            <p>By: {post.author?.name}</p>
+            <div className="comments">
+              {post.comments?.map(comment => (
+                <div key={comment.id} className="comment">
+                  {comment.text}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
 ## Features
 
 - Convert Drizzle ORM schemas to Zero schemas
