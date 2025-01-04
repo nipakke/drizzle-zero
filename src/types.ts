@@ -36,6 +36,7 @@ type TypeOverride<TCustomType> = {
   readonly type: "string" | "number" | "boolean" | "json";
   readonly optional: boolean;
   readonly customType: TCustomType;
+  readonly kind?: "enum";
 };
 
 export type ColumnsConfig<T extends Table> = {

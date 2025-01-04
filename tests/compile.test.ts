@@ -56,6 +56,11 @@ test("compile - one-to-many", async () => {
   expect(result.schema.tables.user).toBeTruthy();
 });
 
+test("compile - one-to-many-named", async () => {
+  const result = await runZeroBuildSchema("one-to-many-named");
+  expect(result.schema.tables.users).toBeTruthy();
+});
+
 test("compile - many-to-many", async () => {
   const result = await runZeroBuildSchema("many-to-many");
   expect(result.schema.tables.user).toBeTruthy();
