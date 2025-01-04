@@ -1,35 +1,33 @@
+import { column, type JSONValue } from "@rocicorp/zero";
 import {
+  bigint,
+  bigserial,
+  boolean,
+  char,
+  date,
+  doublePrecision,
+  integer,
+  json,
   jsonb,
+  numeric,
   pgEnum,
   pgTable,
   primaryKey,
+  real,
   serial,
+  smallint,
+  smallserial,
   text,
   timestamp,
-  numeric,
-  char,
   uuid,
   varchar,
-  boolean,
-  date,
-  real,
-  json,
-  smallint,
-  integer,
-  bigint,
-  smallserial,
-  bigserial,
-  doublePrecision,
 } from "drizzle-orm/pg-core";
 import { expect, test } from "vitest";
-
-import { createZeroSchema } from "../src";
-
-import { column, type JSONValue } from "@rocicorp/zero";
+import { createZeroTableSchema } from "../src";
 import {
   type Equal,
   Expect,
-  expectDeepEqual,
+  expectTableSchemaDeepEqual,
   type ZeroTableSchema,
 } from "./utils";
 
@@ -40,7 +38,7 @@ test("pg - basic", () => {
     json: jsonb().notNull(),
   });
 
-  const result = createZeroSchema(table, {
+  const result = createZeroTableSchema(table, {
     id: true,
     name: true,
     json: true,
@@ -53,10 +51,34 @@ test("pg - basic", () => {
       name: column.string(),
       json: column.json<JSONValue>(),
     },
-    primaryKey: "id",
+    primaryKey: ["id"],
   } as const satisfies ZeroTableSchema;
 
-  expectDeepEqual(result).toEqual(expected);
+  expectTableSchemaDeepEqual(result).toEqual(expected);
+  Expect<Equal<typeof result, typeof expected>>;
+});
+
+test("pg - named fields", () => {
+  const table = pgTable("test", {
+    id: serial("custom_id").primaryKey(),
+    name: text("custom_name").notNull(),
+  });
+
+  const result = createZeroTableSchema(table, {
+    custom_id: true,
+    custom_name: true,
+  });
+
+  const expected = {
+    tableName: "test",
+    columns: {
+      custom_id: column.number(),
+      custom_name: column.string(),
+    },
+    primaryKey: ["custom_id"],
+  } as const satisfies ZeroTableSchema;
+
+  expectTableSchemaDeepEqual(result).toEqual(expected);
   Expect<Equal<typeof result, typeof expected>>;
 });
 
@@ -66,7 +88,7 @@ test("pg - custom types", () => {
     json: jsonb().$type<{ foo: string }>().notNull(),
   });
 
-  const result = createZeroSchema(table, {
+  const result = createZeroTableSchema(table, {
     id: column.string(),
     json: true,
   });
@@ -77,10 +99,10 @@ test("pg - custom types", () => {
       id: column.string(),
       json: column.json<{ foo: string }>(),
     },
-    primaryKey: "id",
+    primaryKey: ["id"],
   } as const satisfies ZeroTableSchema;
 
-  expectDeepEqual(result).toEqual(expected);
+  expectTableSchemaDeepEqual(result).toEqual(expected);
   Expect<Equal<typeof result, typeof expected>>;
 });
 
@@ -92,7 +114,7 @@ test("pg - optional fields", () => {
     metadata: jsonb(), // optional
   });
 
-  const result = createZeroSchema(table, {
+  const result = createZeroTableSchema(table, {
     id: true,
     name: true,
     description: true,
@@ -107,10 +129,10 @@ test("pg - optional fields", () => {
       description: column.string(true),
       metadata: column.json<JSONValue>(true),
     },
-    primaryKey: "id",
+    primaryKey: ["id"],
   } as const satisfies ZeroTableSchema;
 
-  expectDeepEqual(result).toEqual(expected);
+  expectTableSchemaDeepEqual(result).toEqual(expected);
   Expect<Equal<typeof result, typeof expected>>;
 });
 
@@ -122,7 +144,7 @@ test("pg - array types", () => {
   });
 
   expect(() =>
-    createZeroSchema(table, {
+    createZeroTableSchema(table, {
       id: true,
       tags: true,
       scores: true,
@@ -145,7 +167,7 @@ test("pg - complex custom types", () => {
     settings: jsonb().$type<Record<string, boolean>>(),
   });
 
-  const result = createZeroSchema(table, {
+  const result = createZeroTableSchema(table, {
     id: true,
     metadata: true,
     settings: true,
@@ -158,10 +180,10 @@ test("pg - complex custom types", () => {
       metadata: column.json<UserMetadata>(),
       settings: column.json<Record<string, boolean>>(true),
     },
-    primaryKey: "id",
+    primaryKey: ["id"],
   } as const satisfies ZeroTableSchema;
 
-  expectDeepEqual(result).toEqual(expected);
+  expectTableSchemaDeepEqual(result).toEqual(expected);
   Expect<Equal<typeof result, typeof expected>>;
 });
 
@@ -173,7 +195,7 @@ test("pg - partial column selection", () => {
     metadata: jsonb().notNull(),
   });
 
-  const result = createZeroSchema(table, {
+  const result = createZeroTableSchema(table, {
     id: true,
     metadata: true,
     name: false,
@@ -186,10 +208,10 @@ test("pg - partial column selection", () => {
       id: column.number(),
       metadata: column.json<JSONValue>(),
     },
-    primaryKey: "id",
+    primaryKey: ["id"],
   } as const satisfies ZeroTableSchema;
 
-  expectDeepEqual(result).toEqual(expected);
+  expectTableSchemaDeepEqual(result).toEqual(expected);
   Expect<Equal<typeof result, typeof expected>>;
 });
 
@@ -201,7 +223,7 @@ test("pg - partial column selection", () => {
     metadata: jsonb().notNull(),
   });
 
-  const result = createZeroSchema(table, {
+  const result = createZeroTableSchema(table, {
     id: true,
     metadata: true,
     name: false,
@@ -214,10 +236,10 @@ test("pg - partial column selection", () => {
       id: column.number(),
       metadata: column.json<JSONValue>(),
     },
-    primaryKey: "id",
+    primaryKey: ["id"],
   } as const satisfies ZeroTableSchema;
 
-  expectDeepEqual(result).toEqual(expected);
+  expectTableSchemaDeepEqual(result).toEqual(expected);
   Expect<Equal<typeof result, typeof expected>>;
 });
 
@@ -232,7 +254,7 @@ test("pg - composite primary key", () => {
     (t) => [primaryKey({ columns: [t.userId, t.orgId] })],
   );
 
-  const result = createZeroSchema(table, {
+  const result = createZeroTableSchema(table, {
     userId: true,
     orgId: true,
     role: true,
@@ -249,7 +271,7 @@ test("pg - composite primary key", () => {
     primaryKey: ["userId", "orgId"] as readonly [string, ...string[]],
   } as const satisfies ZeroTableSchema;
 
-  expectDeepEqual(result).toEqual(expected);
+  expectTableSchemaDeepEqual(result).toEqual(expected);
   Expect<Equal<typeof result, typeof expected>>;
 });
 
@@ -261,7 +283,7 @@ test("pg - timestamp fields", () => {
     scheduledFor: timestamp().notNull(),
   });
 
-  const result = createZeroSchema(table, {
+  const result = createZeroTableSchema(table, {
     id: true,
     createdAt: true,
     updatedAt: true,
@@ -276,10 +298,10 @@ test("pg - timestamp fields", () => {
       updatedAt: column.string(true),
       scheduledFor: column.string(),
     },
-    primaryKey: "id",
+    primaryKey: ["id"],
   } as const satisfies ZeroTableSchema;
 
-  expectDeepEqual(result).toEqual(expected);
+  expectTableSchemaDeepEqual(result).toEqual(expected);
   Expect<Equal<typeof result, typeof expected>>;
 });
 
@@ -294,28 +316,30 @@ test("pg - custom column mapping", () => {
     }>(),
   });
 
-  const result = createZeroSchema(table, {
+  const result = createZeroTableSchema(table, {
     id: true,
-    firstName: true,
-    lastName: true,
-    profileData: true,
+    first_name: true,
+    last_name: true,
+    profile_data: true,
   });
+
+  // result.
 
   const expected = {
     tableName: "users",
     columns: {
       id: column.number(),
-      firstName: column.string(),
-      lastName: column.string(),
-      profileData: column.json<{
+      first_name: column.string(),
+      last_name: column.string(),
+      profile_data: column.json<{
         bio: string;
         avatar: string;
       }>(true),
     },
-    primaryKey: "id",
+    primaryKey: ["id"],
   } as const satisfies ZeroTableSchema;
 
-  expectDeepEqual(result).toEqual(expected);
+  expectTableSchemaDeepEqual(result).toEqual(expected);
   Expect<Equal<typeof result, typeof expected>>;
 });
 
@@ -328,7 +352,7 @@ test("pg - enum field", () => {
     backupRole: roleEnum(),
   });
 
-  const result = createZeroSchema(table, {
+  const result = createZeroTableSchema(table, {
     id: true,
     role: true,
     backupRole: true,
@@ -341,10 +365,10 @@ test("pg - enum field", () => {
       role: column.enumeration<"admin" | "user" | "guest">(),
       backupRole: column.enumeration<"admin" | "user" | "guest">(true),
     },
-    primaryKey: "id",
+    primaryKey: ["id"],
   } as const satisfies ZeroTableSchema;
 
-  expectDeepEqual(result).toEqual(expected);
+  expectTableSchemaDeepEqual(result).toEqual(expected);
   Expect<Equal<typeof result, typeof expected>>;
 });
 
@@ -357,7 +381,7 @@ test("pg - simple enum field", () => {
     mood: moodEnum().notNull(),
   });
 
-  const result = createZeroSchema(table, {
+  const result = createZeroTableSchema(table, {
     id: true,
     name: true,
     mood: true,
@@ -370,10 +394,10 @@ test("pg - simple enum field", () => {
       name: column.string(),
       mood: column.enumeration<"happy" | "sad" | "ok">(),
     },
-    primaryKey: "id",
+    primaryKey: ["id"],
   } as const satisfies ZeroTableSchema;
 
-  expectDeepEqual(result).toEqual(expected);
+  expectTableSchemaDeepEqual(result).toEqual(expected);
   Expect<Equal<typeof result, typeof expected>>;
 });
 
@@ -420,25 +444,25 @@ test("pg - all supported data types", () => {
     optionalNumeric: numeric("optional_numeric", { precision: 10, scale: 2 }),
     optionalReal: real("optional_real"),
     optionalDoublePrecision: doublePrecision("optional_double_precision"),
-    optionalText: text(),
-    optionalBoolean: boolean(),
-    optionalDate: timestamp(),
-    optionalJson: jsonb(),
-    optionalEnum: statusEnum(),
+    optionalText: text("optional_text"),
+    optionalBoolean: boolean("optional_boolean"),
+    optionalDate: timestamp("optional_date"),
+    optionalJson: jsonb("optional_json"),
+    optionalEnum: statusEnum("optional_enum"),
   });
 
-  const result = createZeroSchema(table, {
+  const result = createZeroTableSchema(table, {
     id: true,
     smallint: true,
     integer: true,
     bigint: true,
-    smallSerial: true,
-    regularSerial: true,
-    bigSerial: true,
+    smallserial: true,
+    regular_serial: true,
+    bigserial: true,
     numeric: true,
     decimal: true,
     real: true,
-    doublePrecision: true,
+    double_precision: true,
     name: true,
     code: true,
     identifier: true,
@@ -450,17 +474,17 @@ test("pg - all supported data types", () => {
     metadata: true,
     settings: true,
     status: true,
-    optionalSmallint: true,
-    optionalInteger: true,
-    optionalBigint: true,
-    optionalNumeric: true,
-    optionalReal: true,
-    optionalDoublePrecision: true,
-    optionalText: true,
-    optionalBoolean: true,
-    optionalDate: true,
-    optionalJson: true,
-    optionalEnum: true,
+    optional_smallint: true,
+    optional_integer: true,
+    optional_bigint: true,
+    optional_numeric: true,
+    optional_real: true,
+    optional_double_precision: true,
+    optional_text: true,
+    optional_boolean: true,
+    optional_date: true,
+    optional_json: true,
+    optional_enum: true,
   });
 
   const expected = {
@@ -473,9 +497,9 @@ test("pg - all supported data types", () => {
       bigint: column.number(),
 
       // Serial types
-      smallSerial: column.number(),
-      regularSerial: column.number(),
-      bigSerial: column.number(),
+      smallserial: column.number(),
+      regular_serial: column.number(),
+      bigserial: column.number(),
 
       // Arbitrary precision types
       numeric: column.number(),
@@ -483,7 +507,7 @@ test("pg - all supported data types", () => {
 
       // Floating-point types
       real: column.number(),
-      doublePrecision: column.number(),
+      double_precision: column.number(),
 
       // Rest of the types
       name: column.string(),
@@ -499,22 +523,24 @@ test("pg - all supported data types", () => {
       status: column.enumeration<"active" | "inactive" | "pending">(),
 
       // Optional variants
-      optionalSmallint: column.number(true),
-      optionalInteger: column.number(true),
-      optionalBigint: column.number(true),
-      optionalNumeric: column.number(true),
-      optionalReal: column.number(true),
-      optionalDoublePrecision: column.number(true),
-      optionalText: column.string(true),
-      optionalBoolean: column.boolean(true),
-      optionalDate: column.string(true),
-      optionalJson: column.json<JSONValue>(true),
-      optionalEnum: column.enumeration<"active" | "inactive" | "pending">(true),
+      optional_smallint: column.number(true),
+      optional_integer: column.number(true),
+      optional_bigint: column.number(true),
+      optional_numeric: column.number(true),
+      optional_real: column.number(true),
+      optional_double_precision: column.number(true),
+      optional_text: column.string(true),
+      optional_boolean: column.boolean(true),
+      optional_date: column.string(true),
+      optional_json: column.json<JSONValue>(true),
+      optional_enum: column.enumeration<"active" | "inactive" | "pending">(
+        true,
+      ),
     },
-    primaryKey: "id",
+    primaryKey: ["id"],
   } as const satisfies ZeroTableSchema;
 
-  expectDeepEqual(result).toEqual(expected);
+  expectTableSchemaDeepEqual(result).toEqual(expected);
   Expect<Equal<typeof result, typeof expected>>;
 });
 
@@ -524,7 +550,7 @@ test("pg - override column json type", () => {
     metadata: jsonb().notNull(),
   });
 
-  const result = createZeroSchema(table, {
+  const result = createZeroTableSchema(table, {
     id: true,
     metadata: column.json<{ amount: number; currency: string }>(),
   });
@@ -535,9 +561,43 @@ test("pg - override column json type", () => {
       id: column.number(),
       metadata: column.json<{ amount: number; currency: string }>(),
     },
-    primaryKey: "id",
+    primaryKey: ["id"],
   } as const satisfies ZeroTableSchema;
 
-  expectDeepEqual(result).toEqual(expected);
+  expectTableSchemaDeepEqual(result).toEqual(expected);
+  Expect<Equal<typeof result, typeof expected>>;
+});
+
+test("pg - compound primary key with serial", () => {
+  const table = pgTable(
+    "order_items",
+    {
+      orderId: serial().notNull(),
+      productId: text().notNull(),
+      quantity: integer().notNull(),
+      price: numeric().notNull(),
+    },
+    (t) => [primaryKey({ columns: [t.orderId, t.productId] })],
+  );
+
+  const result = createZeroTableSchema(table, {
+    orderId: true,
+    productId: true,
+    quantity: true,
+    price: true,
+  });
+
+  const expected = {
+    tableName: "order_items",
+    columns: {
+      orderId: column.number(),
+      productId: column.string(),
+      quantity: column.number(),
+      price: column.number(),
+    },
+    primaryKey: ["orderId", "productId"] as readonly [string, ...string[]],
+  } as const satisfies ZeroTableSchema;
+
+  expectTableSchemaDeepEqual(result).toEqual(expected);
   Expect<Equal<typeof result, typeof expected>>;
 });

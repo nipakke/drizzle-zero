@@ -2,24 +2,33 @@
   "permissions": {
     "medium": {
       "row": {
-        "insert": [],
-        "update": {
-          "preMutation": []
-        },
-        "delete": []
+        "update": {}
       }
     },
     "user": {
       "row": {
-        "insert": [],
-        "update": {
-          "preMutation": []
-        },
-        "delete": []
+        "update": {}
       }
     },
     "message": {
       "row": {
+        "select": [
+          [
+            "allow",
+            {
+              "type": "simple",
+              "left": {
+                "type": "column",
+                "name": "senderId"
+              },
+              "right": {
+                "type": "literal",
+                "value": "1"
+              },
+              "op": "="
+            }
+          ]
+        ],
         "update": {
           "preMutation": [
             [
@@ -31,9 +40,8 @@
                   "name": "senderId"
                 },
                 "right": {
-                  "type": "static",
-                  "anchor": "authData",
-                  "field": "sub"
+                  "type": "literal",
+                  "value": "1"
                 },
                 "op": "="
               }
@@ -46,15 +54,14 @@
             {
               "type": "simple",
               "left": {
-                "type": "static",
-                "anchor": "authData",
-                "field": "sub"
+                "type": "column",
+                "name": "senderId"
               },
               "right": {
                 "type": "literal",
-                "value": null
+                "value": "1"
               },
-              "op": "IS NOT"
+              "op": "="
             }
           ]
         ]
@@ -79,7 +86,17 @@
             "optional": false
           }
         },
-        "relationships": {}
+        "relationships": {
+          "messages": {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "mediumId"
+            ],
+            "destSchema": "message"
+          }
+        }
       },
       "message": {
         "tableName": "message",
@@ -97,11 +114,11 @@
           },
           "mediumId": {
             "type": "string",
-            "optional": false
+            "optional": true
           },
           "senderId": {
             "type": "string",
-            "optional": false
+            "optional": true
           }
         },
         "relationships": {
@@ -140,7 +157,17 @@
             "optional": false
           }
         },
-        "relationships": {}
+        "relationships": {
+          "messages": {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "senderId"
+            ],
+            "destSchema": "message"
+          }
+        }
       }
     }
   }

@@ -4,7 +4,7 @@ import path from "path";
 import { Pool } from "pg";
 import { GenericContainer, Network } from "testcontainers";
 import * as schema from "../drizzle/schema";
-import { medium, message, user } from "../drizzle/schema";
+import { mediumTable, messageTable, userTable } from "../drizzle/schema";
 
 const pool = new Pool({
   host: "localhost",
@@ -19,37 +19,37 @@ const db = drizzle(pool, {
 });
 
 export const seed = async () => {
-  await db.insert(medium).values({ id: "1", name: "email" });
-  await db.insert(medium).values({ id: "2", name: "teams" });
-  await db.insert(medium).values({ id: "3", name: "sms" });
-  await db.insert(medium).values({ id: "4", name: "whatsapp" });
+  await db.insert(mediumTable).values({ id: "1", name: "email" });
+  await db.insert(mediumTable).values({ id: "2", name: "teams" });
+  await db.insert(mediumTable).values({ id: "3", name: "sms" });
+  await db.insert(mediumTable).values({ id: "4", name: "whatsapp" });
 
-  await db.insert(user).values({ id: "1", name: "James", partner: true });
-  await db.insert(user).values({ id: "2", name: "John", partner: false });
-  await db.insert(user).values({ id: "3", name: "Jane", partner: false });
+  await db.insert(userTable).values({ id: "1", name: "James", partner: true });
+  await db.insert(userTable).values({ id: "2", name: "John", partner: false });
+  await db.insert(userTable).values({ id: "3", name: "Jane", partner: false });
 
-  await db.insert(message).values({
+  await db.insert(messageTable).values({
     id: "1",
     body: "Hey, James!",
     senderId: "1",
     mediumId: "1",
   });
 
-  await db.insert(message).values({
+  await db.insert(messageTable).values({
     id: "2",
     body: "Hello on Teams",
     senderId: "2",
     mediumId: "2",
   });
 
-  await db.insert(message).values({
+  await db.insert(messageTable).values({
     id: "3",
     body: "SMS message here",
     senderId: "3",
     mediumId: "3",
   });
 
-  await db.insert(message).values({
+  await db.insert(messageTable).values({
     id: "4",
     body: "WhatsApp message",
     senderId: "2",
@@ -101,7 +101,7 @@ export const startPostgresAndZero = async () => {
   const basePgUrl = `postgresql://${postgresContainer.getUsername()}:${postgresContainer.getPassword()}@postgres-db:5432`;
 
   // Start Zero container
-  const zeroContainer = await new GenericContainer("rocicorp/zero:latest")
+  const zeroContainer = await new GenericContainer("rocicorp/zero:0.10.2024122404-fdc0c8")
     .withExposedPorts({
       container: 4848,
       host: 4949,

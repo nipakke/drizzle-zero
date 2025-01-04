@@ -19,7 +19,7 @@
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
     "preserveSymlinks": true,
-    "types": [],
+    "types": ["node", "vitest/globals"],
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "lib": ["dom", "es2022"],
