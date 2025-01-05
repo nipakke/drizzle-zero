@@ -9,8 +9,8 @@ export function expectTableSchemaDeepEqual<S extends ZeroTableSchema>(
 ) {
   return {
     toEqual(expected: S, depth = 0) {
-      if (depth > 5) {
-        console.debug("reached relationship depth > 5");
+      if (depth > 8) {
+        console.debug("reached relationship depth > 8");
         return;
       }
 
@@ -96,8 +96,8 @@ export function expectSchemaDeepEqual<S extends ZeroSchema>(actual: S) {
 
       for (const key of Object.keys(actual.tables)) {
         expectTableSchemaDeepEqual(
-          actual.tables[key as keyof typeof actual.tables],
-        ).toEqual(expected.tables[key as keyof typeof expected.tables]);
+          actual.tables[key as keyof typeof actual.tables]!,
+        ).toEqual(expected.tables[key as keyof typeof expected.tables]!);
       }
     },
   };

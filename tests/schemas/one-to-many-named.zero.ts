@@ -5,20 +5,21 @@ import {
   type Schema,
 } from "@rocicorp/zero";
 import { createZeroSchema } from "../../src";
-import * as oneToOne from "./one-to-one.schema";
+import * as oneToManyNamed from "./one-to-many-named.schema";
 
 export const schema = createSchema(
-  createZeroSchema(oneToOne, {
+  createZeroSchema(oneToManyNamed, {
     version: 1,
     tables: {
-      user: {
+      users: {
         id: true,
         name: true,
       },
-      profile_info: {
+      posts: {
         id: true,
-        user_id: true,
-        metadata: true,
+        content: true,
+        author_id: true,
+        reviewer_id: true,
       },
     },
   }),
@@ -26,14 +27,21 @@ export const schema = createSchema(
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {
-    user: {
+    post: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
         delete: ANYONE_CAN,
       },
     },
-    profile_info: {
+    comment: {
+      row: {
+        insert: ANYONE_CAN,
+        update: ANYONE_CAN,
+        delete: ANYONE_CAN,
+      },
+    },
+    user: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,

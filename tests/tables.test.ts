@@ -23,7 +23,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { expect, test } from "vitest";
-import { createZeroTableSchema } from "../src";
+import { createZeroTableSchema, type ColumnsConfig } from "../src";
 import {
   type Equal,
   Expect,
@@ -600,4 +600,122 @@ test("pg - compound primary key with serial", () => {
 
   expectTableSchemaDeepEqual(result).toEqual(expected);
   Expect<Equal<typeof result, typeof expected>>;
+});
+
+test("pg - default values", () => {
+  const table = pgTable("items", {
+    id: serial().primaryKey(),
+    name: text().notNull().default("unnamed"),
+    isActive: boolean().notNull().default(true),
+    score: integer().notNull().default(0),
+  });
+
+  const result = createZeroTableSchema(table, {
+    id: true,
+    name: true,
+    isActive: true,
+    score: true,
+  });
+
+  const expected = {
+    tableName: "items",
+    columns: {
+      id: column.number(),
+      name: column.string(),
+      isActive: column.boolean(),
+      score: column.number(),
+    },
+    primaryKey: ["id"],
+  } as const satisfies ZeroTableSchema;
+
+  expectTableSchemaDeepEqual(result).toEqual(expected);
+  Expect<Equal<typeof result, typeof expected>>;
+});
+
+test("pg - mixed required and optional json fields", () => {
+  type ComplexMetadata = {
+    required: {
+      version: number;
+      features: string[];
+    };
+    optional?: {
+      preferences: Record<string, unknown>;
+      lastAccessed?: string;
+    };
+  };
+
+  const table = pgTable("configs", {
+    id: serial().primaryKey(),
+    requiredJson: jsonb().$type<{ key: string }>().notNull(),
+    optionalJson: jsonb().$type<ComplexMetadata>(),
+    mixedJson: json()
+      .$type<{ required: number; optional?: string }>()
+      .notNull(),
+  });
+
+  const result = createZeroTableSchema(table, {
+    id: true,
+    requiredJson: true,
+    optionalJson: true,
+    mixedJson: true,
+  });
+
+  const expected = {
+    tableName: "configs",
+    columns: {
+      id: column.number(),
+      requiredJson: column.json<{ key: string }>(),
+      optionalJson: column.json<ComplexMetadata>(true),
+      mixedJson: column.json<{ required: number; optional?: string }>(),
+    },
+    primaryKey: ["id"],
+  } as const satisfies ZeroTableSchema;
+
+  expectTableSchemaDeepEqual(result).toEqual(expected);
+  Expect<Equal<typeof result, typeof expected>>;
+});
+
+test("pg - custom column selection with overrides", () => {
+  const table = pgTable("products", {
+    id: serial().primaryKey(),
+    name: text().notNull(),
+    description: text(),
+    metadata: jsonb().$type<Record<string, unknown>>(),
+  });
+
+  const result = createZeroTableSchema(table, {
+    id: true,
+    name: column.string(true),
+    description: column.string(),
+    metadata: column.json<{ category: string; tags: string[] }>(true),
+  });
+
+  const expected = {
+    tableName: "products",
+    columns: {
+      id: column.number(),
+      name: column.string(true),
+      description: column.string(),
+      metadata: column.json<{ category: string; tags: string[] }>(true),
+    },
+    primaryKey: ["id"],
+  } as const satisfies ZeroTableSchema;
+
+  expectTableSchemaDeepEqual(result).toEqual(expected);
+  Expect<Equal<typeof result, typeof expected>>;
+});
+
+test("pg - invalid column selection", () => {
+  const table = pgTable("test", {
+    id: serial().primaryKey(),
+    name: text().notNull(),
+    nonexistent: text(),
+  });
+
+  expect(() =>
+    createZeroTableSchema(table, {
+      id: true,
+      name: true,
+    } as unknown as ColumnsConfig<typeof table>),
+  ).toThrow();
 });

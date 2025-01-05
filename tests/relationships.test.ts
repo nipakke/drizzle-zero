@@ -1,8 +1,4 @@
-import {
-  column,
-  createSchema,
-  type JSONValue
-} from "@rocicorp/zero";
+import { column, createSchema, type JSONValue } from "@rocicorp/zero";
 import { test } from "vitest";
 import {
   Expect,
@@ -92,6 +88,56 @@ test("relationships - one-to-one", async () => {
 
   expectSchemaDeepEqual(oneToOneZeroSchema).toEqual(expected);
   Expect<Equal<typeof oneToOneZeroSchema, typeof expected>>;
+});
+
+test("relationships - one-to-one-foreign-key", async () => {
+  const { schema: oneToOneForeignKeyZeroSchema } = await import(
+    "./schemas/one-to-one-foreign-key.zero"
+  );
+
+  const expectedUsers = {
+    tableName: "users",
+    columns: {
+      id: column.string(),
+      name: column.string(true),
+    },
+    primaryKey: ["id"],
+    relationships: {
+      userPosts: {
+        sourceField: ["id"] as AtLeastOne<"id" | "name">,
+        destField: ["author"] as AtLeastOne<"id" | "name" | "author">,
+        destSchema: () => expectedPosts,
+      },
+    },
+  } as const;
+
+  const expectedPosts = {
+    tableName: "posts",
+    columns: {
+      id: column.string(),
+      name: column.string(true),
+      author: column.string(),
+    },
+    primaryKey: ["id"],
+    relationships: {
+      postAuthor: {
+        sourceField: ["author"] as AtLeastOne<"id" | "name" | "author">,
+        destField: ["id"] as AtLeastOne<"id" | "name">,
+        destSchema: () => expectedUsers,
+      },
+    },
+  } as const;
+
+  const expected = createSchema({
+    version: 1,
+    tables: {
+      users: expectedUsers,
+      posts: expectedPosts,
+    },
+  });
+
+  expectSchemaDeepEqual(oneToOneForeignKeyZeroSchema).toEqual(expected);
+  Expect<Equal<typeof oneToOneForeignKeyZeroSchema, typeof expected>>;
 });
 
 test("relationships - one-to-one-2", async () => {
@@ -254,6 +300,75 @@ test("relationships - one-to-many", async () => {
 
   expectSchemaDeepEqual(oneToManyZeroSchema).toEqual(expected);
   Expect<Equal<typeof oneToManyZeroSchema, typeof expected>>;
+});
+
+test("relationships - one-to-many-named", async () => {
+  const { schema: oneToManyNamedZeroSchema } = await import(
+    "./schemas/one-to-many-named.zero"
+  );
+
+  const expectedUsers = {
+    tableName: "users",
+    columns: {
+      id: column.number(),
+      name: column.string(true),
+    },
+    primaryKey: ["id"],
+    relationships: {
+      author: {
+        sourceField: ["id"] as AtLeastOne<"id" | "name">,
+        destField: ["author_id"] as AtLeastOne<
+          "id" | "author_id" | "content" | "reviewer_id"
+        >,
+        destSchema: () => expectedPosts,
+      },
+      reviewer: {
+        sourceField: ["id"] as AtLeastOne<"id" | "name">,
+        destField: ["reviewer_id"] as AtLeastOne<
+          "id" | "reviewer_id" | "content" | "author_id"
+        >,
+        destSchema: () => expectedPosts,
+      },
+    },
+  } as const;
+
+  const expectedPosts = {
+    tableName: "posts",
+    columns: {
+      id: column.number(),
+      content: column.string(true),
+      author_id: column.number(true),
+      reviewer_id: column.number(true),
+    },
+    primaryKey: ["id"],
+    relationships: {
+      author: {
+        sourceField: ["author_id"] as AtLeastOne<
+          "id" | "content" | "author_id" | "reviewer_id"
+        >,
+        destField: ["id"] as AtLeastOne<"id" | "name">,
+        destSchema: () => expectedUsers,
+      },
+      reviewer: {
+        sourceField: ["reviewer_id"] as AtLeastOne<
+          "id" | "content" | "reviewer_id" | "author_id"
+        >,
+        destField: ["id"] as AtLeastOne<"id" | "name">,
+        destSchema: () => expectedUsers,
+      },
+    },
+  } as const;
+
+  const expected = createSchema({
+    version: 1,
+    tables: {
+      users: expectedUsers,
+      posts: expectedPosts,
+    },
+  });
+
+  expectSchemaDeepEqual(oneToManyNamedZeroSchema).toEqual(expected);
+  Expect<Equal<typeof oneToManyNamedZeroSchema, typeof expected>>;
 });
 
 test("relationships - many-to-many", async () => {
