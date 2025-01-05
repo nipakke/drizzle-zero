@@ -8,7 +8,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@rocicorp/zero": "^0.10.2024122404",
+    "@rocicorp/zero": "canary",
     "drizzle-orm": "^0.38.3",
     "drizzle-zero": "workspace:*"
   },
