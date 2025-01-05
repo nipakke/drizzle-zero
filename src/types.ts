@@ -85,10 +85,12 @@ type ZeroMappedCustomType<
     ? ColumnDefinition<T, K>["_"]["$type"]
     : ZeroTypeToTypescriptType[ZeroMappedColumnType<T, K>];
 
-type ZeroColumnDefinition<T extends Table, K extends ColumnNames<T>> = Readonly<{
-  readonly optional: ColumnDefinition<T, K>["_"]["notNull"] extends true
-    ? false
-    : true;
+type ZeroColumnDefinition<T extends Table, K extends ColumnNames<T>, CD extends ColumnDefinition<T, K>['_']> = Readonly<{
+  readonly optional: CD['default'] extends void
+      ? CD['notNull'] extends true
+        ? false
+        : true
+      : true;
   readonly type: ZeroMappedColumnType<T, K>;
   readonly customType: ZeroMappedCustomType<T, K>;
   } & (
