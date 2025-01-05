@@ -2,7 +2,7 @@ import {
   ANYONE_CAN,
   createSchema,
   definePermissions,
-  type Schema
+  type Schema,
 } from "@rocicorp/zero";
 import { createZeroSchema } from "../../src";
 import * as oneToOneSelf from "./one-to-one-self.schema";

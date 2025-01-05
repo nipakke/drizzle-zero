@@ -90,6 +90,56 @@ test("relationships - one-to-one", async () => {
   Expect<Equal<typeof oneToOneZeroSchema, typeof expected>>;
 });
 
+test("relationships - one-to-one-foreign-key", async () => {
+  const { schema: oneToOneForeignKeyZeroSchema } = await import(
+    "./schemas/one-to-one-foreign-key.zero"
+  );
+
+  const expectedUsers = {
+    tableName: "users",
+    columns: {
+      id: column.string(),
+      name: column.string(true),
+    },
+    primaryKey: ["id"],
+    relationships: {
+      userPosts: {
+        sourceField: ["id"] as AtLeastOne<"id" | "name">,
+        destField: ["author"] as AtLeastOne<"id" | "name" | "author">,
+        destSchema: () => expectedPosts,
+      },
+    },
+  } as const;
+
+  const expectedPosts = {
+    tableName: "posts",
+    columns: {
+      id: column.string(),
+      name: column.string(true),
+      author: column.string(),
+    },
+    primaryKey: ["id"],
+    relationships: {
+      postAuthor: {
+        sourceField: ["author"] as AtLeastOne<"id" | "name" | "author">,
+        destField: ["id"] as AtLeastOne<"id" | "name">,
+        destSchema: () => expectedUsers,
+      },
+    },
+  } as const;
+
+  const expected = createSchema({
+    version: 1,
+    tables: {
+      users: expectedUsers,
+      posts: expectedPosts,
+    },
+  });
+
+  expectSchemaDeepEqual(oneToOneForeignKeyZeroSchema).toEqual(expected);
+  Expect<Equal<typeof oneToOneForeignKeyZeroSchema, typeof expected>>;
+});
+
 test("relationships - one-to-one-2", async () => {
   const { schema: oneToOne2ZeroSchema } = await import(
     "./schemas/one-to-one-2.zero"

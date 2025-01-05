@@ -6,7 +6,7 @@ import {
   Relations,
   Table,
 } from "drizzle-orm";
-import { ForeignKey } from "drizzle-orm/pg-core";
+import { getTableConfig } from "drizzle-orm/pg-core";
 import { createZeroTableSchema, type CreateZeroTableSchema } from "./tables";
 import type {
   AtLeastOne,
@@ -45,10 +45,10 @@ type FindRelationsForTable<
 >;
 
 type TableColumnsConfig<TSchema extends Record<string, unknown>> = {
-  [K in keyof TSchema as TSchema[K] extends Table<any>
+  readonly [K in keyof TSchema as TSchema[K] extends Table<any>
     ? TableName<TSchema[K]>
     : never]: TSchema[K] extends Table<any> ? ColumnsConfig<TSchema[K]> : never;
-};
+}
 
 type ReferencedZeroSchemas<
   TSchema extends Record<string, unknown>,
@@ -145,15 +145,10 @@ const createZeroSchema = <
     Record<string, unknown>
   >;
 
-  for (const maybeRelations of Object.values(schema)) {
-    if (maybeRelations instanceof Relations) {
-      const relations = maybeRelations;
-
-      const tableName = getTableName(relations.table);
-
-      const relationsConfig = relations.config(
-        createTableRelationsHelpers(relations.table),
-      ) as Record<string, One | Many<any>>;
+  for (const tableOrRelations of Object.values(schema)) {
+    if (tableOrRelations instanceof Relations) {
+      const tableName = getTableName(tableOrRelations.table);
+      const relationsConfig = getRelationsConfig(tableOrRelations);
 
       Object.values(relationsConfig).forEach((relation) => {
         let sourceFieldNames: string[] = [];
@@ -167,30 +162,22 @@ const createZeroSchema = <
         }
 
         if (!sourceFieldNames.length || !destFieldNames.length) {
-          for (const tableOrRelations of Object.values(schema)) {
-            if (tableOrRelations instanceof Table) {
-              const tableName = getTableName(tableOrRelations);
+          if (relation.relationName) {
+            const sourceAndDestFields = findNamedSourceAndDestFields(
+              schema,
+              relation,
+            );
 
-              if (tableName === relation.referencedTableName) {
-                const foreignKeys = (tableOrRelations as any)?.[
-                  Symbol.for("drizzle:PgInlineForeignKeys")
-                ] as ForeignKey[];
+            sourceFieldNames = sourceAndDestFields.sourceFieldNames;
+            destFieldNames = sourceAndDestFields.destFieldNames;
+          } else {
+            const sourceAndDestFields = findForeignKeySourceAndDestFields(
+              schema,
+              relation,
+            );
 
-                for (const foreignKey of foreignKeys) {
-                  const reference = foreignKey.reference();
-
-                  const foreignTableName = getTableName(reference.foreignTable);
-                  const sourceTableName = getTableName(relation.sourceTable);
-
-                  if (foreignTableName === sourceTableName) {
-                    sourceFieldNames = reference.foreignColumns.map(
-                      (c) => c.name,
-                    );
-                    destFieldNames = reference.columns.map((c) => c.name);
-                  }
-                }
-              }
-            }
+            sourceFieldNames = sourceAndDestFields.sourceFieldNames;
+            destFieldNames = sourceAndDestFields.destFieldNames;
           }
         }
 
@@ -288,6 +275,76 @@ const createZeroSchema = <
     version: schemaConfig.version,
     tables,
   } as CreateZeroSchema<TVersion, TSchema, TColumns>;
+};
+
+const findForeignKeySourceAndDestFields = (
+  schema: Record<string, unknown>,
+  relation: One | Many<any>,
+) => {
+  for (const tableOrRelations of Object.values(schema)) {
+    if (tableOrRelations instanceof Table) {
+      const tableName = getTableName(tableOrRelations);
+
+      if (tableName === relation.referencedTableName) {
+        const tableConfig = getTableConfig(tableOrRelations);
+
+        for (const foreignKey of tableConfig.foreignKeys) {
+          const reference = foreignKey.reference();
+
+          const foreignTableName = getTableName(reference.foreignTable);
+          const sourceTableName = getTableName(relation.sourceTable);
+
+          if (foreignTableName === sourceTableName) {
+            return {
+              sourceFieldNames: reference.foreignColumns.map((c) => c.name),
+              destFieldNames: reference.columns.map((c) => c.name),
+            };
+          }
+        }
+      }
+    }
+  }
+
+  return {
+    sourceFieldNames: [],
+    destFieldNames: [],
+  };
+};
+
+const findNamedSourceAndDestFields = (
+  schema: Record<string, unknown>,
+  relation: One | Many<any>,
+) => {
+  for (const tableOrRelations of Object.values(schema)) {
+    if (tableOrRelations instanceof Relations) {
+      const relationsConfig = getRelationsConfig(tableOrRelations);
+
+      for (const relationConfig of Object.values(relationsConfig)) {
+        if (
+          relationConfig instanceof One &&
+          relationConfig.relationName === relation.relationName
+        ) {
+          return {
+            destFieldNames:
+              relationConfig.config?.fields?.map((f) => f.name) ?? [],
+            sourceFieldNames:
+              relationConfig.config?.references?.map((f) => f.name) ?? [],
+          };
+        }
+      }
+    }
+  }
+
+  return {
+    sourceFieldNames: [],
+    destFieldNames: [],
+  };
+};
+
+const getRelationsConfig = (relations: Relations) => {
+  return relations.config(
+    createTableRelationsHelpers(relations.table),
+  ) as Record<string, One | Many<any>>;
 };
 
 export { createZeroSchema, type CreateZeroSchema };

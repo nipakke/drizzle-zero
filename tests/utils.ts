@@ -96,8 +96,8 @@ export function expectSchemaDeepEqual<S extends ZeroSchema>(actual: S) {
 
       for (const key of Object.keys(actual.tables)) {
         expectTableSchemaDeepEqual(
-          actual.tables[key as keyof typeof actual.tables],
-        ).toEqual(expected.tables[key as keyof typeof expected.tables]);
+          actual.tables[key as keyof typeof actual.tables]!,
+        ).toEqual(expected.tables[key as keyof typeof expected.tables]!);
       }
     },
   };
