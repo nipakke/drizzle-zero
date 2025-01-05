@@ -73,7 +73,9 @@
     "tables": {
       "medium": {
         "tableName": "medium",
-        "primaryKey": ["id"],
+        "primaryKey": [
+          "id"
+        ],
         "columns": {
           "id": {
             "type": "string",
@@ -86,15 +88,21 @@
         },
         "relationships": {
           "messages": {
-            "sourceField": ["id"],
-            "destField": ["mediumId"],
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "mediumId"
+            ],
             "destSchema": "message"
           }
         }
       },
       "message": {
         "tableName": "message",
-        "primaryKey": ["id"],
+        "primaryKey": [
+          "id"
+        ],
         "columns": {
           "body": {
             "type": "string",
@@ -115,20 +123,30 @@
         },
         "relationships": {
           "medium": {
-            "sourceField": ["mediumId"],
-            "destField": ["id"],
+            "sourceField": [
+              "mediumId"
+            ],
+            "destField": [
+              "id"
+            ],
             "destSchema": "medium"
           },
           "sender": {
-            "sourceField": ["senderId"],
-            "destField": ["id"],
+            "sourceField": [
+              "senderId"
+            ],
+            "destField": [
+              "id"
+            ],
             "destSchema": "user"
           }
         }
       },
       "user": {
         "tableName": "user",
-        "primaryKey": ["id"],
+        "primaryKey": [
+          "id"
+        ],
         "columns": {
           "id": {
             "type": "string",
@@ -141,8 +159,12 @@
         },
         "relationships": {
           "messages": {
-            "sourceField": ["id"],
-            "destField": ["senderId"],
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "senderId"
+            ],
             "destSchema": "message"
           }
         }
