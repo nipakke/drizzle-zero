@@ -48,7 +48,7 @@ type TableColumnsConfig<TSchema extends Record<string, unknown>> = {
   readonly [K in keyof TSchema as TSchema[K] extends Table<any>
     ? TableName<TSchema[K]>
     : never]: TSchema[K] extends Table<any> ? ColumnsConfig<TSchema[K]> : never;
-}
+};
 
 type ReferencedZeroSchemas<
   TSchema extends Record<string, unknown>,
