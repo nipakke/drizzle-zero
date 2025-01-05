@@ -87,8 +87,8 @@ type ZeroMappedCustomType<
 
 type ZeroColumnDefinition<T extends Table, K extends ColumnNames<T>> = Readonly<{
   readonly optional: ColumnDefinition<T, K>["_"]["notNull"] extends true
-    ? boolean // false
-    : boolean; // true;
+    ? false
+    : true;
   readonly type: ZeroMappedColumnType<T, K>;
   readonly customType: ZeroMappedCustomType<T, K>;
   } & (
