@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: "12 9 * * *"
 
 jobs:
   test-and-build:
@@ -42,5 +44,8 @@ jobs:
       - name: Run tests
         run: pnpm test
 
-      - name: Run integration tests
-        run: cd integration && pnpm test
+      - name: Run integration tests (PG 16)
+        run: cd integration && PG_VERSION=16 pnpm test
+
+      - name: Run integration tests (PG 17)
+        run: cd integration && PG_VERSION=17 pnpm test

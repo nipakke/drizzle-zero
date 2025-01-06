@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/node-postgres";
 import path from "path";
 import { Pool } from "pg";
-import { GenericContainer, Network } from "testcontainers";
+import { GenericContainer, Network, PullPolicy } from "testcontainers";
 import * as drizzleSchema from "../drizzle/schema";
 import {
   allTypesTable,
@@ -14,9 +14,12 @@ import {
 } from "../drizzle/schema";
 import { schema } from "../schema";
 
+const PG_PORT = process.env.PG_VERSION === "17" ? 5732 : 5632;
+const ZERO_PORT = process.env.PG_VERSION === "17" ? 5949 : 4949;
+
 export const getNewZero = async () => {
   return new Zero({
-    server: "http://localhost:4949",
+    server: `http://localhost:${ZERO_PORT}`,
     userID: "1",
     schema: schema,
     kvStore: "mem",
@@ -25,7 +28,7 @@ export const getNewZero = async () => {
 
 const pool = new Pool({
   host: "localhost",
-  port: 5632,
+  port: PG_PORT,
   user: "user",
   password: "password",
   database: "drizzle_zero",
@@ -118,7 +121,9 @@ export const startPostgresAndZero = async () => {
   const network = await new Network().start();
 
   // Start PostgreSQL container
-  const postgresContainer = await new PostgreSqlContainer("postgres:16.1")
+  const postgresContainer = await new PostgreSqlContainer(
+    `postgres:${process.env.PG_VERSION ?? "16"}`,
+  )
     .withDatabase("postgres")
     .withUsername("user")
     .withPassword("password")
@@ -126,7 +131,7 @@ export const startPostgresAndZero = async () => {
     .withNetworkAliases("postgres-db")
     .withExposedPorts({
       container: 5432,
-      host: 5632,
+      host: PG_PORT,
     })
     .withCommand([
       "postgres",
@@ -147,6 +152,7 @@ export const startPostgresAndZero = async () => {
         target: "/docker-entrypoint-initdb.d",
       },
     ])
+    .withPullPolicy(PullPolicy.alwaysPull())
     .start();
 
   await seed();
@@ -154,12 +160,10 @@ export const startPostgresAndZero = async () => {
   const basePgUrl = `postgresql://${postgresContainer.getUsername()}:${postgresContainer.getPassword()}@postgres-db:5432`;
 
   // Start Zero container
-  const zeroContainer = await new GenericContainer(
-    "rocicorp/zero:0.10.2024122404-fdc0c8",
-  )
+  const zeroContainer = await new GenericContainer(`rocicorp/zero:canary`)
     .withExposedPorts({
       container: 4848,
-      host: 4949,
+      host: ZERO_PORT,
     })
     .withNetwork(network)
     .withEnvironment({
@@ -177,6 +181,7 @@ export const startPostgresAndZero = async () => {
       },
     ])
     .withStartupTimeout(60000)
+    .withPullPolicy(PullPolicy.alwaysPull())
     .start();
 
   return {
