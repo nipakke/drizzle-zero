@@ -43,10 +43,10 @@ type AuthData = {
 };
 
 export const permissions = definePermissions<AuthData, Schema>(schema, () => {
-  const allowIfSender1 = (
+  const allowIfSenderIs1 = (
     _authData: AuthData,
     { cmp }: ExpressionBuilder<typeof schema.tables.message>,
-  ) => cmp("senderId", "=", _authData.sub);
+  ) => cmp("senderId", "=", "1");
 
   return {
     medium: {
@@ -67,12 +67,12 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
     },
     message: {
       row: {
-        select: [allowIfSender1],
+        select: [allowIfSenderIs1],
         insert: ANYONE_CAN,
         update: {
-          preMutation: [allowIfSender1],
+          preMutation: [allowIfSenderIs1],
         },
-        delete: [allowIfSender1],
+        delete: [allowIfSenderIs1],
       },
     },
   };

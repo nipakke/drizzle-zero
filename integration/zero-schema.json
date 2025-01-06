@@ -116,6 +116,10 @@
             "type": "string",
             "optional": true
           },
+          "metadata": {
+            "type": "json",
+            "optional": false
+          },
           "senderId": {
             "type": "string",
             "optional": true

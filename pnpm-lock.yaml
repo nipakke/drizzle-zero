@@ -9,7 +9,7 @@ importers:
   .:
     devDependencies:
       '@rocicorp/zero':
-        specifier: canary
+        specifier: '*'
         version: 0.10.2025010500
       '@types/node':
         specifier: ^22.10.5
@@ -42,7 +42,7 @@ importers:
   integration:
     dependencies:
       '@rocicorp/zero':
-        specifier: canary
+        specifier: '*'
         version: 0.10.2025010500
       drizzle-orm:
         specifier: ^0.38.3
