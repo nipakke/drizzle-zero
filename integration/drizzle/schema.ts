@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { boolean, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, jsonb, pgTable, text, timestamp, smallint, integer, serial, smallserial, bigserial, numeric, real, doublePrecision, char, uuid, varchar, date, pgEnum, bigint, json } from "drizzle-orm/pg-core";
 
 const sharedColumns = {
   createdAt: timestamp("createdAt", {
@@ -59,3 +59,46 @@ export const messageRelations = relations(messageTable, ({ one }) => ({
     references: [userTable.id],
   }),
 }));
+
+export const statusEnum = pgEnum("status_type", ["active", "inactive", "pending"]);
+
+export const allTypesTable = pgTable("all_types", {
+  ...sharedColumns,
+  id: text("id").primaryKey(),
+  smallintField: smallint("smallint").notNull(),
+  integerField: integer("integer").notNull(),
+  bigintField: bigint("bigint", { mode: "number" }).notNull(),
+  smallSerialField: smallserial("smallserial").notNull(),
+  serialField: serial("serial").notNull(),
+  bigSerialField: bigserial("bigserial", { mode: "number" }).notNull(),
+  numericField: numeric("numeric", { precision: 10, scale: 2 }).notNull(),
+  decimalField: numeric("decimal", { precision: 10, scale: 2 }).notNull(),
+  realField: real("real").notNull(),
+  doublePrecisionField: doublePrecision("double_precision").notNull(),
+  textField: text("text").notNull(),
+  charField: char("char").notNull(),
+  uuidField: uuid("uuid").notNull(),
+  varcharField: varchar("varchar").notNull(),
+  booleanField: boolean("boolean").notNull(),
+  timestampField: timestamp("timestamp").notNull(),
+  timestampTzField: timestamp("timestampTz", { withTimezone: true }).notNull(),
+  dateField: date("date").notNull(),
+  jsonField: json("json").notNull(),
+  jsonbField: jsonb("jsonb").notNull(),
+  typedJsonField: jsonb("typed_json").$type<{ theme: string; fontSize: number }>().notNull(),
+  statusField: statusEnum("status").notNull(),
+  optionalSmallint: smallint("optional_smallint"),
+  optionalInteger: integer("optional_integer"),
+  optionalBigint: bigint("optional_bigint", { mode: "number" }),
+  optionalNumeric: numeric("optional_numeric", { precision: 10, scale: 2 }),
+  optionalReal: real("optional_real"),
+  optionalDoublePrecision: doublePrecision("optional_double_precision"),
+  optionalText: text("optional_text"),
+  optionalBoolean: boolean("optional_boolean"),
+  optionalTimestamp: timestamp("optional_timestamp"),
+  optionalJson: jsonb("optional_json"),
+  optionalEnum: statusEnum("optional_enum"),
+  optionalVarchar: varchar("optional_varchar"),
+  optionalUuid: uuid("optional_uuid"),
+});
+

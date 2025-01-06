@@ -1,10 +1,27 @@
+import { Zero } from "@rocicorp/zero";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
+import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/node-postgres";
 import path from "path";
 import { Pool } from "pg";
 import { GenericContainer, Network } from "testcontainers";
-import * as schema from "../drizzle/schema";
-import { mediumTable, messageTable, userTable } from "../drizzle/schema";
+import * as drizzleSchema from "../drizzle/schema";
+import {
+  allTypesTable,
+  mediumTable,
+  messageTable,
+  userTable,
+} from "../drizzle/schema";
+import { schema } from "../schema";
+
+export const getNewZero = async () => {
+  return new Zero({
+    server: "http://localhost:4949",
+    userID: "1",
+    schema: schema,
+    kvStore: "mem",
+  });
+};
 
 const pool = new Pool({
   host: "localhost",
@@ -14,8 +31,8 @@ const pool = new Pool({
   database: "drizzle_zero",
 });
 
-const db = drizzle(pool, {
-  schema,
+export const db = drizzle(pool, {
+  schema: drizzleSchema,
 });
 
 export const seed = async () => {
@@ -66,6 +83,29 @@ export const seed = async () => {
     senderId: "1",
     mediumId: "2",
     metadata: { key: "value5" },
+  });
+
+  await db.insert(allTypesTable).values({
+    id: "1",
+    smallintField: 1,
+    integerField: 2,
+    bigintField: 3,
+    numericField: "8.8",
+    decimalField: "9.9",
+    realField: 9,
+    doublePrecisionField: 10,
+    textField: "text",
+    charField: "c",
+    uuidField: randomUUID(),
+    varcharField: "varchar",
+    booleanField: true,
+    timestampField: new Date(),
+    timestampTzField: new Date(),
+    dateField: new Date().toISOString(),
+    jsonField: { key: "value" },
+    jsonbField: { key: "value" },
+    typedJsonField: { theme: "light", fontSize: 16 },
+    statusField: "pending",
   });
 };
 

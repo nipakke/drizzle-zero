@@ -66,11 +66,169 @@
           ]
         ]
       }
+    },
+    "all_types": {
+      "row": {
+        "update": {}
+      }
     }
   },
   "schema": {
     "version": 1,
     "tables": {
+      "all_types": {
+        "tableName": "all_types",
+        "primaryKey": [
+          "id"
+        ],
+        "columns": {
+          "bigint": {
+            "type": "number",
+            "optional": false
+          },
+          "bigserial": {
+            "type": "number",
+            "optional": true
+          },
+          "boolean": {
+            "type": "boolean",
+            "optional": false
+          },
+          "char": {
+            "type": "string",
+            "optional": false
+          },
+          "date": {
+            "type": "string",
+            "optional": false
+          },
+          "decimal": {
+            "type": "number",
+            "optional": false
+          },
+          "double_precision": {
+            "type": "number",
+            "optional": false
+          },
+          "id": {
+            "type": "string",
+            "optional": false
+          },
+          "integer": {
+            "type": "number",
+            "optional": false
+          },
+          "json": {
+            "type": "json",
+            "optional": false
+          },
+          "jsonb": {
+            "type": "json",
+            "optional": false
+          },
+          "numeric": {
+            "type": "number",
+            "optional": false
+          },
+          "optional_bigint": {
+            "type": "number",
+            "optional": true
+          },
+          "optional_boolean": {
+            "type": "boolean",
+            "optional": true
+          },
+          "optional_double_precision": {
+            "type": "number",
+            "optional": true
+          },
+          "optional_enum": {
+            "type": "string",
+            "optional": true
+          },
+          "optional_integer": {
+            "type": "number",
+            "optional": true
+          },
+          "optional_json": {
+            "type": "json",
+            "optional": true
+          },
+          "optional_numeric": {
+            "type": "number",
+            "optional": true
+          },
+          "optional_real": {
+            "type": "number",
+            "optional": true
+          },
+          "optional_smallint": {
+            "type": "number",
+            "optional": true
+          },
+          "optional_text": {
+            "type": "string",
+            "optional": true
+          },
+          "optional_timestamp": {
+            "type": "string",
+            "optional": true
+          },
+          "optional_uuid": {
+            "type": "string",
+            "optional": true
+          },
+          "optional_varchar": {
+            "type": "string",
+            "optional": true
+          },
+          "real": {
+            "type": "number",
+            "optional": false
+          },
+          "serial": {
+            "type": "number",
+            "optional": true
+          },
+          "smallint": {
+            "type": "number",
+            "optional": false
+          },
+          "smallserial": {
+            "type": "number",
+            "optional": true
+          },
+          "status": {
+            "type": "string",
+            "optional": false
+          },
+          "text": {
+            "type": "string",
+            "optional": false
+          },
+          "timestamp": {
+            "type": "string",
+            "optional": false
+          },
+          "timestampTz": {
+            "type": "string",
+            "optional": false
+          },
+          "typed_json": {
+            "type": "json",
+            "optional": false
+          },
+          "uuid": {
+            "type": "string",
+            "optional": false
+          },
+          "varchar": {
+            "type": "string",
+            "optional": false
+          }
+        },
+        "relationships": {}
+      },
       "medium": {
         "tableName": "medium",
         "primaryKey": [
