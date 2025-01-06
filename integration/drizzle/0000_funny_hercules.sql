@@ -5,11 +5,15 @@ CREATE DATABASE drizzle_zero_cdb;
 \c drizzle_zero;
 
 CREATE TABLE "medium" (
+	"createdAt" timestamp(3) with time zone DEFAULT now() NOT NULL,
+	"updatedAt" timestamp(3) with time zone DEFAULT now() NOT NULL,
 	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "message" (
+	"createdAt" timestamp(3) with time zone DEFAULT now() NOT NULL,
+	"updatedAt" timestamp(3) with time zone DEFAULT now() NOT NULL,
 	"id" text PRIMARY KEY NOT NULL,
 	"senderId" text,
 	"mediumId" text,
@@ -18,6 +22,8 @@ CREATE TABLE "message" (
 );
 --> statement-breakpoint
 CREATE TABLE "user" (
+	"createdAt" timestamp(3) with time zone DEFAULT now() NOT NULL,
+	"updatedAt" timestamp(3) with time zone DEFAULT now() NOT NULL,
 	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"partner" boolean NOT NULL
