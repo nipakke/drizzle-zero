@@ -33,7 +33,7 @@ export const posts = pgTable("post", {
   id: text("id").primaryKey(),
   // this JSON type will be passed to Zero
   content: jsonb("content").$type<{ textValue: string }>().notNull(),
-  authorId: integer("author_id").references(() => users.id),
+  authorId: text("author_id").references(() => users.id),
 });
 
 export const postsRelations = relations(posts, ({ one }) => ({
@@ -92,7 +92,7 @@ Use the generated Zero schema:
 ```tsx
 import { useQuery, useZero } from "@rocicorp/zero/react";
 
-function PostList({ selectedAuthorId }: { selectedAuthorId?: number }) {
+function PostList({ selectedAuthorId }: { selectedAuthorId?: text }) {
   const z = useZero();
 
   // Build a query for posts with their authors
