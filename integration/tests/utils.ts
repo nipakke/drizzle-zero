@@ -15,10 +15,11 @@ import {
 import { schema } from "../schema";
 
 const PG_PORT = process.env.PG_VERSION === "17" ? 5732 : 5632;
+const ZERO_PORT = process.env.PG_VERSION === "17" ? 5949 : 4949;
 
 export const getNewZero = async () => {
   return new Zero({
-    server: "http://localhost:4949",
+    server: `http://localhost:${ZERO_PORT}`,
     userID: "1",
     schema: schema,
     kvStore: "mem",
@@ -162,7 +163,7 @@ export const startPostgresAndZero = async () => {
   const zeroContainer = await new GenericContainer(`rocicorp/zero:canary`)
     .withExposedPorts({
       container: 4848,
-      host: 4949,
+      host: ZERO_PORT,
     })
     .withNetwork(network)
     .withEnvironment({
