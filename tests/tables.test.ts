@@ -1036,11 +1036,62 @@ describe.concurrent("tables", () => {
     Expect<Equal<typeof result, typeof expected>>;
   });
 
+  test("pg - override enum column", () => {
+    const enumType = pgEnum("status", ["active", "inactive", "pending"]);
+
+    const table = pgTable("products", {
+      id: serial().primaryKey(),
+      status: enumType("enum_status"),
+    });
+
+    const result = createZeroTableSchema(table, {
+      id: true,
+      enum_status: column.enumeration<"active" | "inactive" | "pending">(true),
+    });
+
+    const expected = {
+      tableName: "products",
+      columns: {
+        id: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as number,
+        },
+        enum_status: column.enumeration<"active" | "inactive" | "pending">(
+          true,
+        ),
+      },
+      primaryKey: ["id"],
+    } as const satisfies ZeroTableSchema;
+
+    expectTableSchemaDeepEqual(result).toEqual(expected);
+    Expect<
+      Equal<
+        typeof result.columns.enum_status,
+        typeof expected.columns.enum_status
+      >
+    >;
+  });
+
   test("pg - invalid column selection", () => {
     const table = pgTable("test", {
       id: serial().primaryKey(),
       name: text().notNull(),
       nonexistent: text(),
+    });
+
+    expect(() =>
+      createZeroTableSchema(table, {
+        id: true,
+        name: true,
+      } as unknown as ColumnsConfig<typeof table>),
+    ).toThrow();
+  });
+
+  test("pg - no primary key", () => {
+    const table = pgTable("test", {
+      id: serial(),
+      name: text(),
     });
 
     expect(() =>

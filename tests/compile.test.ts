@@ -40,35 +40,60 @@ describe.concurrent("compile", () => {
   test("compile - one-to-one", async () => {
     const result = await runZeroBuildSchema("one-to-one");
     expect(result.schema.tables.user).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toEqual(["profile_info", "user"]);
   });
 
   test("compile - one-to-one-2", async () => {
     const result = await runZeroBuildSchema("one-to-one-2");
     expect(result.schema.tables.user).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toEqual([
+      "medium",
+      "message",
+      "user",
+    ]);
+  });
+
+  test("compile - one-to-one-subset", async () => {
+    const result = await runZeroBuildSchema("one-to-one-subset");
+    expect(result.schema.tables.user).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toEqual(["user"]);
   });
 
   test("compile - one-to-one-foreign-key", async () => {
     const result = await runZeroBuildSchema("one-to-one-foreign-key");
     expect(result.schema.tables.users).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toEqual(["posts", "users"]);
   });
 
   test("compile - one-to-one-self", async () => {
     const result = await runZeroBuildSchema("one-to-one-self");
     expect(result.schema.tables.user).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toEqual(["user"]);
   });
 
   test("compile - one-to-many", async () => {
     const result = await runZeroBuildSchema("one-to-many");
     expect(result.schema.tables.user).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toEqual([
+      "comment",
+      "post",
+      "user",
+    ]);
   });
 
   test("compile - one-to-many-named", async () => {
     const result = await runZeroBuildSchema("one-to-many-named");
     expect(result.schema.tables.users).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toEqual(["posts", "users"]);
   });
 
   test("compile - many-to-many", async () => {
     const result = await runZeroBuildSchema("many-to-many");
     expect(result.schema.tables.user).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toEqual([
+      "group",
+      "user",
+      "users_to_group",
+    ]);
   });
 });

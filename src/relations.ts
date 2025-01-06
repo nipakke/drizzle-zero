@@ -11,6 +11,7 @@ import { createZeroTableSchema, type CreateZeroTableSchema } from "./tables";
 import type {
   AtLeastOne,
   ColumnNames,
+  Columns,
   ColumnsConfig,
   FindPrimaryKeyFromTable,
   Flatten,
@@ -52,6 +53,8 @@ type TableColumnsConfig<TSchema extends Record<string, unknown>> = {
     : never;
 };
 
+type RelationsConfig<T extends Relations> = ReturnType<T["config"]>;
+
 type ReferencedZeroSchemas<
   TSchema extends Record<string, unknown>,
   TColumns extends TableColumnsConfig<TSchema>,
@@ -60,10 +63,10 @@ type ReferencedZeroSchemas<
 > = TRelations extends never
   ? never
   : {
-      readonly [K in keyof ReturnType<TRelations["config"]> as {
+      readonly [K in keyof RelationsConfig<TRelations> as {
         readonly [P in keyof TSchema]: TSchema[P] extends {
           _: {
-            name: ReturnType<TRelations["config"]>[K]["referencedTableName"];
+            name: RelationsConfig<TRelations>[K]["referencedTableName"];
           };
         }
           ? TSchema[P] extends Table<any>
@@ -77,7 +80,7 @@ type ReferencedZeroSchemas<
         : K]: {
         readonly [P in keyof TSchema]: TSchema[P] extends {
           _: {
-            name: ReturnType<TRelations["config"]>[K]["referencedTableName"];
+            name: RelationsConfig<TRelations>[K]["referencedTableName"];
           };
         }
           ? TSchema[P] extends Table<any>
@@ -98,12 +101,14 @@ type ReferencedZeroSchemas<
                   >;
                   readonly destField: AtLeastOne<
                     {
-                      [ColumnName in keyof TSchema[P]["_"]["columns"]]: TSchema[P]["_"]["columns"][ColumnName]["_"] extends {
+                      [ColumnName in keyof Columns<TSchema[P]>]: Columns<
+                        TSchema[P]
+                      >[ColumnName]["_"] extends {
                         name: string;
                       }
-                        ? TSchema[P]["_"]["columns"][ColumnName]["_"]["name"]
+                        ? ColumnNames<TSchema[P]>
                         : never;
-                    }[keyof TSchema[P]["_"]["columns"]]
+                    }[keyof Columns<TSchema[P]>]
                   >;
                   readonly destSchema: () => ZeroSchemaWithRelations<
                     TSchema[P],
@@ -267,31 +272,31 @@ const createZeroSchema = <
   for (const tableWithoutDestSchema of Object.values(tablesWithoutDestSchema)) {
     const tableName = tableWithoutDestSchema.tableName;
 
-    const relationships = tableWithoutDestSchema.relationships
-      ? typedEntries(tableWithoutDestSchema.relationships)
-          // filter out relationships that don't have a corresponding table
-          .filter(([_key, relationship]) =>
-            Boolean(tablesWithoutDestSchema[relationship.destSchemaTableName]),
-          )
-          .reduce(
-            (acc, [key, relationship]) => {
-              acc[key] = {
-                sourceField: relationship.sourceField,
-                destField: relationship.destField,
-                destSchema: () => tables[relationship.destSchemaTableName],
-              };
+    const relationships = typedEntries(
+      tableWithoutDestSchema.relationships ?? {},
+    )
+      // filter out relationships that don't have a corresponding table
+      .filter(([_key, relationship]) =>
+        Boolean(tablesWithoutDestSchema[relationship.destSchemaTableName]),
+      )
+      .reduce(
+        (acc, [key, relationship]) => {
+          acc[key] = {
+            sourceField: relationship.sourceField,
+            destField: relationship.destField,
+            destSchema: () => tables[relationship.destSchemaTableName],
+          };
 
-              return acc;
-            },
-            {} as Record<string, unknown>,
-          )
-      : null;
+          return acc;
+        },
+        {} as Record<string, unknown>,
+      );
 
     tables[tableName as keyof typeof tables] = {
       tableName: tableWithoutDestSchema.tableName,
       columns: tableWithoutDestSchema.columns,
       primaryKey: tableWithoutDestSchema.primaryKey,
-      ...(relationships ? { relationships } : {}),
+      ...(Object.keys(relationships).length ? { relationships } : {}),
     } as unknown as (typeof tables)[keyof typeof tables];
   }
 

@@ -1,5 +1,5 @@
 import { createSchema, type JSONValue } from "@rocicorp/zero";
-import { test, describe } from "vitest";
+import { describe, expect, test } from "vitest";
 import {
   Expect,
   expectSchemaDeepEqual,
@@ -8,6 +8,74 @@ import {
 } from "./utils";
 
 describe.concurrent("relationships", () => {
+  test("relationships - one-to-one-missing-foreign-key", async () => {
+    await expect(
+      import("./schemas/one-to-one-missing-foreign-key.zero"),
+    ).rejects.toThrow();
+  });
+
+  test("relationships - one-to-many-missing-named", async () => {
+    await expect(
+      import("./schemas/one-to-many-missing-named.zero"),
+    ).rejects.toThrow();
+  });
+
+  test("relationships - no-relations", async () => {
+    const { schema: noRelationsZeroSchema } = await import(
+      "./schemas/no-relations.zero"
+    );
+
+    const expectedUsers = {
+      tableName: "user",
+      columns: {
+        id: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as number,
+        },
+        name: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as string,
+        },
+      },
+      primaryKey: ["id"],
+    } as const;
+
+    const expectedProfileInfo = {
+      tableName: "profile_info",
+      columns: {
+        id: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as number,
+        },
+        user_id: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as number,
+        },
+        metadata: {
+          type: "json",
+          optional: true,
+          customType: null as unknown as JSONValue,
+        },
+      },
+      primaryKey: ["id"],
+    } as const;
+
+    const expected = createSchema({
+      version: 1,
+      tables: {
+        user: expectedUsers,
+        profile_info: expectedProfileInfo,
+      },
+    });
+
+    expectSchemaDeepEqual(noRelationsZeroSchema).toEqual(expected);
+    Expect<Equal<typeof noRelationsZeroSchema, typeof expected>>;
+  });
+
   test("relationships - one-to-one self-referential", async () => {
     const { schema: oneToOneSelfZeroSchema } = await import(
       "./schemas/one-to-one-self.zero"
@@ -130,7 +198,7 @@ describe.concurrent("relationships", () => {
     Expect<Equal<typeof oneToOneZeroSchema, typeof expected>>;
   });
 
-  test("relationships - one-to-one (subset)", async () => {
+  test("relationships - one-to-one-subset", async () => {
     const { schema: oneToOneSubsetZeroSchema } = await import(
       "./schemas/one-to-one-subset.zero"
     );

@@ -8,7 +8,7 @@ import type {
 export type TableName<T extends Table> = T["_"]["name"];
 export type ColumnName<C extends Column> = C["_"]["name"];
 
-type Columns<T extends Table> = T["_"]["columns"];
+export type Columns<T extends Table> = T["_"]["columns"];
 export type ColumnNames<T extends Table> = ColumnName<
   Columns<T>[keyof Columns<T>]
 >;
@@ -71,21 +71,23 @@ export type ZeroTypeToTypescriptType = {
 type ZeroMappedColumnType<
   T extends Table,
   K extends keyof Columns<T>,
-> = ColumnDefinition<T, K>["_"] extends {
+  CD extends ColumnDefinition<T, K>["_"] = ColumnDefinition<T, K>["_"],
+> = CD extends {
   columnType: keyof DrizzleColumnTypeToZeroType;
 }
-  ? DrizzleColumnTypeToZeroType[ColumnDefinition<T, K>["_"]["columnType"]]
-  : DrizzleDataTypeToZeroType[ColumnDefinition<T, K>["dataType"]];
+  ? DrizzleColumnTypeToZeroType[CD["columnType"]]
+  : DrizzleDataTypeToZeroType[CD["dataType"]];
 
 type ZeroMappedCustomType<
   T extends Table,
   K extends ColumnNames<T>,
-> = ColumnDefinition<T, K>["_"] extends {
+  CD extends ColumnDefinition<T, K>["_"] = ColumnDefinition<T, K>["_"],
+> = CD extends {
   columnType: "PgEnumColumn";
 }
-  ? ColumnDefinition<T, K>["_"]["data"]
-  : ColumnDefinition<T, K>["_"] extends { $type: any }
-    ? ColumnDefinition<T, K>["_"]["$type"]
+  ? CD["data"]
+  : CD extends { $type: any }
+    ? CD["$type"]
     : ZeroTypeToTypescriptType[ZeroMappedColumnType<T, K>];
 
 type ZeroColumnDefinition<

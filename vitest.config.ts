@@ -8,6 +8,9 @@ export default defineConfig({
       tsconfig: "tsconfig.json",
       include: ["tests/**/*.test.ts"],
     },
+    coverage: {
+      include: ["src/**/*.ts"],
+    }
   },
   plugins: [tsconfigPaths()],
 });
