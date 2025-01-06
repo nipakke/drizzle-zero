@@ -1,8 +1,10 @@
 integration/
-src/
 tests/
 .gitignore
 .github/
 .prettierrc
 .vscode/
 vitest.config.ts
+tsconfig.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
