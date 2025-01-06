@@ -6,6 +6,5 @@ export default defineConfig({
     include: ["tests/**/*.test.ts"],
     testTimeout: 60000,
   },
-
   plugins: [tsconfigPaths()],
 });

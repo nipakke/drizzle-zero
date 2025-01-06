@@ -1,5 +1,5 @@
 import type { JSONValue } from "@rocicorp/zero";
-import type { Column, Relations, Table } from "drizzle-orm";
+import type { Column, Table } from "drizzle-orm";
 import type {
   DrizzleColumnTypeToZeroType,
   DrizzleDataTypeToZeroType,
@@ -17,8 +17,6 @@ type ColumnDefinition<T extends Table, K extends ColumnNames<T>> = {
     ? Columns<T>[C]
     : never;
 }[keyof Columns<T>];
-
-export type RelationsForTable<T extends Table> = Relations<TableName<T>>;
 
 export type FindPrimaryKeyFromTable<TTable extends Table> = {
   [K in keyof Columns<TTable>]: Columns<TTable>[K]["_"]["isPrimaryKey"] extends true

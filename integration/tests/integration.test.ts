@@ -54,13 +54,21 @@ test("can query messages with relationships", async () => {
 
   const preloadedMessages = await zero.query.message
     .related("medium")
+    .related("sender")
     .preload();
   await preloadedMessages.complete;
 
-  const messages = await zero.query.message.related("medium").one().run();
+  const messages = await zero.query.message
+    .related("sender")
+    .related("medium")
+    .one()
+    .run();
 
   expect(messages?.medium).toHaveLength(1);
   expect(messages?.medium[0]?.name).toBe("email");
+
+  expect(messages?.sender).toHaveLength(1);
+  expect(messages?.sender[0]?.name).toBe("James");
 
   preloadedMessages.cleanup();
 });
