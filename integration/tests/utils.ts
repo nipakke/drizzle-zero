@@ -59,6 +59,14 @@ export const seed = async () => {
     mediumId: "4",
     metadata: { key: "value4" },
   });
+
+  await db.insert(messageTable).values({
+    id: "5",
+    body: "Thomas!",
+    senderId: "1",
+    mediumId: "2",
+    metadata: { key: "value5" },
+  });
 };
 
 export const shutdown = async () => {

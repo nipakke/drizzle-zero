@@ -22,19 +22,19 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import { expect, test, describe } from "vitest";
+import { describe, expect, test } from "vitest";
 import { createZeroTableSchema, type ColumnsConfig } from "../src";
 import {
-  type Equal,
   Expect,
   expectTableSchemaDeepEqual,
+  type Equal,
   type ZeroTableSchema,
 } from "./utils";
 
 describe.concurrent("tables", () => {
   test("pg - basic", () => {
     const table = pgTable("test", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       name: text().notNull(),
       json: jsonb().notNull(),
     });
@@ -49,9 +49,9 @@ describe.concurrent("tables", () => {
       tableName: "test",
       columns: {
         id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         name: {
           type: "string",
@@ -73,7 +73,7 @@ describe.concurrent("tables", () => {
 
   test("pg - named fields", () => {
     const table = pgTable("test", {
-      id: serial("custom_id").primaryKey(),
+      id: text("custom_id").primaryKey(),
       name: text("custom_name").notNull(),
     });
 
@@ -86,9 +86,9 @@ describe.concurrent("tables", () => {
       tableName: "test",
       columns: {
         custom_id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         custom_name: {
           type: "string",
@@ -133,7 +133,7 @@ describe.concurrent("tables", () => {
 
   test("pg - optional fields", () => {
     const table = pgTable("test", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       name: text(), // optional
       description: text(), // optional
       metadata: jsonb(), // optional
@@ -150,9 +150,9 @@ describe.concurrent("tables", () => {
       tableName: "test",
       columns: {
         id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         name: {
           type: "string",
@@ -179,7 +179,7 @@ describe.concurrent("tables", () => {
 
   test("pg - array types", () => {
     const table = pgTable("test", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       tags: text().array().notNull(),
       scores: jsonb().array(),
     });
@@ -203,7 +203,7 @@ describe.concurrent("tables", () => {
     };
 
     const table = pgTable("users", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       metadata: jsonb().$type<UserMetadata>().notNull(),
       settings: jsonb().$type<Record<string, boolean>>(),
     });
@@ -218,9 +218,9 @@ describe.concurrent("tables", () => {
       tableName: "users",
       columns: {
         id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         metadata: {
           type: "json",
@@ -242,7 +242,7 @@ describe.concurrent("tables", () => {
 
   test("pg - partial column selection", () => {
     const table = pgTable("test", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       name: text().notNull(),
       age: serial().notNull(),
       metadata: jsonb().notNull(),
@@ -259,9 +259,9 @@ describe.concurrent("tables", () => {
       tableName: "test",
       columns: {
         id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         metadata: {
           type: "json",
@@ -278,7 +278,7 @@ describe.concurrent("tables", () => {
 
   test("pg - partial column selection with omit", () => {
     const table = pgTable("test", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       name: text().notNull(),
       age: serial().notNull(),
       metadata: jsonb().notNull(),
@@ -293,9 +293,9 @@ describe.concurrent("tables", () => {
       tableName: "test",
       columns: {
         id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         name: {
           type: "string",
@@ -312,7 +312,7 @@ describe.concurrent("tables", () => {
 
   test("pg - partial column selection with false", () => {
     const table = pgTable("test", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       name: text().notNull(),
       age: serial().notNull(),
       metadata: jsonb().notNull(),
@@ -329,9 +329,9 @@ describe.concurrent("tables", () => {
       tableName: "test",
       columns: {
         id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         metadata: {
           type: "json",
@@ -392,7 +392,7 @@ describe.concurrent("tables", () => {
 
   test("pg - timestamp fields", () => {
     const table = pgTable("events", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       createdAt: timestamp().notNull().defaultNow(),
       updatedAt: timestamp(),
       scheduledFor: timestamp().notNull(),
@@ -409,13 +409,13 @@ describe.concurrent("tables", () => {
       tableName: "events",
       columns: {
         id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         createdAt: {
           type: "string",
-          optional: false,
+          optional: true,
           customType: null as unknown as string,
         },
         updatedAt: {
@@ -438,7 +438,7 @@ describe.concurrent("tables", () => {
 
   test("pg - custom column mapping", () => {
     const table = pgTable("users", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       firstName: text("first_name").notNull(),
       lastName: text("last_name").notNull(),
       profileData: jsonb("profile_data").$type<{
@@ -460,9 +460,9 @@ describe.concurrent("tables", () => {
       tableName: "users",
       columns: {
         id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         first_name: {
           type: "string",
@@ -494,7 +494,7 @@ describe.concurrent("tables", () => {
     const roleEnum = pgEnum("user_role", ["admin", "user", "guest"]);
 
     const table = pgTable("users", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       role: roleEnum().notNull(),
       backupRole: roleEnum(),
     });
@@ -509,9 +509,9 @@ describe.concurrent("tables", () => {
       tableName: "users",
       columns: {
         id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         role: {
           type: "string",
@@ -580,7 +580,7 @@ describe.concurrent("tables", () => {
 
     const table = pgTable("all_types", {
       // Integer types
-      id: serial("id").primaryKey(),
+      id: text("id").primaryKey(),
       smallint: smallint("smallint").notNull(),
       integer: integer("integer").notNull(),
       bigint: bigint("bigint", { mode: "number" }).notNull(),
@@ -666,9 +666,9 @@ describe.concurrent("tables", () => {
       columns: {
         // Integer types
         id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         smallint: {
           type: "number",
@@ -689,17 +689,17 @@ describe.concurrent("tables", () => {
         // Serial types
         smallserial: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         regular_serial: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         bigserial: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
 
@@ -852,7 +852,7 @@ describe.concurrent("tables", () => {
 
   test("pg - override column json type", () => {
     const table = pgTable("metrics", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       metadata: jsonb().notNull(),
     });
 
@@ -865,9 +865,9 @@ describe.concurrent("tables", () => {
       tableName: "metrics",
       columns: {
         id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         metadata: column.json<{ amount: number; currency: string }>(),
       },
@@ -882,7 +882,7 @@ describe.concurrent("tables", () => {
     const table = pgTable(
       "order_items",
       {
-        orderId: serial().notNull(),
+        orderId: text().notNull(),
         productId: text().notNull(),
         quantity: integer().notNull(),
         price: numeric().notNull(),
@@ -901,9 +901,9 @@ describe.concurrent("tables", () => {
       tableName: "order_items",
       columns: {
         orderId: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         productId: {
           type: "string",
@@ -930,15 +930,17 @@ describe.concurrent("tables", () => {
 
   test("pg - default values", () => {
     const table = pgTable("items", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       name: text().notNull().default("unnamed"),
       isActive: boolean().notNull().default(true),
       score: integer().notNull().default(0),
       optionalScore: integer().default(0),
-      currentDate: text()
+      currentDateWithRuntimeDefault: text()
         .notNull()
         .$default(() => new Date().toISOString()),
-      optionalCurrentDate: text().$default(() => new Date().toISOString()),
+      optionalCurrentDateWithRuntimeDefault: text().$default(() =>
+        new Date().toISOString(),
+      ),
     });
 
     const result = createZeroTableSchema(table, {
@@ -947,31 +949,31 @@ describe.concurrent("tables", () => {
       isActive: true,
       score: true,
       optionalScore: true,
-      currentDate: true,
-      optionalCurrentDate: true,
+      currentDateWithRuntimeDefault: true,
+      optionalCurrentDateWithRuntimeDefault: true,
     });
 
     const expected = {
       tableName: "items",
       columns: {
         id: {
-          type: "number",
-          optional: false,
-          customType: null as unknown as number,
-        },
-        name: {
           type: "string",
           optional: false,
           customType: null as unknown as string,
         },
+        name: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as string,
+        },
         isActive: {
           type: "boolean",
-          optional: false,
+          optional: true,
           customType: null as unknown as boolean,
         },
         score: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         optionalScore: {
@@ -979,12 +981,12 @@ describe.concurrent("tables", () => {
           optional: true,
           customType: null as unknown as number,
         },
-        currentDate: {
+        currentDateWithRuntimeDefault: {
           type: "string",
           optional: false,
           customType: null as unknown as string,
         },
-        optionalCurrentDate: {
+        optionalCurrentDateWithRuntimeDefault: {
           type: "string",
           optional: true,
           customType: null as unknown as string,
@@ -1010,7 +1012,7 @@ describe.concurrent("tables", () => {
     };
 
     const table = pgTable("configs", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       requiredJson: jsonb().$type<{ key: string }>().notNull(),
       optionalJson: jsonb().$type<ComplexMetadata>(),
       mixedJson: json()
@@ -1029,9 +1031,9 @@ describe.concurrent("tables", () => {
       tableName: "configs",
       columns: {
         id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         requiredJson: {
           type: "json",
@@ -1061,7 +1063,7 @@ describe.concurrent("tables", () => {
 
   test("pg - custom column selection with type overrides", () => {
     const table = pgTable("products", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       name: text().notNull(),
       description: text(),
       metadata: jsonb().$type<Record<string, unknown>>(),
@@ -1078,9 +1080,9 @@ describe.concurrent("tables", () => {
       tableName: "products",
       columns: {
         id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         name: column.string(true),
         description: column.string(),
@@ -1097,7 +1099,7 @@ describe.concurrent("tables", () => {
     const enumType = pgEnum("status", ["active", "inactive", "pending"]);
 
     const table = pgTable("products", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       status: enumType("enum_status"),
     });
 
@@ -1110,9 +1112,9 @@ describe.concurrent("tables", () => {
       tableName: "products",
       columns: {
         id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         enum_status: column.enumeration<"active" | "inactive" | "pending">(
           true,
@@ -1132,7 +1134,7 @@ describe.concurrent("tables", () => {
 
   test("pg - invalid column selection", () => {
     const table = pgTable("test", {
-      id: serial().primaryKey(),
+      id: text().primaryKey(),
       invalid: text().notNull(),
     });
 
@@ -1146,7 +1148,19 @@ describe.concurrent("tables", () => {
 
   test("pg - no primary key", () => {
     const table = pgTable("test", {
-      id: serial(),
+      id: text(),
+    });
+
+    expect(() =>
+      createZeroTableSchema(table, {
+        id: true,
+      } as unknown as ColumnsConfig<typeof table>),
+    ).toThrow();
+  });
+
+  test("pg - auto-increment primary key not supported", () => {
+    const table = pgTable("test", {
+      id: serial().primaryKey(),
       name: text(),
     });
 
