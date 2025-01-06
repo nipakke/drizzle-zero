@@ -37,6 +37,12 @@ const runZeroBuildSchema = async (testName: string) => {
 };
 
 describe.concurrent("compile", () => {
+  test("compile - no-relations", async () => {
+    const result = await runZeroBuildSchema("no-relations");
+    expect(result.schema.tables.user).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toEqual(["profile_info", "user"]);
+  });
+
   test("compile - one-to-one", async () => {
     const result = await runZeroBuildSchema("one-to-one");
     expect(result.schema.tables.user).toBeTruthy();
@@ -92,6 +98,21 @@ describe.concurrent("compile", () => {
     expect(result.schema.tables.user).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toEqual([
       "group",
+      "user",
+      "users_to_group",
+    ]);
+  });
+
+  test("compile - many-to-many-subset", async () => {
+    const result = await runZeroBuildSchema("many-to-many-subset");
+    expect(result.schema.tables.user).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toEqual(["user"]);
+  });
+
+  test("compile - many-to-many-subset-2", async () => {
+    const result = await runZeroBuildSchema("many-to-many-subset-2");
+    expect(result.schema.tables.user).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toEqual([
       "user",
       "users_to_group",
     ]);

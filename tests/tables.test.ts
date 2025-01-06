@@ -27,6 +27,7 @@ import { createZeroTableSchema, type ColumnsConfig } from "../src";
 import {
   Expect,
   expectTableSchemaDeepEqual,
+  type AtLeastOne,
   type Equal,
   type ZeroTableSchema,
 } from "./utils";
@@ -383,7 +384,7 @@ describe.concurrent("tables", () => {
         },
       },
       // this type is erased in drizzle, so we need to cast it
-      primaryKey: ["userId", "orgId"] as readonly [string, ...string[]],
+      primaryKey: ["userId", "orgId"] as Readonly<AtLeastOne<string>>,
     } as const satisfies ZeroTableSchema;
 
     expectTableSchemaDeepEqual(result).toEqual(expected);
@@ -921,7 +922,7 @@ describe.concurrent("tables", () => {
           customType: null as unknown as number,
         },
       },
-      primaryKey: ["orderId", "productId"] as readonly [string, ...string[]],
+      primaryKey: ["orderId", "productId"] as Readonly<AtLeastOne<string>>,
     } as const satisfies ZeroTableSchema;
 
     expectTableSchemaDeepEqual(result).toEqual(expected);
@@ -1071,9 +1072,9 @@ describe.concurrent("tables", () => {
 
     const result = createZeroTableSchema(table, {
       id: true,
-      name: column.string(true),
-      description: column.string(),
-      metadata: column.json<{ category: string; tags: string[] }>(true),
+      name: column.string<"typed-value">(true),
+      description: column.string<"typed-value-2">(false),
+      metadata: column.json<{ category: string; tags: string[] }>(false),
     });
 
     const expected = {
@@ -1084,9 +1085,9 @@ describe.concurrent("tables", () => {
           optional: false,
           customType: null as unknown as string,
         },
-        name: column.string(true),
-        description: column.string(),
-        metadata: column.json<{ category: string; tags: string[] }>(true),
+        name: column.string<"typed-value">(true),
+        description: column.string<"typed-value-2">(false),
+        metadata: column.json<{ category: string; tags: string[] }>(false),
       },
       primaryKey: ["id"],
     } as const satisfies ZeroTableSchema;
@@ -1105,7 +1106,7 @@ describe.concurrent("tables", () => {
 
     const result = createZeroTableSchema(table, {
       id: true,
-      enum_status: column.enumeration<"active" | "inactive" | "pending">(true),
+      enum_status: column.enumeration<"active" | "inactive">(false),
     });
 
     const expected = {
@@ -1116,9 +1117,7 @@ describe.concurrent("tables", () => {
           optional: false,
           customType: null as unknown as string,
         },
-        enum_status: column.enumeration<"active" | "inactive" | "pending">(
-          true,
-        ),
+        enum_status: column.enumeration<"active" | "inactive">(false),
       },
       primaryKey: ["id"],
     } as const satisfies ZeroTableSchema;

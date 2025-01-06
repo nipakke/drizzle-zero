@@ -724,4 +724,97 @@ describe.concurrent("relationships", () => {
     expectSchemaDeepEqual(manyToManyZeroSchema).toEqual(expected);
     Expect<Equal<typeof manyToManyZeroSchema, typeof expected>>;
   });
+
+  test("relationships - many-to-many-subset", async () => {
+    const { schema: manyToManySubsetZeroSchema } = await import(
+      "./schemas/many-to-many-subset.zero"
+    );
+
+    const expectedUsers = {
+      tableName: "user",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+      },
+      primaryKey: ["id"],
+    } as const;
+
+    const expected = createSchema({
+      version: 1,
+      tables: {
+        user: expectedUsers,
+      },
+    });
+
+    expectSchemaDeepEqual(manyToManySubsetZeroSchema).toEqual(expected);
+    Expect<Equal<typeof manyToManySubsetZeroSchema, typeof expected>>;
+  });
+
+  test("relationships - many-to-many-subset-2", async () => {
+    const { schema: manyToManySubset2ZeroSchema } = await import(
+      "./schemas/many-to-many-subset-2.zero"
+    );
+
+    const expectedUsers = {
+      tableName: "user",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+        name: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as string,
+        },
+      },
+      primaryKey: ["id"],
+      relationships: {
+        usersToGroups: {
+          sourceField: ["id"] as AtLeastOne<"id" | "name">,
+          destField: ["user_id"] as AtLeastOne<"user_id" | "group_id">,
+          destSchema: () => expectedUsersToGroups,
+        },
+      },
+    } as const;
+
+    const expectedUsersToGroups = {
+      tableName: "users_to_group",
+      columns: {
+        user_id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+        group_id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+      },
+      primaryKey: ["user_id", "group_id"] as Readonly<AtLeastOne<string>>,
+      relationships: {
+        user: {
+          sourceField: ["user_id"] as AtLeastOne<"user_id" | "group_id">,
+          destField: ["id"] as AtLeastOne<"id" | "name">,
+          destSchema: () => expectedUsers,
+        },
+      },
+    } as const;
+
+    const expected = createSchema({
+      version: 1,
+      tables: {
+        user: expectedUsers,
+        users_to_group: expectedUsersToGroups,
+      },
+    });
+
+    expectSchemaDeepEqual(manyToManySubset2ZeroSchema).toEqual(expected);
+    Expect<Equal<typeof manyToManySubset2ZeroSchema, typeof expected>>;
+  });
 });

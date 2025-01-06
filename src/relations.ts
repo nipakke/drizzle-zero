@@ -95,28 +95,32 @@ type ReferencedZeroSchemas<
             ? TColumns[TableName<TSchema[P]>] extends object
               ? {
                   readonly sourceField: AtLeastOne<
-                    {
-                      [P in keyof TSchema]: TSchema[P] extends {
-                        _: {
-                          name: TTableName;
-                        };
-                      }
-                        ? TSchema[P] extends Table<any>
-                          ? ColumnIndexKeys<TSchema[P]>
-                          : never
-                        : never;
-                    }[keyof TSchema]
+                    Readonly<
+                      {
+                        [P in keyof TSchema]: TSchema[P] extends {
+                          _: {
+                            name: TTableName;
+                          };
+                        }
+                          ? TSchema[P] extends Table<any>
+                            ? ColumnIndexKeys<TSchema[P]>
+                            : never
+                          : never;
+                      }[keyof TSchema]
+                    >
                   >;
                   readonly destField: AtLeastOne<
-                    {
-                      [ColumnName in keyof Columns<TSchema[P]>]: Columns<
-                        TSchema[P]
-                      >[ColumnName]["_"] extends {
-                        name: string;
-                      }
-                        ? ColumnIndexKeys<TSchema[P]>
-                        : never;
-                    }[keyof Columns<TSchema[P]>]
+                    Readonly<
+                      {
+                        [ColumnName in keyof Columns<TSchema[P]>]: Columns<
+                          TSchema[P]
+                        >[ColumnName]["_"] extends {
+                          name: string;
+                        }
+                          ? ColumnIndexKeys<TSchema[P]>
+                          : never;
+                      }[keyof Columns<TSchema[P]>]
+                    >
                   >;
                   readonly destSchema: () => ZeroSchemaWithRelations<
                     TSchema[P],

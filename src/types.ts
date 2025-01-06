@@ -23,7 +23,7 @@ export type FindPrimaryKeyFromTable<TTable extends Table> = {
     ? ColumnName<Columns<TTable>[K]>
     : never;
 }[keyof Columns<TTable>] extends never
-  ? readonly [string, ...string[]]
+  ? Readonly<AtLeastOne<string>>
   : readonly [
       {
         [K in keyof Columns<TTable>]: Columns<TTable>[K]["_"]["isPrimaryKey"] extends true
@@ -99,7 +99,10 @@ type ZeroColumnDefinition<
       // Zero doesn't support runtime defaults yet
       hasRuntimeDefault: false;
     }
-      ? true : CD extends { notNull: true } ? false : true;
+      ? true
+      : CD extends { notNull: true }
+        ? false
+        : true;
     readonly type: ZeroMappedColumnType<T, K>;
     readonly customType: ZeroMappedCustomType<T, K>;
   } & (CD extends { columnType: "PgEnumColumn" }
