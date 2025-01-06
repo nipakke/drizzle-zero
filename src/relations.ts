@@ -10,7 +10,7 @@ import { getTableConfig } from "drizzle-orm/pg-core";
 import { createZeroTableSchema, type CreateZeroTableSchema } from "./tables";
 import type {
   AtLeastOne,
-  ColumnNames,
+  ColumnName,
   Columns,
   ColumnsConfig,
   FindPrimaryKeyFromTable,
@@ -55,6 +55,14 @@ type TableColumnsConfig<TSchema extends Record<string, unknown>> = {
 
 type RelationsConfig<T extends Relations> = ReturnType<T["config"]>;
 
+type ColumnIndexKeys<T extends Table> = {
+  [K in keyof Columns<T>]: Columns<T>[K] extends {
+    dataType: "string" | "number";
+  }
+    ? ColumnName<Columns<T>[K]>
+    : never;
+}[keyof Columns<T>];
+
 type ReferencedZeroSchemas<
   TSchema extends Record<string, unknown>,
   TColumns extends TableColumnsConfig<TSchema>,
@@ -94,7 +102,7 @@ type ReferencedZeroSchemas<
                         };
                       }
                         ? TSchema[P] extends Table<any>
-                          ? ColumnNames<TSchema[P]>
+                          ? ColumnIndexKeys<TSchema[P]>
                           : never
                         : never;
                     }[keyof TSchema]
@@ -106,7 +114,7 @@ type ReferencedZeroSchemas<
                       >[ColumnName]["_"] extends {
                         name: string;
                       }
-                        ? ColumnNames<TSchema[P]>
+                        ? ColumnIndexKeys<TSchema[P]>
                         : never;
                     }[keyof Columns<TSchema[P]>]
                   >;

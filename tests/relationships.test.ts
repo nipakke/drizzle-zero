@@ -151,7 +151,7 @@ describe.concurrent("relationships", () => {
       relationships: {
         profileInfo: {
           sourceField: ["id"] as AtLeastOne<"id" | "name">,
-          destField: ["user_id"] as AtLeastOne<"id" | "user_id" | "metadata">,
+          destField: ["user_id"] as AtLeastOne<"id" | "user_id">,
           destSchema: () => expectedProfileInfo,
         },
       },
@@ -179,7 +179,7 @@ describe.concurrent("relationships", () => {
       primaryKey: ["id"],
       relationships: {
         user: {
-          sourceField: ["user_id"] as AtLeastOne<"id" | "user_id" | "metadata">,
+          sourceField: ["user_id"] as AtLeastOne<"id" | "user_id">,
           destField: ["id"] as AtLeastOne<"id" | "name">,
           destSchema: () => expectedUsers,
         },
@@ -328,7 +328,7 @@ describe.concurrent("relationships", () => {
       primaryKey: ["id"],
       relationships: {
         messages: {
-          sourceField: ["id"] as AtLeastOne<"id" | "name" | "partner">,
+          sourceField: ["id"] as AtLeastOne<"id" | "name">,
           destField: ["senderId"] as AtLeastOne<
             "id" | "senderId" | "mediumId" | "body"
           >,
@@ -400,7 +400,7 @@ describe.concurrent("relationships", () => {
           sourceField: ["senderId"] as AtLeastOne<
             "id" | "senderId" | "mediumId" | "body"
           >,
-          destField: ["id"] as AtLeastOne<"id" | "name" | "partner">,
+          destField: ["id"] as AtLeastOne<"id" | "name">,
           destSchema: () => expectedUsers,
         },
       },
