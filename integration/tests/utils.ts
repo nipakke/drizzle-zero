@@ -33,6 +33,7 @@ export const seed = async () => {
     body: "Hey, James!",
     senderId: "1",
     mediumId: "1",
+    metadata: { key: "value1" },
   });
 
   await db.insert(messageTable).values({
@@ -40,6 +41,7 @@ export const seed = async () => {
     body: "Hello on Teams",
     senderId: "2",
     mediumId: "2",
+    metadata: { key: "value2" },
   });
 
   await db.insert(messageTable).values({
@@ -47,6 +49,7 @@ export const seed = async () => {
     body: "SMS message here",
     senderId: "3",
     mediumId: "3",
+    metadata: { key: "value3" },
   });
 
   await db.insert(messageTable).values({
@@ -54,6 +57,7 @@ export const seed = async () => {
     body: "WhatsApp message",
     senderId: "2",
     mediumId: "4",
+    metadata: { key: "value4" },
   });
 };
 

@@ -13,7 +13,8 @@ CREATE TABLE "message" (
 	"id" text PRIMARY KEY NOT NULL,
 	"senderId" text,
 	"mediumId" text,
-	"body" text NOT NULL
+	"body" text NOT NULL,
+	"metadata" jsonb NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "user" (

@@ -25,6 +25,7 @@ const zeroSchema = createZeroSchema(drizzleSchema, {
       senderId: true,
       mediumId: true,
       body: true,
+      metadata: true,
     },
   },
 });
@@ -45,7 +46,7 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
   const allowIfSender1 = (
     _authData: AuthData,
     { cmp }: ExpressionBuilder<typeof schema.tables.message>,
-  ) => cmp("senderId", "=", "1");
+  ) => cmp("senderId", "=", _authData.sub);
 
   return {
     medium: {

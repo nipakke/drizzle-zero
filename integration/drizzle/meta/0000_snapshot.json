@@ -1,5 +1,5 @@
 {
-  "id": "aae07e9c-34a6-4917-ae21-19b574e9719c",
+  "id": "a3d5a6b7-36be-49e3-9687-4ba8910aeafe",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -56,6 +56,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
@@ -64,8 +70,12 @@
           "name": "message_senderId_user_id_fk",
           "tableFrom": "message",
           "tableTo": "user",
-          "columnsFrom": ["senderId"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "senderId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -73,8 +83,12 @@
           "name": "message_mediumId_medium_id_fk",
           "tableFrom": "message",
           "tableTo": "medium",
-          "columnsFrom": ["mediumId"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "mediumId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
