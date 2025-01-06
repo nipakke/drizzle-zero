@@ -92,7 +92,7 @@ Use the generated Zero schema:
 ```tsx
 import { useQuery, useZero } from "@rocicorp/zero/react";
 
-function PostList({ selectedAuthorId }: { selectedAuthorId?: text }) {
+function PostList({ selectedAuthorId }: { selectedAuthorId?: string }) {
   const z = useZero();
 
   // Build a query for posts with their authors
