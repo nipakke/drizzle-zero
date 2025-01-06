@@ -1,14 +1,12 @@
 import { relations } from "drizzle-orm";
 import {
-  integer,
   pgTable,
   primaryKey,
-  serial,
-  text,
+  text
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("user", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey(),
   name: text("name"),
 });
 
@@ -19,10 +17,10 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const usersToGroups = pgTable(
   "users_to_group",
   {
-    userId: integer("user_id")
+    userId: text("user_id")
       .notNull()
       .references(() => users.id),
-    groupId: integer("group_id")
+    groupId: text("group_id")
       .notNull()
       .references(() => groups.id),
   },
@@ -41,7 +39,7 @@ export const usersToGroupsRelations = relations(usersToGroups, ({ one }) => ({
 }));
 
 export const groups = pgTable("group", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey(),
   name: text("name"),
 });
 

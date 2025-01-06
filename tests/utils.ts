@@ -20,9 +20,13 @@ export function expectTableSchemaDeepEqual<S extends ZeroTableSchema>(
       );
 
       for (const key of Object.keys(actual.columns)) {
-        expect(
-          actual.columns[key as keyof typeof actual.columns],
-        ).toStrictEqual(expected.columns[key as keyof typeof expected.columns]);
+        expect({
+          ...(actual.columns[key as keyof typeof actual.columns] as object),
+          __testKey: key,
+        }).toStrictEqual({
+          ...(expected.columns[key as keyof typeof expected.columns] as object),
+          __testKey: key,
+        });
       }
 
       expect(actual.primaryKey).toStrictEqual(expected.primaryKey);

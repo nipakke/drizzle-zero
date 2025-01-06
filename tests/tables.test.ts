@@ -625,8 +625,6 @@ describe.concurrent("tables", () => {
       optionalEnum: statusEnum("optional_enum"),
     });
 
-    table.smallSerial._.hasDefault;
-
     const result = createZeroTableSchema(table, {
       id: true,
       smallint: true,
@@ -1150,7 +1148,19 @@ describe.concurrent("tables", () => {
 
   test("pg - no primary key", () => {
     const table = pgTable("test", {
-      id: serial(),
+      id: text(),
+    });
+
+    expect(() =>
+      createZeroTableSchema(table, {
+        id: true,
+      } as unknown as ColumnsConfig<typeof table>),
+    ).toThrow();
+  });
+
+  test("pg - auto-increment primary key not supported", () => {
+    const table = pgTable("test", {
+      id: serial().primaryKey(),
       name: text(),
     });
 

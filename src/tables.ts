@@ -69,18 +69,26 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
         throw new Error(`Unsupported column type: ${column.dataType}`);
       }
 
+      const isColumnOptional =
+        typeof columnConfig === "boolean"
+          ? column.hasDefault && column.defaultFn === undefined
+            ? true
+            : !column.notNull
+          : columnConfig.optional;
+
       if (column.primary) {
+        if (isColumnOptional) {
+          throw new Error(
+            `Primary key column ${name} cannot have a default value.`,
+          );
+        }
+
         primaryKeysFromColumns.push(name);
       }
 
       const schemaValue = {
         type: typeof columnConfig === "boolean" ? type : columnConfig.type,
-        optional:
-          typeof columnConfig === "boolean"
-            ? column.hasDefault
-              ? true
-              : !column.notNull
-            : columnConfig.optional,
+        optional: isColumnOptional,
         customType: null as unknown as ZeroTypeToTypescriptType[typeof type],
         ...(typeof columnConfig !== "boolean" && columnConfig.kind
           ? { kind: columnConfig.kind }

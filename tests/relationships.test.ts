@@ -29,9 +29,9 @@ describe.concurrent("relationships", () => {
       tableName: "user",
       columns: {
         id: {
-          type: "number",
-          optional: true,
-          customType: null as unknown as number,
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
         },
         name: {
           type: "string",
@@ -46,14 +46,14 @@ describe.concurrent("relationships", () => {
       tableName: "profile_info",
       columns: {
         id: {
-          type: "number",
-          optional: true,
-          customType: null as unknown as number,
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
         },
         user_id: {
-          type: "number",
+          type: "string",
           optional: true,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         metadata: {
           type: "json",
@@ -85,9 +85,9 @@ describe.concurrent("relationships", () => {
       tableName: "user",
       columns: {
         id: {
-          type: "number",
-          optional: true,
-          customType: null as unknown as number,
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
         },
         name: {
           type: "string",
@@ -95,9 +95,9 @@ describe.concurrent("relationships", () => {
           customType: null as unknown as string,
         },
         invited_by: {
-          type: "number",
+          type: "string",
           optional: true,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
       },
       primaryKey: ["id"],
@@ -137,9 +137,9 @@ describe.concurrent("relationships", () => {
       tableName: "user",
       columns: {
         id: {
-          type: "number",
-          optional: true,
-          customType: null as unknown as number,
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
         },
         name: {
           type: "string",
@@ -161,14 +161,14 @@ describe.concurrent("relationships", () => {
       tableName: "profile_info",
       columns: {
         id: {
-          type: "number",
-          optional: true,
-          customType: null as unknown as number,
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
         },
         user_id: {
-          type: "number",
+          type: "string",
           optional: true,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         metadata: {
           type: "json",
@@ -207,9 +207,9 @@ describe.concurrent("relationships", () => {
       tableName: "user",
       columns: {
         id: {
-          type: "number",
-          optional: true,
-          customType: null as unknown as number,
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
         },
         name: {
           type: "string",
@@ -428,9 +428,9 @@ describe.concurrent("relationships", () => {
       tableName: "user",
       columns: {
         id: {
-          type: "number",
-          optional: true,
-          customType: null as unknown as number,
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
         },
         name: {
           type: "string",
@@ -454,9 +454,9 @@ describe.concurrent("relationships", () => {
       tableName: "post",
       columns: {
         id: {
-          type: "number",
-          optional: true,
-          customType: null as unknown as number,
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
         },
         content: {
           type: "string",
@@ -464,9 +464,9 @@ describe.concurrent("relationships", () => {
           customType: null as unknown as string,
         },
         author_id: {
-          type: "number",
+          type: "string",
           optional: true,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
       },
       primaryKey: ["id"],
@@ -485,9 +485,9 @@ describe.concurrent("relationships", () => {
       tableName: "comment",
       columns: {
         id: {
-          type: "number",
-          optional: true,
-          customType: null as unknown as number,
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
         },
         text: {
           type: "string",
@@ -495,14 +495,14 @@ describe.concurrent("relationships", () => {
           customType: null as unknown as string,
         },
         author_id: {
-          type: "number",
+          type: "string",
           optional: true,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         post_id: {
-          type: "number",
+          type: "string",
           optional: true,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
       },
       primaryKey: ["id"],
@@ -546,9 +546,9 @@ describe.concurrent("relationships", () => {
       tableName: "users",
       columns: {
         id: {
-          type: "number",
-          optional: true,
-          customType: null as unknown as number,
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
         },
         name: {
           type: "string",
@@ -579,9 +579,9 @@ describe.concurrent("relationships", () => {
       tableName: "posts",
       columns: {
         id: {
-          type: "number",
-          optional: true,
-          customType: null as unknown as number,
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
         },
         content: {
           type: "string",
@@ -589,14 +589,14 @@ describe.concurrent("relationships", () => {
           customType: null as unknown as string,
         },
         author_id: {
-          type: "number",
+          type: "string",
           optional: true,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         reviewer_id: {
-          type: "number",
+          type: "string",
           optional: true,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
       },
       primaryKey: ["id"],
@@ -639,9 +639,9 @@ describe.concurrent("relationships", () => {
       tableName: "user",
       columns: {
         id: {
-          type: "number",
-          optional: true,
-          customType: null as unknown as number,
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
         },
         name: {
           type: "string",
@@ -663,14 +663,14 @@ describe.concurrent("relationships", () => {
       tableName: "users_to_group",
       columns: {
         user_id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
         group_id: {
-          type: "number",
+          type: "string",
           optional: false,
-          customType: null as unknown as number,
+          customType: null as unknown as string,
         },
       },
       primaryKey: ["user_id", "group_id"] as Readonly<AtLeastOne<string>>,
@@ -692,9 +692,9 @@ describe.concurrent("relationships", () => {
       tableName: "group",
       columns: {
         id: {
-          type: "number",
-          optional: true,
-          customType: null as unknown as number,
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
         },
         name: {
           type: "string",
