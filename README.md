@@ -54,6 +54,10 @@ import * as drizzleSchema from "./drizzle-schema";
 export const schema = createSchema(
   createZeroSchema(drizzleSchema, {
     version: 1,
+    // Specify which columns to include in the Zero schema
+    // this allows for the "expand/migrate/contract" pattern recommended in the Zero docs
+    // e.g. when a column is first added, it should be set to false, and then changed to true
+    // once the migration has been run.
     tables: {
       user: {
         id: true,
@@ -69,7 +73,7 @@ export const schema = createSchema(
 );
 ```
 
-You can then use the generated Zero schema in a React component:
+Use the generated Zero schema:
 
 ```tsx
 import { useQuery, useZero } from "@rocicorp/zero/react";
@@ -112,6 +116,7 @@ function PostList({ selectedAuthorId }: { selectedAuthorId?: number }) {
 - Convert Drizzle ORM schemas to Zero schemas
 - Handles all Drizzle column types that are supported by Zero
 - Type-safe schema generation
+- Sync a subset of tables
 - Supports relationships:
   - One-to-one relationships
   - One-to-many relationships

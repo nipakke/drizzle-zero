@@ -1,0 +1,32 @@
+import {
+  ANYONE_CAN,
+  createSchema,
+  definePermissions,
+  type Schema,
+} from "@rocicorp/zero";
+import { createZeroSchema } from "../../src";
+import * as oneToOne from "./one-to-one.schema";
+
+export const schema = createSchema(
+  createZeroSchema(oneToOne, {
+    version: 1,
+    tables: {
+      user: {
+        id: true,
+        name: true,
+      },
+    },
+  }),
+);
+
+export const permissions = definePermissions<{}, Schema>(schema, () => {
+  return {
+    user: {
+      row: {
+        insert: ANYONE_CAN,
+        update: ANYONE_CAN,
+        delete: ANYONE_CAN,
+      },
+    },
+  };
+});

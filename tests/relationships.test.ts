@@ -130,6 +130,39 @@ describe.concurrent("relationships", () => {
     Expect<Equal<typeof oneToOneZeroSchema, typeof expected>>;
   });
 
+  test("relationships - one-to-one (subset)", async () => {
+    const { schema: oneToOneSubsetZeroSchema } = await import(
+      "./schemas/one-to-one-subset.zero"
+    );
+
+    const expectedUsers = {
+      tableName: "user",
+      columns: {
+        id: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as number,
+        },
+        name: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as string,
+        },
+      },
+      primaryKey: ["id"],
+    } as const;
+
+    const expected = createSchema({
+      version: 1,
+      tables: {
+        user: expectedUsers,
+      },
+    });
+
+    expectSchemaDeepEqual(oneToOneSubsetZeroSchema).toEqual(expected);
+    Expect<Equal<typeof oneToOneSubsetZeroSchema, typeof expected>>;
+  });
+
   test("relationships - one-to-one-foreign-key", async () => {
     const { schema: oneToOneForeignKeyZeroSchema } = await import(
       "./schemas/one-to-one-foreign-key.zero"
