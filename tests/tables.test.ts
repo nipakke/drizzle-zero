@@ -50,7 +50,7 @@ describe.concurrent("tables", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         name: {
@@ -87,7 +87,7 @@ describe.concurrent("tables", () => {
       columns: {
         custom_id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         custom_name: {
@@ -151,7 +151,7 @@ describe.concurrent("tables", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         name: {
@@ -219,7 +219,7 @@ describe.concurrent("tables", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         metadata: {
@@ -260,7 +260,7 @@ describe.concurrent("tables", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         metadata: {
@@ -294,7 +294,7 @@ describe.concurrent("tables", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         name: {
@@ -330,7 +330,7 @@ describe.concurrent("tables", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         metadata: {
@@ -410,12 +410,12 @@ describe.concurrent("tables", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         createdAt: {
           type: "string",
-          optional: false,
+          optional: true,
           customType: null as unknown as string,
         },
         updatedAt: {
@@ -461,7 +461,7 @@ describe.concurrent("tables", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         first_name: {
@@ -510,7 +510,7 @@ describe.concurrent("tables", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         role: {
@@ -625,6 +625,8 @@ describe.concurrent("tables", () => {
       optionalEnum: statusEnum("optional_enum"),
     });
 
+    table.smallSerial._.hasDefault;
+
     const result = createZeroTableSchema(table, {
       id: true,
       smallint: true,
@@ -667,7 +669,7 @@ describe.concurrent("tables", () => {
         // Integer types
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         smallint: {
@@ -689,17 +691,17 @@ describe.concurrent("tables", () => {
         // Serial types
         smallserial: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         regular_serial: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         bigserial: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
 
@@ -866,7 +868,7 @@ describe.concurrent("tables", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         metadata: column.json<{ amount: number; currency: string }>(),
@@ -902,7 +904,7 @@ describe.concurrent("tables", () => {
       columns: {
         orderId: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         productId: {
@@ -956,22 +958,22 @@ describe.concurrent("tables", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         name: {
           type: "string",
-          optional: false,
+          optional: true,
           customType: null as unknown as string,
         },
         isActive: {
           type: "boolean",
-          optional: false,
+          optional: true,
           customType: null as unknown as boolean,
         },
         score: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         optionalScore: {
@@ -981,7 +983,7 @@ describe.concurrent("tables", () => {
         },
         currentDate: {
           type: "string",
-          optional: false,
+          optional: true,
           customType: null as unknown as string,
         },
         optionalCurrentDate: {
@@ -1030,7 +1032,7 @@ describe.concurrent("tables", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         requiredJson: {
@@ -1079,7 +1081,7 @@ describe.concurrent("tables", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         name: column.string(true),
@@ -1111,7 +1113,7 @@ describe.concurrent("tables", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         enum_status: column.enumeration<"active" | "inactive" | "pending">(

@@ -94,7 +94,10 @@ type ZeroColumnDefinition<
   CD extends ColumnDefinition<T, K>["_"] = ColumnDefinition<T, K>["_"],
 > = Readonly<
   {
-    readonly optional: CD extends { notNull: true } ? false : true;
+    readonly optional: CD extends {
+      hasDefault: true;
+    }
+      ? true : CD extends { notNull: true } ? false : true;
     readonly type: ZeroMappedColumnType<T, K>;
     readonly customType: ZeroMappedCustomType<T, K>;
   } & (CD extends { columnType: "PgEnumColumn" }

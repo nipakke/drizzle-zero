@@ -12,15 +12,21 @@ const zeroSchema = createZeroSchema(drizzleSchema, {
   version: 1,
   tables: {
     user: {
+      createdAt: true,
+      updatedAt: true,
       id: true,
       name: true,
       partner: false,
     },
     medium: {
+      createdAt: true,
+      updatedAt: true,
       id: true,
       name: true,
     },
     message: {
+      createdAt: true,
+      updatedAt: true,
       id: true,
       senderId: true,
       mediumId: true,

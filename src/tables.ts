@@ -77,7 +77,9 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
         type: typeof columnConfig === "boolean" ? type : columnConfig.type,
         optional:
           typeof columnConfig === "boolean"
-            ? !column.notNull
+            ? column.hasDefault
+              ? true
+              : !column.notNull
             : columnConfig.optional,
         customType: null as unknown as ZeroTypeToTypescriptType[typeof type],
         ...(typeof columnConfig !== "boolean" && columnConfig.kind

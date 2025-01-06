@@ -77,11 +77,19 @@
           "id"
         ],
         "columns": {
+          "createdAt": {
+            "type": "string",
+            "optional": false
+          },
           "id": {
             "type": "string",
             "optional": false
           },
           "name": {
+            "type": "string",
+            "optional": false
+          },
+          "updatedAt": {
             "type": "string",
             "optional": false
           }
@@ -108,6 +116,10 @@
             "type": "string",
             "optional": false
           },
+          "createdAt": {
+            "type": "string",
+            "optional": false
+          },
           "id": {
             "type": "string",
             "optional": false
@@ -123,6 +135,10 @@
           "senderId": {
             "type": "string",
             "optional": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "optional": false
           }
         },
         "relationships": {
@@ -152,11 +168,19 @@
           "id"
         ],
         "columns": {
+          "createdAt": {
+            "type": "string",
+            "optional": false
+          },
           "id": {
             "type": "string",
             "optional": false
           },
           "name": {
+            "type": "string",
+            "optional": false
+          },
+          "updatedAt": {
             "type": "string",
             "optional": false
           }

@@ -30,7 +30,7 @@ describe.concurrent("relationships", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         name: {
@@ -47,7 +47,7 @@ describe.concurrent("relationships", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         user_id: {
@@ -86,7 +86,7 @@ describe.concurrent("relationships", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         name: {
@@ -138,7 +138,7 @@ describe.concurrent("relationships", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         name: {
@@ -162,7 +162,7 @@ describe.concurrent("relationships", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         user_id: {
@@ -208,7 +208,7 @@ describe.concurrent("relationships", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         name: {
@@ -429,7 +429,7 @@ describe.concurrent("relationships", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         name: {
@@ -455,7 +455,7 @@ describe.concurrent("relationships", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         content: {
@@ -486,7 +486,7 @@ describe.concurrent("relationships", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         text: {
@@ -547,7 +547,7 @@ describe.concurrent("relationships", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         name: {
@@ -580,7 +580,7 @@ describe.concurrent("relationships", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         content: {
@@ -640,7 +640,7 @@ describe.concurrent("relationships", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         name: {
@@ -693,7 +693,7 @@ describe.concurrent("relationships", () => {
       columns: {
         id: {
           type: "number",
-          optional: false,
+          optional: true,
           customType: null as unknown as number,
         },
         name: {
