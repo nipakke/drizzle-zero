@@ -10,7 +10,13 @@ export default defineConfig({
     },
     coverage: {
       include: ["src/**/*.ts"],
-    }
+      thresholds: {
+        lines: 100,
+        statements: 100,
+        functions: 100,
+        branches: 90,
+      },
+    },
   },
   plugins: [tsconfigPaths()],
 });
