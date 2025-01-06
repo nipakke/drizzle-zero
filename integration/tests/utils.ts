@@ -14,6 +14,8 @@ import {
 } from "../drizzle/schema";
 import { schema } from "../schema";
 
+const PG_PORT = process.env.PG_VERSION === "17" ? 5732 : 5632;
+
 export const getNewZero = async () => {
   return new Zero({
     server: "http://localhost:4949",
@@ -25,7 +27,7 @@ export const getNewZero = async () => {
 
 const pool = new Pool({
   host: "localhost",
-  port: 5632,
+  port: PG_PORT,
   user: "user",
   password: "password",
   database: "drizzle_zero",
@@ -128,7 +130,7 @@ export const startPostgresAndZero = async () => {
     .withNetworkAliases("postgres-db")
     .withExposedPorts({
       container: 5432,
-      host: 5632,
+      host: PG_PORT,
     })
     .withCommand([
       "postgres",
