@@ -26,8 +26,6 @@ export const userTable = pgTable("user", {
   partner: boolean("partner").notNull(),
 });
 
-// userTable._.columns.createdAt._.hasDefault
-
 export const userRelations = relations(userTable, ({ many }) => ({
   messages: many(messageTable),
 }));

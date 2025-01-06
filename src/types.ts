@@ -96,6 +96,8 @@ type ZeroColumnDefinition<
   {
     readonly optional: CD extends {
       hasDefault: true;
+      // Zero doesn't support runtime defaults yet
+      hasRuntimeDefault: false;
     }
       ? true : CD extends { notNull: true } ? false : true;
     readonly type: ZeroMappedColumnType<T, K>;
