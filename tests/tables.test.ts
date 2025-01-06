@@ -934,6 +934,11 @@ describe.concurrent("tables", () => {
       name: text().notNull().default("unnamed"),
       isActive: boolean().notNull().default(true),
       score: integer().notNull().default(0),
+      optionalScore: integer().default(0),
+      currentDate: text()
+        .notNull()
+        .$default(() => new Date().toISOString()),
+      optionalCurrentDate: text().$default(() => new Date().toISOString()),
     });
 
     const result = createZeroTableSchema(table, {
@@ -941,6 +946,9 @@ describe.concurrent("tables", () => {
       name: true,
       isActive: true,
       score: true,
+      optionalScore: true,
+      currentDate: true,
+      optionalCurrentDate: true,
     });
 
     const expected = {
@@ -965,6 +973,21 @@ describe.concurrent("tables", () => {
           type: "number",
           optional: false,
           customType: null as unknown as number,
+        },
+        optionalScore: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as number,
+        },
+        currentDate: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+        optionalCurrentDate: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as string,
         },
       },
       primaryKey: ["id"],
