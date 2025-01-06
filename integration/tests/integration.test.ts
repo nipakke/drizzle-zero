@@ -112,5 +112,7 @@ test("can insert messages", async () => {
   expect(messages).toHaveLength(3);
   expect(messages[2]?.id).toBe("99");
   expect(messages[2]?.metadata.key).toEqual("newvalue");
+  expect(messages[2]?.createdAt).toBeDefined();
+  expect(messages[2]?.updatedAt).toBeDefined();
   preloadedMessages.cleanup();
 });
