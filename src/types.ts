@@ -88,14 +88,16 @@ type ZeroMappedCustomType<
     ? ColumnDefinition<T, K>["_"]["$type"]
     : ZeroTypeToTypescriptType[ZeroMappedColumnType<T, K>];
 
-type ZeroColumnDefinition<T extends Table, K extends ColumnNames<T>> = Readonly<
+type ZeroColumnDefinition<
+  T extends Table,
+  K extends ColumnNames<T>,
+  CD extends ColumnDefinition<T, K>["_"] = ColumnDefinition<T, K>["_"],
+> = Readonly<
   {
-    readonly optional: ColumnDefinition<T, K>["_"]["notNull"] extends true
-      ? boolean // false
-      : boolean; // true;
+    readonly optional: CD extends { notNull: true } ? false : true;
     readonly type: ZeroMappedColumnType<T, K>;
     readonly customType: ZeroMappedCustomType<T, K>;
-  } & (ColumnDefinition<T, K>["_"] extends { columnType: "PgEnumColumn" }
+  } & (CD extends { columnType: "PgEnumColumn" }
     ? { readonly kind: "enum" }
     : {})
 >;

@@ -9,8 +9,9 @@ export function expectTableSchemaDeepEqual<S extends ZeroTableSchema>(
 ) {
   return {
     toEqual(expected: S, depth = 0) {
-      if (depth > 8) {
-        console.debug("reached relationship depth > 8");
+      if (depth > 10) {
+        // the comparison is only checking the first 10 levels of relationships
+        // to avoid infinite loops
         return;
       }
 

@@ -183,7 +183,7 @@ const createZeroSchema = <
 
         if (!sourceFieldNames.length || !destFieldNames.length) {
           throw new Error(
-            `No source or dest field names found for: ${relation.fieldName}`,
+            `No relationship found for: ${relation.fieldName} (${relation instanceof One ? "One" : "Many"} from ${tableName} to ${relation.referencedTableName}). Did you forget to define foreign keys?`,
           );
         }
 
