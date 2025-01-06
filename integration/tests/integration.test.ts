@@ -1,6 +1,6 @@
-import { beforeAll, expect, test, describe } from "vitest";
+import { afterAll, beforeAll, expect, test, describe } from "vitest";
 import { WebSocket } from "ws";
-import { db, getNewZero, startPostgresAndZero } from "./utils";
+import { db, getNewZero, shutdown, startPostgresAndZero } from "./utils";
 import { randomUUID } from "crypto";
 
 // Provide WebSocket on the global scope
@@ -9,6 +9,10 @@ globalThis.WebSocket = WebSocket as any;
 beforeAll(async () => {
   await startPostgresAndZero();
 }, 60000);
+
+afterAll(async () => {
+  await shutdown();
+});
 
 describe("relationships", () => {
   test("can query users", async () => {
@@ -168,6 +172,9 @@ describe("types", () => {
     expect(result?.optional_boolean).toEqual(false);
     expect(result?.optional_timestamp).toBeNull();
     expect(result?.optional_json).toBeNull();
+    expect(result?.optional_enum).toBeNull();
+    expect(result?.optional_varchar).toBeNull();
+    expect(result?.optional_uuid).toBeNull();
     expect(result?.optional_enum).toBeNull();
     expect(result?.optional_varchar).toBeNull();
     expect(result?.optional_uuid).toBeNull();
