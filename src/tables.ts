@@ -37,10 +37,6 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
     (acc, [_key, column]) => {
       const name = column.name;
 
-      if (!name) {
-        throw new Error(`Column name is required`);
-      }
-
       const columnConfig = columns[name as keyof C];
 
       if (columnConfig === undefined) {

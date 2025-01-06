@@ -8,6 +8,15 @@ export default defineConfig({
       tsconfig: "tsconfig.json",
       include: ["tests/**/*.test.ts"],
     },
+    coverage: {
+      include: ["src/**/*.ts"],
+      thresholds: {
+        lines: 100,
+        statements: 100,
+        functions: 100,
+        branches: 90,
+      },
+    },
   },
   plugins: [tsconfigPaths()],
 });

@@ -28,6 +28,10 @@ export function expectTableSchemaDeepEqual<S extends ZeroTableSchema>(
       expect(actual.primaryKey).toStrictEqual(expected.primaryKey);
       expect(actual.tableName).toStrictEqual(expected.tableName);
 
+      expect(Object.keys(actual.relationships || {})).toStrictEqual(
+        Object.keys(expected.relationships || {}),
+      );
+
       if (expected.relationships) {
         for (const key of Object.keys(expected.relationships)) {
           expect(
