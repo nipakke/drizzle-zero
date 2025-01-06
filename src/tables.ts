@@ -39,8 +39,14 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
 
       const columnConfig = columns[name as keyof C];
 
-      if (columnConfig === undefined) {
-        throw new Error(`Column ${name} is not defined in the columns config`);
+      if (
+        typeof columnConfig !== "boolean" &&
+        typeof columnConfig !== "object" &&
+        typeof columnConfig !== "undefined"
+      ) {
+        throw new Error(
+          `Invalid column config for column ${name} - expected boolean or object but was ${typeof columnConfig}`,
+        );
       }
 
       if (!columnConfig) {

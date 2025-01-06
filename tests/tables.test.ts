@@ -276,7 +276,41 @@ describe.concurrent("tables", () => {
     Expect<Equal<typeof result, typeof expected>>;
   });
 
-  test("pg - partial column selection", () => {
+  test("pg - partial column selection with omit", () => {
+    const table = pgTable("test", {
+      id: serial().primaryKey(),
+      name: text().notNull(),
+      age: serial().notNull(),
+      metadata: jsonb().notNull(),
+    });
+
+    const result = createZeroTableSchema(table, {
+      id: true,
+      name: true,
+    });
+
+    const expected = {
+      tableName: "test",
+      columns: {
+        id: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as number,
+        },
+        name: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+      },
+      primaryKey: ["id"],
+    } as const satisfies ZeroTableSchema;
+
+    expectTableSchemaDeepEqual(result).toEqual(expected);
+    Expect<Equal<typeof result, typeof expected>>;
+  });
+
+  test("pg - partial column selection with false", () => {
     const table = pgTable("test", {
       id: serial().primaryKey(),
       name: text().notNull(),
@@ -287,8 +321,8 @@ describe.concurrent("tables", () => {
     const result = createZeroTableSchema(table, {
       id: true,
       metadata: true,
-      name: false,
       age: false,
+      name: false,
     });
 
     const expected = {
@@ -1076,14 +1110,13 @@ describe.concurrent("tables", () => {
   test("pg - invalid column selection", () => {
     const table = pgTable("test", {
       id: serial().primaryKey(),
-      name: text().notNull(),
-      nonexistent: text(),
+      invalid: text().notNull(),
     });
 
     expect(() =>
       createZeroTableSchema(table, {
         id: true,
-        name: true,
+        invalid: "someinvalidtype",
       } as unknown as ColumnsConfig<typeof table>),
     ).toThrow();
   });
