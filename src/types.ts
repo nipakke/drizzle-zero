@@ -51,7 +51,7 @@ type TypeOverride<TCustomType> = {
  * ```
  */
 export type ColumnsConfig<T extends Table> = {
-  readonly [K in ColumnNames<T>]:
+  readonly [K in ColumnNames<T>]?:
     | boolean
     | TypeOverride<
         ZeroTypeToTypescriptType[DrizzleDataTypeToZeroType[Columns<T>[K]["dataType"]]]

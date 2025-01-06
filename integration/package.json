@@ -5,10 +5,11 @@
   "scripts": {
     "build-schema": "zero-build-schema -p schema.ts",
     "db:generate": "drizzle-kit generate",
+    "pretest": "pnpm run build-schema",
     "test": "vitest run"
   },
   "dependencies": {
-    "@rocicorp/zero": "canary",
+    "@rocicorp/zero": "*",
     "drizzle-orm": "^0.38.3",
     "drizzle-zero": "workspace:*"
   },

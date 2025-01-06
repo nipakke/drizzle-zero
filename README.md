@@ -18,7 +18,7 @@ Here's an example of how to convert a Drizzle schema to a Zero schema with bidir
 
 ```ts
 import { relations } from "drizzle-orm";
-import { integer, pgTable, serial, text } from "drizzle-orm/pg-core";
+import { integer, pgTable, serial, text, jsonb } from "drizzle-orm/pg-core";
 
 export const users = pgTable("user", {
   id: serial("id").primaryKey(),
@@ -31,7 +31,8 @@ export const usersRelations = relations(users, ({ many }) => ({
 
 export const posts = pgTable("post", {
   id: serial("id").primaryKey(),
-  content: text("content"),
+  // this JSON type will be passed to Zero
+  content: jsonb("content").$type<{ textValue: string }>().notNull(),
   authorId: integer("author_id").references(() => users.id),
 });
 
@@ -71,6 +72,19 @@ export const schema = createSchema(
     },
   }),
 );
+
+// Define permissions with the inferred types from Drizzle
+type Schema = typeof schema;
+type User = typeof schema.tables.user;
+
+export const permissions = definePermissions<AuthData, Schema>(schema, () => {
+  const allowIfUserIsSelf = (
+    authData: AuthData,
+    { cmp }: ExpressionBuilder<User>,
+  ) => cmp("id", "=", authData.sub);
+
+  // ...further permissions definitions
+});
 ```
 
 Use the generated Zero schema:
@@ -101,7 +115,8 @@ function PostList({ selectedAuthorId }: { selectedAuthorId?: number }) {
       <div>
         {posts.map((post) => (
           <div key={post.id} className="post">
-            <h2>{post.content}</h2>
+            {/* this is the JSON type from Drizzle */}
+            <h2>{post.content.textValue}</h2>
             <p>By: {post.author?.name}</p>
           </div>
         ))}
@@ -115,7 +130,7 @@ function PostList({ selectedAuthorId }: { selectedAuthorId?: number }) {
 
 - Convert Drizzle ORM schemas to Zero schemas
 - Handles all Drizzle column types that are supported by Zero
-- Type-safe schema generation
+- Type-safe schema generation, with inferred types from Drizzle
 - Sync a subset of tables
 - Supports relationships:
   - One-to-one relationships

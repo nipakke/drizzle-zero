@@ -45,6 +45,7 @@ test("can query messages", async () => {
 
   expect(messages).toHaveLength(1);
   expect(messages[0]?.body).toBe("Hey, James!");
+  expect(messages[0]?.metadata.key).toEqual("value1");
 
   preloadedMessages.cleanup();
 });
@@ -81,6 +82,7 @@ test("can insert messages", async () => {
     body: "Hello, James!",
     senderId: "1",
     mediumId: "1",
+    metadata: { key: "newvalue" },
   });
 
   const preloadedMessages = await zero.query.message.preload();
@@ -89,6 +91,6 @@ test("can insert messages", async () => {
   const messages = await zero.query.message.run();
   expect(messages).toHaveLength(2);
   expect(messages[1]?.id).toBe("99");
-
+  expect(messages[1]?.metadata.key).toEqual("newvalue");
   preloadedMessages.cleanup();
 });

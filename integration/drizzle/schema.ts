@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { boolean, pgTable, text } from "drizzle-orm/pg-core";
+import { boolean, jsonb, pgTable, text } from "drizzle-orm/pg-core";
 
 export const userTable = pgTable("user", {
   id: text("id").primaryKey(),
@@ -25,6 +25,7 @@ export const messageTable = pgTable("message", {
   senderId: text("senderId").references(() => userTable.id),
   mediumId: text("mediumId").references(() => mediumTable.id),
   body: text("body").notNull(),
+  metadata: jsonb("metadata").$type<{ key: string }>().notNull(),
 });
 
 export const messageRelations = relations(messageTable, ({ one }) => ({
