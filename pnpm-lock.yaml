@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@rocicorp/zero':
-        specifier: ^0.10.2024122404
-        version: 0.10.2024122404
+        specifier: canary
+        version: 0.10.2025010400
       '@types/node':
         specifier: ^22.10.5
         version: 22.10.5
@@ -39,8 +39,8 @@ importers:
   integration:
     dependencies:
       '@rocicorp/zero':
-        specifier: ^0.10.2024122404
-        version: 0.10.2024122404
+        specifier: canary
+        version: 0.10.2025010400
       drizzle-orm:
         specifier: ^0.38.3
         version: 0.38.3(@opentelemetry/api@1.9.0)(@types/pg@8.11.10)(pg@8.13.1)(postgres@3.4.5)
@@ -1157,8 +1157,8 @@ packages:
     resolution: {integrity: sha512-bm+VUdF4CnKVjUj/dSCmVu0hjcyXaF/nKkw2rNhZUjGeBOMRy/hh8z/32h311es4dxCVvcZ3+QHQHMxF2YG5Kw==}
     hasBin: true
 
-  '@rocicorp/zero@0.10.2024122404':
-    resolution: {integrity: sha512-q9lcRX8f69dIMmQZWCoNWKnS+IhnyekBbfpa9h4FkjQLmIXcdZyjuGdK9XT1aseshgATDesJ1jiyckg402cwAg==}
+  '@rocicorp/zero@0.10.2025010400':
+    resolution: {integrity: sha512-ce3UmNqSUw57P2hBTIlKAZ39hwuh8Wd9jvFEsFerQWIHOZDpzWrzlRoGokrFo4H1OKhUnhyFYFerqU9u61Eu+w==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -3727,7 +3727,7 @@ snapshots:
       bindings: 1.5.0
       prebuild-install: 7.1.2
 
-  '@rocicorp/zero@0.10.2024122404':
+  '@rocicorp/zero@0.10.2025010400':
     dependencies:
       '@badrap/valita': 0.3.11
       '@databases/escape-identifier': 1.0.3

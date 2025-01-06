@@ -9,7 +9,9 @@ export type TableName<T extends Table> = T["_"]["name"];
 export type ColumnName<C extends Column> = C["_"]["name"];
 
 type Columns<T extends Table> = T["_"]["columns"];
-export type ColumnNames<T extends Table> = ColumnName<Columns<T>[keyof Columns<T>]>;
+export type ColumnNames<T extends Table> = ColumnName<
+  Columns<T>[keyof Columns<T>]
+>;
 type ColumnDefinition<T extends Table, K extends ColumnNames<T>> = {
   [C in keyof Columns<T>]: ColumnName<Columns<T>[C]> extends K
     ? Columns<T>[C]
@@ -29,27 +31,28 @@ export type FindPrimaryKeyFromTable<TTable extends Table> = {
         [K in keyof Columns<TTable>]: Columns<TTable>[K]["_"]["isPrimaryKey"] extends true
           ? ColumnName<Columns<TTable>[K]>
           : never;
-      }[keyof Columns<TTable>]
+      }[keyof Columns<TTable>],
     ];
 
 type TypeOverride<TCustomType> = {
   readonly type: "string" | "number" | "boolean" | "json";
   readonly optional: boolean;
   readonly customType: TCustomType;
+  readonly kind?: "enum";
 };
 
+/**
+ * Specify the columns to be included in sync.
+ *
+ * @example
+ * ```ts
+ * {
+ *   id: true,
+ *   name: true,
+ * }
+ * ```
+ */
 export type ColumnsConfig<T extends Table> = {
-  /**
-   * Specify the columns to be included in sync.
-   *
-   * @example
-   * ```ts
-   * {
-   *   id: true,
-   *   name: true,
-   * }
-   * ```
-   */
   readonly [K in ColumnNames<T>]:
     | boolean
     | TypeOverride<
@@ -85,19 +88,22 @@ type ZeroMappedCustomType<
     ? ColumnDefinition<T, K>["_"]["$type"]
     : ZeroTypeToTypescriptType[ZeroMappedColumnType<T, K>];
 
-type ZeroColumnDefinition<T extends Table, K extends ColumnNames<T>, CD extends ColumnDefinition<T, K>['_']> = Readonly<{
-  readonly optional: CD['default'] extends void
-      ? CD['notNull'] extends true
+type ZeroColumnDefinition<
+  T extends Table,
+  K extends ColumnNames<T>,
+  CD extends ColumnDefinition<T, K>["_"] = ColumnDefinition<T, K>["_"],
+> = Readonly<
+  {
+    readonly optional: CD["default"] extends void
+      ? CD["notNull"] extends true
         ? false
         : true
       : true;
-  readonly type: ZeroMappedColumnType<T, K>;
-  readonly customType: ZeroMappedCustomType<T, K>;
-  } & (
-    ColumnDefinition<T, K>["_"] extends { columnType: "PgEnumColumn" }
-      ? { readonly kind: "enum" }
-      : {}
-  )
+    readonly type: ZeroMappedColumnType<T, K>;
+    readonly customType: ZeroMappedCustomType<T, K>;
+  } & (ColumnDefinition<T, K>["_"] extends { columnType: "PgEnumColumn" }
+    ? { readonly kind: "enum" }
+    : {})
 >;
 
 export type ZeroColumns<T extends Table, C extends ColumnsConfig<T>> = {

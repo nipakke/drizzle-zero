@@ -12,7 +12,7 @@ import type {
   Flatten,
   TableName,
   ZeroColumns,
-  ZeroTypeToTypescriptType
+  ZeroTypeToTypescriptType,
 } from "./types";
 import { typedEntries } from "./util";
 
@@ -41,8 +41,18 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
         throw new Error(`Column name is required`);
       }
 
-      if (!columns[name as keyof C]) {
+      const columnConfig = columns[name as keyof C];
+
+      if (columnConfig === undefined) {
+        throw new Error(`Column ${name} is not defined in the columns config`);
+      }
+
+      if (!columnConfig) {
         return acc;
+      }
+
+      if (typeof columnConfig !== "boolean") {
+        columnConfig.customType;
       }
 
       const type =
@@ -62,10 +72,17 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
       }
 
       const schemaValue = {
-        type,
-        optional: !column.notNull,
+        type: typeof columnConfig === "boolean" ? type : columnConfig.type,
+        optional:
+          typeof columnConfig === "boolean"
+            ? !column.notNull
+            : columnConfig.optional,
         customType: null as unknown as ZeroTypeToTypescriptType[typeof type],
-        ...(column.enumValues ? { kind: "enum" } : {}),
+        ...(typeof columnConfig !== "boolean" && columnConfig.kind
+          ? { kind: columnConfig.kind }
+          : column.enumValues
+            ? { kind: "enum" }
+            : {}),
       };
 
       return {

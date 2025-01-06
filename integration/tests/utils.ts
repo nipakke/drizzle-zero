@@ -101,7 +101,9 @@ export const startPostgresAndZero = async () => {
   const basePgUrl = `postgresql://${postgresContainer.getUsername()}:${postgresContainer.getPassword()}@postgres-db:5432`;
 
   // Start Zero container
-  const zeroContainer = await new GenericContainer("rocicorp/zero:0.10.2024122404-fdc0c8")
+  const zeroContainer = await new GenericContainer(
+    "rocicorp/zero:0.10.2024122404-fdc0c8",
+  )
     .withExposedPorts({
       container: 4848,
       host: 4949,

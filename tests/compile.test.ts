@@ -41,19 +41,29 @@ test("compile - one-to-one", async () => {
   expect(result.schema.tables.user).toBeTruthy();
 });
 
-test("compile - one-to-one-self", async () => {
-  const result = await runZeroBuildSchema("one-to-one-self");
+test("compile - one-to-one-2", async () => {
+  const result = await runZeroBuildSchema("one-to-one-2");
   expect(result.schema.tables.user).toBeTruthy();
 });
 
-test("compile - one-to-one-2", async () => {
-  const result = await runZeroBuildSchema("one-to-one-2");
+test("compile - one-to-one-foreign-key", async () => {
+  const result = await runZeroBuildSchema("one-to-one-foreign-key");
+  expect(result.schema.tables.users).toBeTruthy();
+});
+
+test("compile - one-to-one-self", async () => {
+  const result = await runZeroBuildSchema("one-to-one-self");
   expect(result.schema.tables.user).toBeTruthy();
 });
 
 test("compile - one-to-many", async () => {
   const result = await runZeroBuildSchema("one-to-many");
   expect(result.schema.tables.user).toBeTruthy();
+});
+
+test("compile - one-to-many-named", async () => {
+  const result = await runZeroBuildSchema("one-to-many-named");
+  expect(result.schema.tables.users).toBeTruthy();
 });
 
 test("compile - many-to-many", async () => {

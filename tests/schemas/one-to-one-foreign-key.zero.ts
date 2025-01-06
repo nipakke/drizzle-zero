@@ -5,20 +5,20 @@ import {
   type Schema,
 } from "@rocicorp/zero";
 import { createZeroSchema } from "../../src";
-import * as oneToOne from "./one-to-one.schema";
+import * as oneToOneForeignKey from "./one-to-one-foreign-key.schema";
 
 export const schema = createSchema(
-  createZeroSchema(oneToOne, {
+  createZeroSchema(oneToOneForeignKey, {
     version: 1,
     tables: {
-      user: {
+      users: {
         id: true,
         name: true,
       },
-      profile_info: {
+      posts: {
         id: true,
-        user_id: true,
-        metadata: true,
+        name: true,
+        author: true,
       },
     },
   }),
@@ -33,7 +33,7 @@ export const permissions = definePermissions<{}, Schema>(schema, () => {
         delete: ANYONE_CAN,
       },
     },
-    profile_info: {
+    posts: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,

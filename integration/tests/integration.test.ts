@@ -29,8 +29,8 @@ test("can query users", async () => {
   const user = await zero.query.user.run();
 
   expect(user).toHaveLength(3);
-  expect(user[0].name).toBe("James");
-  expect(user[0].id).toBe("1");
+  expect(user[0]?.name).toBe("James");
+  expect(user[0]?.id).toBe("1");
 
   preloadedUsers.cleanup();
 });
@@ -44,7 +44,7 @@ test("can query messages", async () => {
   const messages = await zero.query.message.run();
 
   expect(messages).toHaveLength(1);
-  expect(messages[0].body).toBe("Hey, James!");
+  expect(messages[0]?.body).toBe("Hey, James!");
 
   preloadedMessages.cleanup();
 });
@@ -60,7 +60,7 @@ test("can query messages with relationships", async () => {
   const messages = await zero.query.message.related("medium").one().run();
 
   expect(messages?.medium).toHaveLength(1);
-  expect(messages?.medium[0].name).toBe("email");
+  expect(messages?.medium[0]?.name).toBe("email");
 
   preloadedMessages.cleanup();
 });
@@ -80,7 +80,7 @@ test("can insert messages", async () => {
 
   const messages = await zero.query.message.run();
   expect(messages).toHaveLength(2);
-  expect(messages[1].id).toBe("99");
+  expect(messages[1]?.id).toBe("99");
 
   preloadedMessages.cleanup();
 });
