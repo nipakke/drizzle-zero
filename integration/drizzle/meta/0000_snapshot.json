@@ -1,5 +1,5 @@
 {
-  "id": "c0d09190-0f6e-4cfb-86ef-7c557cc39a10",
+  "id": "f5762bc7-5124-4542-bc3d-498881db199a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -42,6 +42,12 @@
         },
         "bigint": {
           "name": "bigint",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bigint_number": {
+          "name": "bigint_number",
           "type": "bigint",
           "primaryKey": false,
           "notNull": true

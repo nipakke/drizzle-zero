@@ -119,6 +119,4 @@ export type Equal<X, Y extends X> =
     ? true
     : false;
 
-export type NotEqual<X, Y extends X> = Equal<X, Y> extends true ? false : true;
-
 export type AtLeastOne<T> = [T, ...T[]];

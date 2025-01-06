@@ -86,6 +86,10 @@
             "type": "number",
             "optional": false
           },
+          "bigint_number": {
+            "type": "number",
+            "optional": false
+          },
           "bigserial": {
             "type": "number",
             "optional": true

@@ -12,6 +12,7 @@ CREATE TABLE "all_types" (
 	"smallint" smallint NOT NULL,
 	"integer" integer NOT NULL,
 	"bigint" bigint NOT NULL,
+	"bigint_number" bigint NOT NULL,
 	"smallserial" "smallserial" NOT NULL,
 	"serial" serial NOT NULL,
 	"bigserial" bigserial NOT NULL,

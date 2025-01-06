@@ -44,7 +44,7 @@ describe("relationships", () => {
 
     expect(messages).toHaveLength(2);
     expect(messages[0]?.body).toBe("Hey, James!");
-    expect(messages[0]?.metadata.key).toEqual("value1");
+    expect(messages[0]?.metadata.key).toStrictEqual("value1");
 
     preloadedMessages.cleanup();
   });
@@ -63,7 +63,7 @@ describe("relationships", () => {
 
     expect(messages).toHaveLength(1);
     expect(messages[0]?.body).toBe("Thomas!");
-    expect(messages[0]?.metadata.key).toEqual("value5");
+    expect(messages[0]?.metadata.key).toStrictEqual("value5");
 
     preloadedMessages.cleanup();
   });
@@ -106,7 +106,7 @@ describe("relationships", () => {
     const message = await q.one().run();
 
     expect(message?.id).toBe("99");
-    expect(message?.metadata.key).toEqual("9988");
+    expect(message?.metadata.key).toStrictEqual("9988");
     expect(message?.createdAt).toBeDefined();
     expect(message?.updatedAt).toBeDefined();
     preloadedMessages.cleanup();
@@ -137,30 +137,31 @@ describe("types", () => {
 
     const result = await q.run();
 
-    expect(result?.id).toEqual("1");
-    expect(result?.smallint).toEqual(1);
-    expect(result?.integer).toEqual(2);
-    expect(result?.bigint).toEqual(3);
-    expect(result?.numeric).toEqual(8.8);
-    expect(result?.decimal).toEqual(9.9);
-    expect(result?.real).toEqual(9);
-    expect(result?.double_precision).toEqual(10);
-    expect(result?.text).toEqual("text");
-    expect(result?.char).toEqual("c");
+    expect(result?.id).toStrictEqual("1");
+    expect(result?.smallint).toStrictEqual(1);
+    expect(result?.integer).toStrictEqual(2);
+    expect(result?.bigint).toStrictEqual(95807);
+    expect(result?.bigint_number).toStrictEqual(444);
+    expect(result?.numeric).toStrictEqual(8.8);
+    expect(result?.decimal).toStrictEqual(9.9);
+    expect(result?.real).toStrictEqual(9);
+    expect(result?.double_precision).toStrictEqual(10);
+    expect(result?.text).toStrictEqual("text");
+    expect(result?.char).toStrictEqual("c");
     expect(result?.uuid).toBeDefined();
-    expect(result?.varchar).toEqual("varchar");
-    expect(result?.boolean).toEqual(true);
+    expect(result?.varchar).toStrictEqual("varchar");
+    expect(result?.boolean).toStrictEqual(true);
     expect(result?.timestamp).toBeDefined();
     expect(result?.timestampTz).toBeDefined();
     expect(result?.date).toBeDefined();
-    expect(result?.json).toEqual({ key: "value" });
-    expect(result?.jsonb).toEqual({ key: "value" });
-    expect(result?.typed_json).toEqual({ theme: "light", fontSize: 16 });
-    expect(result?.status).toEqual("pending");
+    expect(result?.json).toStrictEqual({ key: "value" });
+    expect(result?.jsonb).toStrictEqual({ key: "value" });
+    expect(result?.typed_json).toStrictEqual({ theme: "light", fontSize: 16 });
+    expect(result?.status).toStrictEqual("pending");
 
-    expect(result?.smallserial).toEqual(1);
-    expect(result?.serial).toEqual(1);
-    expect(result?.bigserial).toEqual(1);
+    expect(result?.smallserial).toStrictEqual(1);
+    expect(result?.serial).toStrictEqual(1);
+    expect(result?.bigserial).toStrictEqual(1);
 
     expect(result?.optional_smallint).toBeNull();
     expect(result?.optional_integer).toBeNull();
@@ -169,7 +170,7 @@ describe("types", () => {
     expect(result?.optional_real).toBeNull();
     expect(result?.optional_double_precision).toBeNull();
     expect(result?.optional_text).toBeNull();
-    expect(result?.optional_boolean).toEqual(false);
+    expect(result?.optional_boolean).toStrictEqual(false);
     expect(result?.optional_timestamp).toBeNull();
     expect(result?.optional_json).toBeNull();
     expect(result?.optional_enum).toBeNull();
@@ -190,6 +191,7 @@ describe("types", () => {
       smallint: 22,
       integer: 23,
       bigint: 24,
+      bigint_number: 444,
       numeric: 25.8,
       decimal: 26.9,
       real: 27,
@@ -217,26 +219,27 @@ describe("types", () => {
 
     const result = await q.one().run();
 
-    expect(result?.id).toEqual("1011");
-    expect(result?.smallint).toEqual(22);
-    expect(result?.integer).toEqual(23);
-    expect(result?.bigint).toEqual(24);
-    expect(result?.numeric).toEqual(25.8);
-    expect(result?.decimal).toEqual(26.9);
-    expect(result?.real).toEqual(27);
-    expect(result?.double_precision).toEqual(28);
-    expect(result?.text).toEqual("text2");
-    expect(result?.char).toEqual("f");
+    expect(result?.id).toStrictEqual("1011");
+    expect(result?.smallint).toStrictEqual(22);
+    expect(result?.integer).toStrictEqual(23);
+    expect(result?.bigint).toStrictEqual(24);
+    expect(result?.bigint_number).toStrictEqual(444);
+    expect(result?.numeric).toStrictEqual(25.8);
+    expect(result?.decimal).toStrictEqual(26.9);
+    expect(result?.real).toStrictEqual(27);
+    expect(result?.double_precision).toStrictEqual(28);
+    expect(result?.text).toStrictEqual("text2");
+    expect(result?.char).toStrictEqual("f");
     expect(result?.uuid).toBeDefined();
-    expect(result?.varchar).toEqual("varchar2");
-    expect(result?.boolean).toEqual(true);
+    expect(result?.varchar).toStrictEqual("varchar2");
+    expect(result?.boolean).toStrictEqual(true);
     expect(result?.timestamp).toBeDefined();
     expect(result?.timestampTz).toBeDefined();
     expect(result?.date).toBeDefined();
-    expect(result?.json).toEqual({ key: "value" });
-    expect(result?.jsonb).toEqual({ key: "value" });
-    expect(result?.typed_json).toEqual({ theme: "light", fontSize: 16 });
-    expect(result?.status).toEqual("active");
+    expect(result?.json).toStrictEqual({ key: "value" });
+    expect(result?.jsonb).toStrictEqual({ key: "value" });
+    expect(result?.typed_json).toStrictEqual({ theme: "light", fontSize: 16 });
+    expect(result?.status).toStrictEqual("active");
 
     preloadedAllTypes.cleanup();
 
@@ -244,30 +247,31 @@ describe("types", () => {
       where: (table, { eq }) => eq(table.id, "1011"),
     });
 
-    expect(dbResult?.id).toEqual("1011");
-    expect(dbResult?.smallintField).toEqual(22);
-    expect(dbResult?.integerField).toEqual(23);
-    expect(dbResult?.bigintField).toEqual(24);
-    expect(dbResult?.numericField).toEqual("25.80");
-    expect(dbResult?.decimalField).toEqual("26.90");
-    expect(dbResult?.realField).toEqual(27);
-    expect(dbResult?.doublePrecisionField).toEqual(28);
-    expect(dbResult?.textField).toEqual("text2");
-    expect(dbResult?.charField).toEqual("f");
+    expect(dbResult?.id).toStrictEqual("1011");
+    expect(dbResult?.smallintField).toStrictEqual(22);
+    expect(dbResult?.integerField).toStrictEqual(23);
+    expect(dbResult?.bigintField).toStrictEqual(24n);
+    expect(dbResult?.bigintNumberField).toStrictEqual(444);
+    expect(dbResult?.numericField).toStrictEqual("25.80");
+    expect(dbResult?.decimalField).toStrictEqual("26.90");
+    expect(dbResult?.realField).toStrictEqual(27);
+    expect(dbResult?.doublePrecisionField).toStrictEqual(28);
+    expect(dbResult?.textField).toStrictEqual("text2");
+    expect(dbResult?.charField).toStrictEqual("f");
     expect(dbResult?.uuidField).toBeDefined();
-    expect(dbResult?.varcharField).toEqual("varchar2");
-    expect(dbResult?.booleanField).toEqual(true);
+    expect(dbResult?.varcharField).toStrictEqual("varchar2");
+    expect(dbResult?.booleanField).toStrictEqual(true);
     expect(dbResult?.timestampField).toBeDefined();
     expect(dbResult?.timestampTzField).toBeDefined();
     expect(dbResult?.dateField).toBeDefined();
-    expect(dbResult?.jsonField).toEqual({ key: "value" });
-    expect(dbResult?.jsonbField).toEqual({ key: "value" });
-    expect(dbResult?.typedJsonField).toEqual({ theme: "light", fontSize: 16 });
-    expect(dbResult?.statusField).toEqual("active");
+    expect(dbResult?.jsonField).toStrictEqual({ key: "value" });
+    expect(dbResult?.jsonbField).toStrictEqual({ key: "value" });
+    expect(dbResult?.typedJsonField).toStrictEqual({ theme: "light", fontSize: 16 });
+    expect(dbResult?.statusField).toStrictEqual("active");
 
-    expect(dbResult?.smallSerialField).toEqual(2);
-    expect(dbResult?.serialField).toEqual(2);
-    expect(dbResult?.bigSerialField).toEqual(2);
+    expect(dbResult?.smallSerialField).toStrictEqual(2);
+    expect(dbResult?.serialField).toStrictEqual(2);
+    expect(dbResult?.bigSerialField).toStrictEqual(2);
 
     expect(dbResult?.optionalSmallint).toBeNull();
     expect(dbResult?.optionalInteger).toBeNull();

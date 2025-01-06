@@ -38,6 +38,7 @@ const zeroSchema = createZeroSchema(drizzleSchema, {
       smallint: true,
       integer: true,
       bigint: true,
+      bigint_number: true,
       smallserial: true,
       serial: true,
       bigserial: true,

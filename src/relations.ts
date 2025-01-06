@@ -1,6 +1,7 @@
 import {
   createTableRelationsHelpers,
   getTableName,
+  is,
   Many,
   One,
   Relations,
@@ -95,28 +96,32 @@ type ReferencedZeroSchemas<
             ? TColumns[TableName<TSchema[P]>] extends object
               ? {
                   readonly sourceField: AtLeastOne<
-                    {
-                      [P in keyof TSchema]: TSchema[P] extends {
-                        _: {
-                          name: TTableName;
-                        };
-                      }
-                        ? TSchema[P] extends Table<any>
-                          ? ColumnIndexKeys<TSchema[P]>
-                          : never
-                        : never;
-                    }[keyof TSchema]
+                    Readonly<
+                      {
+                        [P in keyof TSchema]: TSchema[P] extends {
+                          _: {
+                            name: TTableName;
+                          };
+                        }
+                          ? TSchema[P] extends Table<any>
+                            ? ColumnIndexKeys<TSchema[P]>
+                            : never
+                          : never;
+                      }[keyof TSchema]
+                    >
                   >;
                   readonly destField: AtLeastOne<
-                    {
-                      [ColumnName in keyof Columns<TSchema[P]>]: Columns<
-                        TSchema[P]
-                      >[ColumnName]["_"] extends {
-                        name: string;
-                      }
-                        ? ColumnIndexKeys<TSchema[P]>
-                        : never;
-                    }[keyof Columns<TSchema[P]>]
+                    Readonly<
+                      {
+                        [ColumnName in keyof Columns<TSchema[P]>]: Columns<
+                          TSchema[P]
+                        >[ColumnName]["_"] extends {
+                          name: string;
+                        }
+                          ? ColumnIndexKeys<TSchema[P]>
+                          : never;
+                      }[keyof Columns<TSchema[P]>]
+                    >
                   >;
                   readonly destSchema: () => ZeroSchemaWithRelations<
                     TSchema[P],
@@ -179,7 +184,7 @@ const createZeroSchema = <
   >;
 
   for (const tableOrRelations of Object.values(schema)) {
-    if (tableOrRelations instanceof Relations) {
+    if (is(tableOrRelations, Relations)) {
       const tableName = getTableName(tableOrRelations.table);
       const relationsConfig = getRelationsConfig(tableOrRelations);
 
@@ -187,7 +192,7 @@ const createZeroSchema = <
         let sourceFieldNames: string[] = [];
         let destFieldNames: string[] = [];
 
-        if (relation instanceof One) {
+        if (is(relation, One)) {
           sourceFieldNames =
             relation?.config?.fields?.map((f) => f?.name) ?? [];
           destFieldNames =
@@ -216,7 +221,7 @@ const createZeroSchema = <
 
         if (!sourceFieldNames.length || !destFieldNames.length) {
           throw new Error(
-            `No relationship found for: ${relation.fieldName} (${relation instanceof One ? "One" : "Many"} from ${tableName} to ${relation.referencedTableName}). Did you forget to define foreign keys?`,
+            `No relationship found for: ${relation.fieldName} (${is(relation, One) ? "One" : "Many"} from ${tableName} to ${relation.referencedTableName}). Did you forget to define foreign keys${relation.relationName ? ` for named relation "${relation.relationName}"` : ""}?`,
           );
         }
 
@@ -250,7 +255,7 @@ const createZeroSchema = <
   > = {};
 
   for (const tableOrRelations of Object.values(schema)) {
-    if (tableOrRelations instanceof Table) {
+    if (is(tableOrRelations, Table)) {
       const table = tableOrRelations;
 
       const tableName = getTableName(table);
@@ -319,7 +324,7 @@ const findForeignKeySourceAndDestFields = (
   relation: One | Many<any>,
 ) => {
   for (const tableOrRelations of Object.values(schema)) {
-    if (tableOrRelations instanceof Table) {
+    if (is(tableOrRelations, Table)) {
       const tableName = getTableName(tableOrRelations);
 
       if (tableName === relation.referencedTableName) {
@@ -353,12 +358,12 @@ const findNamedSourceAndDestFields = (
   relation: One | Many<any>,
 ) => {
   for (const tableOrRelations of Object.values(schema)) {
-    if (tableOrRelations instanceof Relations) {
+    if (is(tableOrRelations, Relations)) {
       const relationsConfig = getRelationsConfig(tableOrRelations);
 
       for (const relationConfig of Object.values(relationsConfig)) {
         if (
-          relationConfig instanceof One &&
+          is(relationConfig, One) &&
           relationConfig.relationName === relation.relationName
         ) {
           return {
