@@ -1,9 +1,254 @@
 {
-  "id": "3c418357-558b-4a4f-abbb-55ac126ae782",
+  "id": "c0d09190-0f6e-4cfb-86ef-7c557cc39a10",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.all_types": {
+      "name": "all_types",
+      "schema": "",
+      "columns": {
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "smallint": {
+          "name": "smallint",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "integer": {
+          "name": "integer",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bigint": {
+          "name": "bigint",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "smallserial": {
+          "name": "smallserial",
+          "type": "smallserial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "serial": {
+          "name": "serial",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bigserial": {
+          "name": "bigserial",
+          "type": "bigserial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "numeric": {
+          "name": "numeric",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "decimal": {
+          "name": "decimal",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "real": {
+          "name": "real",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "double_precision": {
+          "name": "double_precision",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "char": {
+          "name": "char",
+          "type": "char",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "varchar": {
+          "name": "varchar",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "boolean": {
+          "name": "boolean",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestampTz": {
+          "name": "timestampTz",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "json": {
+          "name": "json",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jsonb": {
+          "name": "jsonb",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "typed_json": {
+          "name": "typed_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "status_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "optional_smallint": {
+          "name": "optional_smallint",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "optional_integer": {
+          "name": "optional_integer",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "optional_bigint": {
+          "name": "optional_bigint",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "optional_numeric": {
+          "name": "optional_numeric",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "optional_real": {
+          "name": "optional_real",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "optional_double_precision": {
+          "name": "optional_double_precision",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "optional_text": {
+          "name": "optional_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "optional_boolean": {
+          "name": "optional_boolean",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "optional_timestamp": {
+          "name": "optional_timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "optional_json": {
+          "name": "optional_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "optional_enum": {
+          "name": "optional_enum",
+          "type": "status_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "optional_varchar": {
+          "name": "optional_varchar",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "optional_uuid": {
+          "name": "optional_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.medium": {
       "name": "medium",
       "schema": "",
@@ -173,7 +418,17 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.status_type": {
+      "name": "status_type",
+      "schema": "public",
+      "values": [
+        "active",
+        "inactive",
+        "pending"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},
