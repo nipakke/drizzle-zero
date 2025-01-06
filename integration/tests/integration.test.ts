@@ -23,10 +23,12 @@ beforeAll(async () => {
 test("can query users", async () => {
   const zero = await getNewZero();
 
-  const preloadedUsers = await zero.query.user.preload();
+  const q = zero.query.user;
+
+  const preloadedUsers = await q.preload();
   await preloadedUsers.complete;
 
-  const user = await zero.query.user.run();
+  const user = await q.run();
 
   expect(user).toHaveLength(3);
   expect(user[0]?.name).toBe("James");
@@ -38,14 +40,35 @@ test("can query users", async () => {
 test("can query messages", async () => {
   const zero = await getNewZero();
 
-  const preloadedMessages = await zero.query.message.preload();
+  const q = zero.query.message;
+
+  const preloadedMessages = await q.preload();
   await preloadedMessages.complete;
 
-  const messages = await zero.query.message.run();
+  const messages = await q.run();
 
-  expect(messages).toHaveLength(1);
+  expect(messages).toHaveLength(2);
   expect(messages[0]?.body).toBe("Hey, James!");
   expect(messages[0]?.metadata.key).toEqual("value1");
+
+  preloadedMessages.cleanup();
+});
+
+test("can query messages with filter", async () => {
+  const zero = await getNewZero();
+
+  const q = zero.query.message.where((query) =>
+    query.cmp("body", "=", "Thomas!"),
+  );
+
+  const preloadedMessages = await q.preload();
+  await preloadedMessages.complete;
+
+  const messages = await q.run();
+
+  expect(messages).toHaveLength(1);
+  expect(messages[0]?.body).toBe("Thomas!");
+  expect(messages[0]?.metadata.key).toEqual("value5");
 
   preloadedMessages.cleanup();
 });
@@ -53,17 +76,12 @@ test("can query messages", async () => {
 test("can query messages with relationships", async () => {
   const zero = await getNewZero();
 
-  const preloadedMessages = await zero.query.message
-    .related("medium")
-    .related("sender")
-    .preload();
+  const q = zero.query.message.related("medium").related("sender");
+
+  const preloadedMessages = await q.preload();
   await preloadedMessages.complete;
 
-  const messages = await zero.query.message
-    .related("sender")
-    .related("medium")
-    .one()
-    .run();
+  const messages = await q.one().run();
 
   expect(messages?.medium).toHaveLength(1);
   expect(messages?.medium[0]?.name).toBe("email");
@@ -85,12 +103,14 @@ test("can insert messages", async () => {
     metadata: { key: "newvalue" },
   });
 
-  const preloadedMessages = await zero.query.message.preload();
+  const q = zero.query.message;
+
+  const preloadedMessages = await q.preload();
   await preloadedMessages.complete;
 
-  const messages = await zero.query.message.run();
-  expect(messages).toHaveLength(2);
-  expect(messages[1]?.id).toBe("99");
-  expect(messages[1]?.metadata.key).toEqual("newvalue");
+  const messages = await q.run();
+  expect(messages).toHaveLength(3);
+  expect(messages[2]?.id).toBe("99");
+  expect(messages[2]?.metadata.key).toEqual("newvalue");
   preloadedMessages.cleanup();
 });
