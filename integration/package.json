@@ -5,7 +5,7 @@
   "scripts": {
     "build-schema": "zero-build-schema -p schema.ts",
     "db:generate": "drizzle-kit generate",
-    "postinstall": "pnpm run build-schema",
+    "pretest": "pnpm run build-schema",
     "test": "vitest run"
   },
   "dependencies": {
