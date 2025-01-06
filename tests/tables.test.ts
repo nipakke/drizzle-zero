@@ -31,6 +31,7 @@ import {
   type Equal,
   type ZeroTableSchema,
 } from "./utils";
+import { mysqlTable, text as textMysql } from "drizzle-orm/mysql-core";
 
 describe.concurrent("tables", () => {
   test("pg - basic", () => {
@@ -191,7 +192,9 @@ describe.concurrent("tables", () => {
         tags: true,
         scores: true,
       }),
-    ).toThrow("Unsupported column type: array");
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Unsupported column type: array. It must be supported by Zero, e.g.: number | bigint | boolean | date | string | json]`,
+    );
   });
 
   test("pg - complex custom types", () => {
@@ -584,7 +587,8 @@ describe.concurrent("tables", () => {
       id: text("id").primaryKey(),
       smallint: smallint("smallint").notNull(),
       integer: integer("integer").notNull(),
-      bigint: bigint("bigint", { mode: "number" }).notNull(),
+      bigint: bigint("bigint", { mode: "bigint" }).notNull(),
+      bigint_number: bigint("bigint_number", { mode: "number" }).notNull(),
 
       // Serial types
       smallSerial: smallserial("smallserial").notNull(),
@@ -617,6 +621,7 @@ describe.concurrent("tables", () => {
       optionalInteger: integer("optional_integer"),
       optionalBigint: bigint("optional_bigint", { mode: "number" }),
       optionalNumeric: numeric("optional_numeric", { precision: 10, scale: 2 }),
+      optionalDecimal: numeric("optional_decimal", { precision: 10, scale: 2 }),
       optionalReal: real("optional_real"),
       optionalDoublePrecision: doublePrecision("optional_double_precision"),
       optionalText: text("optional_text"),
@@ -631,6 +636,7 @@ describe.concurrent("tables", () => {
       smallint: true,
       integer: true,
       bigint: true,
+      bigint_number: true,
       smallserial: true,
       regular_serial: true,
       bigserial: true,
@@ -653,6 +659,7 @@ describe.concurrent("tables", () => {
       optional_integer: true,
       optional_bigint: true,
       optional_numeric: true,
+      optional_decimal: true,
       optional_real: true,
       optional_double_precision: true,
       optional_text: true,
@@ -682,6 +689,11 @@ describe.concurrent("tables", () => {
           customType: null as unknown as number,
         },
         bigint: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as number,
+        },
+        bigint_number: {
           type: "number",
           optional: false,
           customType: null as unknown as number,
@@ -807,6 +819,11 @@ describe.concurrent("tables", () => {
           optional: true,
           customType: null as unknown as number,
         },
+        optional_decimal: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as number,
+        },
         optional_real: {
           type: "number",
           optional: true,
@@ -879,7 +896,7 @@ describe.concurrent("tables", () => {
     Expect<Equal<typeof result, typeof expected>>;
   });
 
-  test("pg - compound primary key with serial", () => {
+  test("pg - compound primary key", () => {
     const table = pgTable(
       "order_items",
       {
@@ -1142,7 +1159,9 @@ describe.concurrent("tables", () => {
         id: true,
         invalid: "someinvalidtype",
       } as unknown as ColumnsConfig<typeof table>),
-    ).toThrow();
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invalid column config for column invalid - expected boolean or object but was string]`,
+    );
   });
 
   test("pg - no primary key", () => {
@@ -1153,8 +1172,10 @@ describe.concurrent("tables", () => {
     expect(() =>
       createZeroTableSchema(table, {
         id: true,
-      } as unknown as ColumnsConfig<typeof table>),
-    ).toThrow();
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: No primary keys found in table - test. Did you forget to define a primary key?]`,
+    );
   });
 
   test("pg - auto-increment primary key not supported", () => {
@@ -1167,7 +1188,25 @@ describe.concurrent("tables", () => {
       createZeroTableSchema(table, {
         id: true,
         name: true,
-      } as unknown as ColumnsConfig<typeof table>),
-    ).toThrow();
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Primary key column id cannot have a default value defined on the database level and cannot be optional, since auto-incrementing primary keys can cause race conditions with concurrent inserts. See the Zero docs for more information.]`,
+    );
+  });
+
+  test("pg - fail if not pg", () => {
+    const table = mysqlTable("test", {
+      id: textMysql().primaryKey(),
+      name: textMysql(),
+    });
+
+    expect(() =>
+      createZeroTableSchema(table, {
+        id: true,
+        name: true,
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Unsupported column type: MySqlText. Only Postgres columns are supported.]`,
+    );
   });
 });

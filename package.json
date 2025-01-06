@@ -1,13 +1,14 @@
 {
   "name": "drizzle-zero",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Generate Zero schemas from Drizzle ORM schemas",
   "type": "module",
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --sourcemap",
     "release": "pnpm run build && pnpm publish",
+    "test": "vitest run --typecheck --coverage",
     "test:types": "cd tests && tsc --noEmit",
-    "test": "vitest run --typecheck --coverage"
+    "test:ui": "vitest --ui"
   },
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -45,6 +46,7 @@
     "@rocicorp/zero": "canary",
     "@types/node": "^22.10.5",
     "@vitest/coverage-v8": "2.1.8",
+    "@vitest/ui": "^2.1.8",
     "drizzle-orm": "^0.38.3",
     "prettier": "^3.4.2",
     "tsup": "^8.0.2",

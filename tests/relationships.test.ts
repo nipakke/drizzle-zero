@@ -11,13 +11,13 @@ describe.concurrent("relationships", () => {
   test("relationships - one-to-one-missing-foreign-key", async () => {
     await expect(
       import("./schemas/one-to-one-missing-foreign-key.zero"),
-    ).rejects.toThrow();
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`[Error: No relationship found for: userPosts (One from users to posts). Did you forget to define foreign keys?]`);
   });
 
   test("relationships - one-to-many-missing-named", async () => {
     await expect(
       import("./schemas/one-to-many-missing-named.zero"),
-    ).rejects.toThrow();
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`[Error: No relationship found for: author (Many from users to posts). Did you forget to define foreign keys for named relation "author"?]`);
   });
 
   test("relationships - no-relations", async () => {

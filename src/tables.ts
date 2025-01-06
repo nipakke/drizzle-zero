@@ -1,5 +1,5 @@
-import { getTableColumns, getTableName, Table } from "drizzle-orm";
-import { getTableConfig } from "drizzle-orm/pg-core";
+import { getTableColumns, getTableName, is, Table } from "drizzle-orm";
+import { getTableConfig, PgColumn } from "drizzle-orm/pg-core";
 import {
   type DrizzleColumnTypeToZeroType,
   drizzleColumnTypeToZeroType,
@@ -37,6 +37,12 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
     (acc, [_key, column]) => {
       const name = column.name;
 
+      if (!is(column, PgColumn)) {
+        throw new Error(
+          `Unsupported column type: ${column.columnType}. Only Postgres columns are supported.`,
+        );
+      }
+
       const columnConfig = columns[name as keyof C];
 
       if (
@@ -66,7 +72,9 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
         ];
 
       if (!type) {
-        throw new Error(`Unsupported column type: ${column.dataType}`);
+        throw new Error(
+          `Unsupported column type: ${column.dataType}. It must be supported by Zero, e.g.: ${Object.keys(drizzleDataTypeToZeroType).join(" | ")}`,
+        );
       }
 
       const isColumnOptional =
@@ -79,7 +87,7 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
       if (column.primary) {
         if (isColumnOptional) {
           throw new Error(
-            `Primary key column ${name} cannot have a default value.`,
+            `Primary key column ${name} cannot have a default value defined on the database level and cannot be optional, since auto-incrementing primary keys can cause race conditions with concurrent inserts. See the Zero docs for more information.`,
           );
         }
 
@@ -115,7 +123,9 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
   ];
 
   if (!primaryKeys.length) {
-    throw new Error("No primary keys found in table");
+    throw new Error(
+      `No primary keys found in table - ${tableName}. Did you forget to define a primary key?`,
+    );
   }
 
   return {
