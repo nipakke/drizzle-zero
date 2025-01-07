@@ -46,7 +46,13 @@ type FindRelationsForTable<
   Relations<TableName>
 >;
 
+/**
+ * The configuration for the tables to include in the Zero schema.
+ */
 type TableColumnsConfig<TSchema extends Record<string, unknown>> = {
+  /**
+   * The columns to include in the Zero schema.
+   */
   readonly [K in keyof TSchema as TSchema[K] extends Table<any>
     ? TableName<TSchema[K]>
     : never]?: TSchema[K] extends Table<any>
@@ -166,15 +172,53 @@ type CreateZeroSchema<
   };
 };
 
+/**
+ * Create a Zero schema from a Drizzle schema.
+ *
+ * @param schema - The Drizzle schema to create a Zero schema from.
+ * @param schemaConfig - The configuration for the Zero schema.
+ * @returns The generated Zero schema.
+ */
 const createZeroSchema = <
   const TVersion extends number,
   const TSchema extends Record<string, unknown>,
   const TColumns extends
     TableColumnsConfig<TSchema> = TableColumnsConfig<TSchema>,
 >(
+  /**
+   * The Drizzle schema to create a Zero schema from.
+   */
   schema: TSchema,
+  /**
+   * The configuration for the Zero schema.
+   *
+   * @param schemaConfig.version - The version of the schema.
+   * @param schemaConfig.tables - The tables to include in the Zero schema.
+   */
   schemaConfig: {
+    /**
+     * The version of the schema, used for schema migrations.
+     */
     readonly version: TVersion;
+    /**
+     * Specify the tables to include in the Zero schema.
+     * This can include type overrides for columns, using `column.json()` for example.
+     *
+     * @example
+     * ```ts
+     * {
+     *   user: {
+     *     id: true,
+     *     name: true,
+     *   },
+     *   profile_info: {
+     *     id: true,
+     *     user_id: true,
+     *     metadata: column.json(),
+     *   },
+     * }
+     * ```
+     */
     readonly tables: TColumns;
   },
 ): Flatten<CreateZeroSchema<TVersion, TSchema, TColumns>> => {

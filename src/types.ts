@@ -32,6 +32,9 @@ export type FindPrimaryKeyFromTable<TTable extends Table> = {
       }[keyof Columns<TTable>],
     ];
 
+/**
+ * The type override for a column.
+ */
 type TypeOverride<TCustomType> = {
   readonly type: "string" | "number" | "boolean" | "json";
   readonly optional: boolean;
@@ -40,17 +43,12 @@ type TypeOverride<TCustomType> = {
 };
 
 /**
- * Specify the columns to be included in sync.
- *
- * @example
- * ```ts
- * {
- *   id: true,
- *   name: true,
- * }
- * ```
+ * The configuration for the columns to include in the Zero schema.
  */
 export type ColumnsConfig<T extends Table> = {
+  /**
+   * The columns to include in the Zero schema.
+   */
   readonly [K in ColumnNames<T>]?:
     | boolean
     | TypeOverride<
