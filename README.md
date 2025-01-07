@@ -126,6 +126,37 @@ function PostList({ selectedAuthorId }: { selectedAuthorId?: string }) {
 }
 ```
 
+### Schema Versioning
+
+This library includes the `schemaVersions` table definition that is used by Zero to track the supported schema versions.
+When you run `zero-cache` against a Postgres database, it will add a `schemaVersions` table to the database if it doesn't already exist.
+
+You should update the `schemaVersions` table when running migrations. e.g.:
+
+```ts
+import { db } from './db';
+import { zeroSchemaVersions } from 'drizzle-zero/pg';
+
+// After running an "expand" migration, update the `schemaVersions` table to reflect the new supported schema version
+export async function postMigrationExpand(maxSupportedVersion: number) {
+  await db
+    .update(zeroSchemaVersions)
+    .set({ maxSupportedVersion })
+    .execute();
+}
+
+// After a grace period, run a "contract" migration to delete any obsolete rows/tables
+// and update the `schemaVersions` table to reflect the minimum supported schema version
+export async function postMigrationContract(minSupportedVersion: number) {
+  await db
+    .update(zeroSchemaVersions)
+    .set({ minSupportedVersion })
+    .execute();
+}
+```
+
+If you prefer to define the `schemaVersions` table yourself, check out the [`schemaVersions`](./src/pg/index.ts) file to copy and paste into your own schema.
+
 ## Features
 
 - Convert Drizzle ORM schemas to Zero schemas
@@ -137,6 +168,7 @@ function PostList({ selectedAuthorId }: { selectedAuthorId?: string }) {
   - One-to-many relationships
   - Many-to-many relationships
   - Self-referential relationships
+- Helps with schema versioning
 
 ## License
 
