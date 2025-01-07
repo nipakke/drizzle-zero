@@ -9,14 +9,14 @@ importers:
   .:
     devDependencies:
       '@rocicorp/zero':
-        specifier: ^0.10.2025010500
+        specifier: canary
         version: 0.10.2025010500
       '@types/node':
         specifier: ^22.10.5
         version: 22.10.5
       '@vitest/coverage-v8':
         specifier: 2.1.8
-        version: 2.1.8(@vitest/browser@2.1.8(@types/node@22.10.5)(typescript@5.7.2)(vite@5.4.11(@types/node@22.10.5))(vitest@2.1.8))(vitest@2.1.8(@types/node@22.10.5)(@vitest/browser@2.1.8)(@vitest/ui@2.1.8)(msw@2.7.0(@types/node@22.10.5)(typescript@5.7.2)))
+        version: 2.1.8(@vitest/browser@2.1.8)(vitest@2.1.8)
       '@vitest/ui':
         specifier: ^2.1.8
         version: 2.1.8(vitest@2.1.8)
@@ -68,7 +68,7 @@ importers:
         version: 8.5.13
       '@vitest/browser':
         specifier: ^2.1.8
-        version: 2.1.8(@types/node@22.10.5)(typescript@5.7.2)(vite@6.0.7(@types/node@22.10.5)(tsx@4.19.2)(yaml@2.7.0))(vitest@2.1.8)
+        version: 2.1.8(@types/node@22.10.5)(typescript@5.7.2)(vite@5.4.11(@types/node@22.10.5))(vitest@2.1.8)
       drizzle-kit:
         specifier: ^0.30.1
         version: 0.30.1
@@ -2905,46 +2905,6 @@ packages:
       terser:
         optional: true
 
-  vite@6.0.7:
-    resolution: {integrity: sha512-RDt8r/7qx9940f8FcOIAH9PTViRrghKaK2K1jY3RaAURrEUbm9Du1mJ72G+jlhtG3WwodnfzY8ORQZbBavZEAQ==}
-    engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': ^18.0.0 || ^20.0.0 || >=22.0.0
-      jiti: '>=1.21.0'
-      less: '*'
-      lightningcss: ^1.21.0
-      sass: '*'
-      sass-embedded: '*'
-      stylus: '*'
-      sugarss: '*'
-      terser: ^5.16.0
-      tsx: ^4.8.1
-      yaml: ^2.4.2
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      jiti:
-        optional: true
-      less:
-        optional: true
-      lightningcss:
-        optional: true
-      sass:
-        optional: true
-      sass-embedded:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-      tsx:
-        optional: true
-      yaml:
-        optional: true
-
   vitest@2.1.8:
     resolution: {integrity: sha512-1vBKTZskHw/aosXqQUlVWWlGUxSJR8YtiyZDJAFeW2kPAeX6S3Sool0mjspO+kXLuxVWlEDDowBAeqeAQefqLQ==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -4077,28 +4037,8 @@ snapshots:
       - typescript
       - utf-8-validate
       - vite
-    optional: true
 
-  '@vitest/browser@2.1.8(@types/node@22.10.5)(typescript@5.7.2)(vite@6.0.7(@types/node@22.10.5)(tsx@4.19.2)(yaml@2.7.0))(vitest@2.1.8)':
-    dependencies:
-      '@testing-library/dom': 10.4.0
-      '@testing-library/user-event': 14.5.2(@testing-library/dom@10.4.0)
-      '@vitest/mocker': 2.1.8(msw@2.7.0(@types/node@22.10.5)(typescript@5.7.2))(vite@6.0.7(@types/node@22.10.5)(tsx@4.19.2)(yaml@2.7.0))
-      '@vitest/utils': 2.1.8
-      magic-string: 0.30.17
-      msw: 2.7.0(@types/node@22.10.5)(typescript@5.7.2)
-      sirv: 3.0.0
-      tinyrainbow: 1.2.0
-      vitest: 2.1.8(@types/node@22.10.5)(@vitest/browser@2.1.8)(@vitest/ui@2.1.8)(msw@2.7.0(@types/node@22.10.5)(typescript@5.7.2))
-      ws: 8.18.0
-    transitivePeerDependencies:
-      - '@types/node'
-      - bufferutil
-      - typescript
-      - utf-8-validate
-      - vite
-
-  '@vitest/coverage-v8@2.1.8(@vitest/browser@2.1.8(@types/node@22.10.5)(typescript@5.7.2)(vite@5.4.11(@types/node@22.10.5))(vitest@2.1.8))(vitest@2.1.8(@types/node@22.10.5)(@vitest/browser@2.1.8)(@vitest/ui@2.1.8)(msw@2.7.0(@types/node@22.10.5)(typescript@5.7.2)))':
+  '@vitest/coverage-v8@2.1.8(@vitest/browser@2.1.8)(vitest@2.1.8)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 0.2.3
@@ -4133,15 +4073,6 @@ snapshots:
     optionalDependencies:
       msw: 2.7.0(@types/node@22.10.5)(typescript@5.7.2)
       vite: 5.4.11(@types/node@22.10.5)
-
-  '@vitest/mocker@2.1.8(msw@2.7.0(@types/node@22.10.5)(typescript@5.7.2))(vite@6.0.7(@types/node@22.10.5)(tsx@4.19.2)(yaml@2.7.0))':
-    dependencies:
-      '@vitest/spy': 2.1.8
-      estree-walker: 3.0.3
-      magic-string: 0.30.17
-    optionalDependencies:
-      msw: 2.7.0(@types/node@22.10.5)(typescript@5.7.2)
-      vite: 6.0.7(@types/node@22.10.5)(tsx@4.19.2)(yaml@2.7.0)
 
   '@vitest/pretty-format@2.1.8':
     dependencies:
@@ -5675,18 +5606,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 22.10.5
       fsevents: 2.3.3
-
-  vite@6.0.7(@types/node@22.10.5)(tsx@4.19.2)(yaml@2.7.0):
-    dependencies:
-      esbuild: 0.24.2
-      postcss: 8.4.49
-      rollup: 4.30.1
-    optionalDependencies:
-      '@types/node': 22.10.5
-      fsevents: 2.3.3
-      tsx: 4.19.2
-      yaml: 2.7.0
-    optional: true
 
   vitest@2.1.8(@types/node@22.10.5)(@vitest/browser@2.1.8)(@vitest/ui@2.1.8)(msw@2.7.0(@types/node@22.10.5)(typescript@5.7.2)):
     dependencies:
