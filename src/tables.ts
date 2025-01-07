@@ -1,5 +1,5 @@
-import { getTableColumns, getTableName, is, Table } from "drizzle-orm";
-import { getTableConfig, PgColumn } from "drizzle-orm/pg-core";
+import { getTableColumns, getTableName, Table } from "drizzle-orm";
+import { getTableConfigForDatabase } from "./db";
 import {
   type DrizzleColumnTypeToZeroType,
   drizzleColumnTypeToZeroType,
@@ -30,18 +30,13 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
   columns: C,
 ): CreateZeroTableSchema<T, C> => {
   const tableColumns = getTableColumns(table);
+  const tableConfig = getTableConfigForDatabase(table);
 
   const primaryKeysFromColumns: string[] = [];
 
   const columnsMapped = typedEntries(tableColumns).reduce(
     (acc, [_key, column]) => {
       const name = column.name;
-
-      if (!is(column, PgColumn)) {
-        throw new Error(
-          `Unsupported column type: ${column.columnType}. Only Postgres columns are supported.`,
-        );
-      }
 
       const columnConfig = columns[name as keyof C];
 
@@ -117,8 +112,8 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
 
   const primaryKeys = [
     ...primaryKeysFromColumns,
-    ...getTableConfig(table)
-      .primaryKeys.flatMap((k) => k.columns.map((c) => c.name))
+    ...tableConfig.primaryKeys
+      .flatMap((k) => k.columns.map((c) => c.name))
       .filter(Boolean),
   ];
 

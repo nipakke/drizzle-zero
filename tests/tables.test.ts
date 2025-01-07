@@ -1,4 +1,5 @@
 import { column, type JSONValue } from "@rocicorp/zero";
+import { mysqlTable, text as textMysql } from "drizzle-orm/mysql-core";
 import {
   bigint,
   bigserial,
@@ -20,7 +21,7 @@ import {
   text,
   timestamp,
   uuid,
-  varchar,
+  varchar
 } from "drizzle-orm/pg-core";
 import { describe, expect, test } from "vitest";
 import { createZeroTableSchema, type ColumnsConfig } from "../src";
@@ -31,7 +32,6 @@ import {
   type Equal,
   type ZeroTableSchema,
 } from "./utils";
-import { mysqlTable, text as textMysql } from "drizzle-orm/mysql-core";
 
 describe.concurrent("tables", () => {
   test("pg - basic", () => {
@@ -1194,7 +1194,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - fail if not pg", () => {
+  test("pg - fail if table is not pg", () => {
     const table = mysqlTable("test", {
       id: textMysql().primaryKey(),
       name: textMysql(),
@@ -1206,7 +1206,7 @@ describe.concurrent("tables", () => {
         name: true,
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Unsupported column type: MySqlText. Only Postgres columns are supported.]`,
+      `[Error: Unsupported table type: test. Only Postgres tables are supported.]`,
     );
   });
 });
