@@ -7,7 +7,7 @@ import {
   Relations,
   Table,
 } from "drizzle-orm";
-import { getTableConfig } from "drizzle-orm/pg-core";
+import { getTableConfigForDatabase } from "./db";
 import { createZeroTableSchema, type CreateZeroTableSchema } from "./tables";
 import type {
   AtLeastOne,
@@ -328,7 +328,7 @@ const findForeignKeySourceAndDestFields = (
       const tableName = getTableName(tableOrRelations);
 
       if (tableName === relation.referencedTableName) {
-        const tableConfig = getTableConfig(tableOrRelations);
+        const tableConfig = getTableConfigForDatabase(tableOrRelations);
 
         for (const foreignKey of tableConfig.foreignKeys) {
           const reference = foreignKey.reference();
