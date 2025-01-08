@@ -117,4 +117,10 @@ describe.concurrent("compile", () => {
       "users_to_group",
     ]);
   });
+
+  test("compile - custom-schema", async () => {
+    const result = await runZeroBuildSchema("custom-schema");
+    expect(result.schema.tables.user).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toStrictEqual(["user"]);
+  });
 });

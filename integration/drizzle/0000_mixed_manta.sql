@@ -1,9 +1,7 @@
-CREATE DATABASE drizzle_zero;
-CREATE DATABASE drizzle_zero_cvr;
-CREATE DATABASE drizzle_zero_cdb;
-
 \c drizzle_zero;
 
+CREATE SCHEMA "zero";
+--> statement-breakpoint
 CREATE TYPE "public"."status_type" AS ENUM('active', 'inactive', 'pending');--> statement-breakpoint
 CREATE TABLE "all_types" (
 	"createdAt" timestamp(3) with time zone DEFAULT now() NOT NULL,
@@ -70,6 +68,13 @@ CREATE TABLE "user" (
 	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"partner" boolean NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "zero"."schemaVersions" (
+	"minSupportedVersion" integer,
+	"maxSupportedVersion" integer,
+	"lock" boolean PRIMARY KEY DEFAULT true NOT NULL,
+	CONSTRAINT "zero_schema_versions_single_row_constraint" CHECK ("zero"."schemaVersions"."lock")
 );
 --> statement-breakpoint
 ALTER TABLE "message" ADD CONSTRAINT "message_senderId_user_id_fk" FOREIGN KEY ("senderId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

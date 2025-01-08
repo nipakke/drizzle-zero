@@ -103,7 +103,7 @@
             "optional": false
           },
           "date": {
-            "type": "string",
+            "type": "number",
             "optional": false
           },
           "decimal": {
@@ -175,7 +175,7 @@
             "optional": true
           },
           "optional_timestamp": {
-            "type": "string",
+            "type": "number",
             "optional": true
           },
           "optional_uuid": {
@@ -211,11 +211,11 @@
             "optional": false
           },
           "timestamp": {
-            "type": "string",
+            "type": "number",
             "optional": false
           },
           "timestampTz": {
-            "type": "string",
+            "type": "number",
             "optional": false
           },
           "typed_json": {
