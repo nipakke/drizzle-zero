@@ -1,5 +1,26 @@
 import { relations, sql } from "drizzle-orm";
-import { boolean, jsonb, pgTable, text, timestamp, smallint, integer, serial, smallserial, bigserial, numeric, real, doublePrecision, char, uuid, varchar, date, pgEnum, bigint, json } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+  smallint,
+  integer,
+  serial,
+  smallserial,
+  bigserial,
+  numeric,
+  real,
+  doublePrecision,
+  char,
+  uuid,
+  varchar,
+  date,
+  pgEnum,
+  bigint,
+  json,
+} from "drizzle-orm/pg-core";
 
 const sharedColumns = {
   createdAt: timestamp("createdAt", {
@@ -60,7 +81,11 @@ export const messageRelations = relations(messageTable, ({ one }) => ({
   }),
 }));
 
-export const statusEnum = pgEnum("status_type", ["active", "inactive", "pending"]);
+export const statusEnum = pgEnum("status_type", [
+  "active",
+  "inactive",
+  "pending",
+]);
 
 export const allTypesTable = pgTable("all_types", {
   ...sharedColumns,
@@ -86,7 +111,9 @@ export const allTypesTable = pgTable("all_types", {
   dateField: date("date").notNull(),
   jsonField: json("json").notNull(),
   jsonbField: jsonb("jsonb").notNull(),
-  typedJsonField: jsonb("typed_json").$type<{ theme: string; fontSize: number }>().notNull(),
+  typedJsonField: jsonb("typed_json")
+    .$type<{ theme: string; fontSize: number }>()
+    .notNull(),
   statusField: statusEnum("status").notNull(),
   optionalSmallint: smallint("optional_smallint"),
   optionalInteger: integer("optional_integer"),
@@ -102,4 +129,3 @@ export const allTypesTable = pgTable("all_types", {
   optionalVarchar: varchar("optional_varchar"),
   optionalUuid: uuid("optional_uuid"),
 });
-

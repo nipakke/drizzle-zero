@@ -5,10 +5,10 @@ import {
   type Schema,
 } from "@rocicorp/zero";
 import { createZeroSchema } from "../../src";
-import * as oneToOneSelf from "./one-to-one-self.schema";
+import * as customSchema from "./custom-schema.schema";
 
 export const schema = createSchema(
-  createZeroSchema(oneToOneSelf, {
+  createZeroSchema(customSchema, {
     version: 1,
     tables: {
       user: {

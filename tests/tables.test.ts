@@ -12,6 +12,7 @@ import {
   jsonb,
   numeric,
   pgEnum,
+  pgSchema,
   pgTable,
   primaryKey,
   real,
@@ -1146,6 +1147,41 @@ describe.concurrent("tables", () => {
         typeof expected.columns.enum_status
       >
     >;
+  });
+
+
+  test("pg - custom schema", () => {
+    const customSchema = pgSchema("custom_schema")
+
+    const table = customSchema.table("products", {
+      id: text("custom_id").primaryKey(),
+      name: text("custom_name").notNull(),
+    });
+
+    const result = createZeroTableSchema(table, {
+      custom_id: true,
+      custom_name: true,
+    });
+
+    const expected = {
+      tableName: "products",
+      columns: {
+        custom_id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+        custom_name: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+      },
+      primaryKey: ["custom_id"],
+    } as const satisfies ZeroTableSchema;
+
+    expectTableSchemaDeepEqual(result).toEqual(expected);
+    Expect<Equal<typeof result, typeof expected>>;
   });
 
   test("pg - invalid column selection", () => {
