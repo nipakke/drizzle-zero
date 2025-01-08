@@ -1,5 +1,5 @@
 {
-  "id": "f5762bc7-5124-4542-bc3d-498881db199a",
+  "id": "5493d16e-9973-485f-9b87-f2ac7b56295f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -422,6 +422,43 @@
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
+    },
+    "zero.schemaVersions": {
+      "name": "schemaVersions",
+      "schema": "zero",
+      "columns": {
+        "minSupportedVersion": {
+          "name": "minSupportedVersion",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maxSupportedVersion": {
+          "name": "maxSupportedVersion",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lock": {
+          "name": "lock",
+          "type": "boolean",
+          "primaryKey": true,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "zero_schema_versions_single_row_constraint": {
+          "name": "zero_schema_versions_single_row_constraint",
+          "value": "\"zero\".\"schemaVersions\".\"lock\""
+        }
+      },
+      "isRLSEnabled": false
     }
   },
   "enums": {
@@ -435,7 +472,9 @@
       ]
     }
   },
-  "schemas": {},
+  "schemas": {
+    "zero": "zero"
+  },
   "sequences": {},
   "roles": {},
   "policies": {},

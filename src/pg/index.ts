@@ -1,4 +1,5 @@
-import { boolean, integer, pgSchema } from "drizzle-orm/pg-core";
+import { boolean, check, integer, pgSchema } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 /**
  * The PostgreSQL Zero Schema is a schema that is used to store schema metadata.
@@ -29,8 +30,14 @@ export const zeroSchema = pgSchema("zero");
  * +---------------------+---------------------+------+
  * ```
  */
-export const zeroSchemaVersions = zeroSchema.table("schemaVersions", {
-  minSupportedVersion: integer("minSupportedVersion"),
-  maxSupportedVersion: integer("maxSupportedVersion"),
-  lock: boolean("lock").notNull().default(true),
-});
+export const zeroSchemaVersions = zeroSchema.table(
+  "schemaVersions",
+  {
+    minSupportedVersion: integer("minSupportedVersion"),
+    maxSupportedVersion: integer("maxSupportedVersion"),
+    lock: boolean("lock").notNull().default(true).primaryKey(),
+  },
+  (table) => [
+    check("zero_schema_versions_single_row_constraint", sql`${table.lock}`),
+  ],
+);

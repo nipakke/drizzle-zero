@@ -22,7 +22,7 @@ import {
   text,
   timestamp,
   uuid,
-  varchar
+  varchar,
 } from "drizzle-orm/pg-core";
 import { describe, expect, test } from "vitest";
 import { createZeroTableSchema, type ColumnsConfig } from "../src";
@@ -401,6 +401,8 @@ describe.concurrent("tables", () => {
       createdAt: timestamp().notNull().defaultNow(),
       updatedAt: timestamp(),
       scheduledFor: timestamp().notNull(),
+      scheduledForTz: timestamp({ withTimezone: true }),
+      precision: timestamp({ precision: 2 }),
     });
 
     const result = createZeroTableSchema(table, {
@@ -408,6 +410,8 @@ describe.concurrent("tables", () => {
       createdAt: true,
       updatedAt: true,
       scheduledFor: true,
+      scheduledForTz: true,
+      precision: true,
     });
 
     const expected = {
@@ -419,19 +423,29 @@ describe.concurrent("tables", () => {
           customType: null as unknown as string,
         },
         createdAt: {
-          type: "string",
+          type: "number",
           optional: true,
-          customType: null as unknown as string,
+          customType: null as unknown as number,
         },
         updatedAt: {
-          type: "string",
+          type: "number",
           optional: true,
-          customType: null as unknown as string,
+          customType: null as unknown as number,
         },
         scheduledFor: {
-          type: "string",
+          type: "number",
           optional: false,
-          customType: null as unknown as string,
+          customType: null as unknown as number,
+        },
+        scheduledForTz: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as number,
+        },
+        precision: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as number,
         },
       },
       primaryKey: ["id"],
@@ -613,6 +627,7 @@ describe.concurrent("tables", () => {
       createdAt: timestamp().notNull(),
       updatedAt: timestamp({ withTimezone: true }).notNull(),
       birthDate: date().notNull(),
+      dateString: date({ mode: "string" }).notNull(),
       metadata: jsonb().notNull(),
       settings: json().$type<{ theme: string; fontSize: number }>().notNull(),
       status: statusEnum().notNull(),
@@ -627,7 +642,8 @@ describe.concurrent("tables", () => {
       optionalDoublePrecision: doublePrecision("optional_double_precision"),
       optionalText: text("optional_text"),
       optionalBoolean: boolean("optional_boolean"),
-      optionalDate: timestamp("optional_date"),
+      optionalTimestamp: timestamp("optional_timestamp"),
+      optionalDate: date("optional_date"),
       optionalJson: jsonb("optional_json"),
       optionalEnum: statusEnum("optional_enum"),
     });
@@ -653,6 +669,7 @@ describe.concurrent("tables", () => {
       createdAt: true,
       updatedAt: true,
       birthDate: true,
+      dateString: true,
       metadata: true,
       settings: true,
       status: true,
@@ -665,6 +682,7 @@ describe.concurrent("tables", () => {
       optional_double_precision: true,
       optional_text: true,
       optional_boolean: true,
+      optional_timestamp: true,
       optional_date: true,
       optional_json: true,
       optional_enum: true,
@@ -768,19 +786,24 @@ describe.concurrent("tables", () => {
           customType: null as unknown as boolean,
         },
         createdAt: {
-          type: "string",
+          type: "number",
           optional: false,
-          customType: null as unknown as string,
+          customType: null as unknown as number,
         },
         updatedAt: {
-          type: "string",
+          type: "number",
           optional: false,
-          customType: null as unknown as string,
+          customType: null as unknown as number,
         },
         birthDate: {
-          type: "string",
+          type: "number",
           optional: false,
-          customType: null as unknown as string,
+          customType: null as unknown as number,
+        },
+        dateString: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as number,
         },
         metadata: {
           type: "json",
@@ -845,10 +868,15 @@ describe.concurrent("tables", () => {
           optional: true,
           customType: null as unknown as boolean,
         },
-        optional_date: {
-          type: "string",
+        optional_timestamp: {
+          type: "number",
           optional: true,
-          customType: null as unknown as string,
+          customType: null as unknown as number,
+        },
+        optional_date: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as number,
         },
         optional_json: {
           type: "json",
@@ -1149,9 +1177,8 @@ describe.concurrent("tables", () => {
     >;
   });
 
-
   test("pg - custom schema", () => {
-    const customSchema = pgSchema("custom_schema")
+    const customSchema = pgSchema("custom_schema");
 
     const table = customSchema.table("products", {
       id: text("custom_id").primaryKey(),

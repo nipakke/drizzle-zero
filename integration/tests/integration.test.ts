@@ -186,6 +186,8 @@ describe("types", () => {
   test("can insert all types", async () => {
     const zero = await getNewZero();
 
+    const currentDate = new Date();
+
     await zero.mutate.all_types.insert({
       id: "1011",
       smallint: 22,
@@ -201,9 +203,9 @@ describe("types", () => {
       uuid: randomUUID(),
       varchar: "varchar2",
       boolean: true,
-      timestamp: new Date().toISOString(),
-      timestampTz: new Date().toISOString(),
-      date: new Date().toISOString(),
+      timestamp: currentDate.getTime(),
+      timestampTz: currentDate.getTime(),
+      date: currentDate.getTime(),
       json: { key: "value" },
       jsonb: { key: "value" },
       typed_json: { theme: "light", fontSize: 16 },
@@ -233,9 +235,9 @@ describe("types", () => {
     expect(result?.uuid).toBeDefined();
     expect(result?.varchar).toStrictEqual("varchar2");
     expect(result?.boolean).toStrictEqual(true);
-    expect(result?.timestamp).toBeDefined();
-    expect(result?.timestampTz).toBeDefined();
-    expect(result?.date).toBeDefined();
+    expect(result?.timestamp).toStrictEqual(currentDate.getTime());
+    expect(result?.timestampTz).toStrictEqual(currentDate.getTime());
+    expect(result?.date).toStrictEqual(currentDate.getTime());
     expect(result?.json).toStrictEqual({ key: "value" });
     expect(result?.jsonb).toStrictEqual({ key: "value" });
     expect(result?.typed_json).toStrictEqual({ theme: "light", fontSize: 16 });
@@ -261,9 +263,9 @@ describe("types", () => {
     expect(dbResult?.uuidField).toBeDefined();
     expect(dbResult?.varcharField).toStrictEqual("varchar2");
     expect(dbResult?.booleanField).toStrictEqual(true);
-    expect(dbResult?.timestampField).toBeDefined();
-    expect(dbResult?.timestampTzField).toBeDefined();
-    expect(dbResult?.dateField).toBeDefined();
+    expect(dbResult?.timestampField?.toISOString()).toStrictEqual(currentDate.toISOString());
+    expect(dbResult?.timestampTzField?.toISOString()).toStrictEqual(currentDate.toISOString());
+    expect(dbResult?.dateField).toStrictEqual(currentDate.toISOString().split("T")[0]);
     expect(dbResult?.jsonField).toStrictEqual({ key: "value" });
     expect(dbResult?.jsonbField).toStrictEqual({ key: "value" });
     expect(dbResult?.typedJsonField).toStrictEqual({ theme: "light", fontSize: 16 });
