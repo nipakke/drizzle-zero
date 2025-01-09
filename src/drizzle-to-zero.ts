@@ -17,11 +17,12 @@ export const drizzleDataTypeToZeroType = {
 
 export type DrizzleDataTypeToZeroType = typeof drizzleDataTypeToZeroType;
 
-type DrizzleColumnType = "PgNumeric" | "PgDateString";
+type DrizzleColumnType = "PgNumeric" | "PgDateString" | "PgTimestampString";
 
 export const drizzleColumnTypeToZeroType = {
   PgNumeric: "number",
   PgDateString: "number",
+  PgTimestampString: "number",
 } as const satisfies Record<DrizzleColumnType, string>;
 
 export type DrizzleColumnTypeToZeroType = typeof drizzleColumnTypeToZeroType;
