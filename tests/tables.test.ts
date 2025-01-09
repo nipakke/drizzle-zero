@@ -403,6 +403,8 @@ describe.concurrent("tables", () => {
       scheduledFor: timestamp().notNull(),
       scheduledForTz: timestamp({ withTimezone: true }),
       precision: timestamp({ precision: 2 }),
+      timestampModeString: timestamp({ mode: "string" }),
+      timestampModeDate: timestamp({ mode: "date" }),
     });
 
     const result = createZeroTableSchema(table, {
@@ -412,6 +414,8 @@ describe.concurrent("tables", () => {
       scheduledFor: true,
       scheduledForTz: true,
       precision: true,
+      timestampModeString: true,
+      timestampModeDate: true,
     });
 
     const expected = {
@@ -443,6 +447,16 @@ describe.concurrent("tables", () => {
           customType: null as unknown as number,
         },
         precision: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as number,
+        },
+        timestampModeString: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as number,
+        },
+        timestampModeDate: {
           type: "number",
           optional: true,
           customType: null as unknown as number,
