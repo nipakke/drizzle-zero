@@ -109,7 +109,13 @@ export const allTypesTable = pgTable("all_types", {
   varcharField: varchar("varchar").notNull(),
   booleanField: boolean("boolean").notNull(),
   timestampField: timestamp("timestamp").notNull(),
-  timestampTzField: timestamp("timestampTz", { withTimezone: true }).notNull(),
+  timestampTzField: timestamp("timestamp_tz", { withTimezone: true }).notNull(),
+  timestampModeString: timestamp("timestamp_mode_string", {
+    mode: "string",
+  }).notNull(),
+  timestampModeDate: timestamp("timestamp_mode_date", {
+    mode: "date",
+  }).notNull(),
   dateField: date("date").notNull(),
   jsonField: json("json").notNull(),
   jsonbField: jsonb("jsonb").notNull(),
