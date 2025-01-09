@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: "12 9 * * *"
+    - cron: "12 16 * * *"
 
 jobs:
   test-and-build:
@@ -34,6 +34,10 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Install zero canary (cron only)
+        if: github.event_name == 'schedule'
+        run: pnpm install @rocicorp/zero@canary -w
 
       - name: Build
         run: pnpm run build

@@ -47,7 +47,7 @@
     "drizzle-orm": ">=0.36.0"
   },
   "devDependencies": {
-    "@rocicorp/zero": "canary",
+    "@rocicorp/zero": "^0.10.2025010800",
     "@types/node": "^22.10.5",
     "@vitest/coverage-v8": "2.1.8",
     "@vitest/ui": "^2.1.8",
@@ -55,7 +55,7 @@
     "esbuild": "^0.24.2",
     "prettier": "^3.4.2",
     "tsup": "^8.3.5",
-    "typescript": "^5.7.2",
+    "typescript": "^5.7.3",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^2.1.8"
   }
