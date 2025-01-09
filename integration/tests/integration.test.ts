@@ -148,10 +148,10 @@ describe("types", () => {
     expect(result?.double_precision).toStrictEqual(10);
     expect(result?.text).toStrictEqual("text");
     expect(result?.char).toStrictEqual("c");
-    expect(result?.uuid).toBeDefined();
+    expect(typeof result?.uuid).toStrictEqual("string");
     expect(result?.varchar).toStrictEqual("varchar");
     expect(result?.boolean).toStrictEqual(true);
-    expect(result?.timestamp).toBeDefined();
+    expect(typeof result?.timestamp).toStrictEqual("number");
     expect(typeof result?.timestamp_tz).toStrictEqual("number");
     expect(typeof result?.timestamp_mode_date).toStrictEqual("number");
     expect(typeof result?.timestamp_mode_string).toStrictEqual("number");
@@ -236,7 +236,7 @@ describe("types", () => {
     expect(result?.double_precision).toStrictEqual(28);
     expect(result?.text).toStrictEqual("text2");
     expect(result?.char).toStrictEqual("f");
-    expect(result?.uuid).toBeDefined();
+    expect(typeof result?.uuid).toStrictEqual("string");
     expect(result?.varchar).toStrictEqual("varchar2");
     expect(result?.boolean).toStrictEqual(true);
     expect(result?.timestamp).toStrictEqual(currentDate.getTime());
