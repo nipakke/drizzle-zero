@@ -214,7 +214,15 @@
             "type": "number",
             "optional": false
           },
-          "timestampTz": {
+          "timestamp_mode_date": {
+            "type": "number",
+            "optional": false
+          },
+          "timestamp_mode_string": {
+            "type": "number",
+            "optional": false
+          },
+          "timestamp_tz": {
             "type": "number",
             "optional": false
           },
@@ -240,7 +248,7 @@
         ],
         "columns": {
           "createdAt": {
-            "type": "string",
+            "type": "number",
             "optional": true
           },
           "id": {
@@ -252,7 +260,7 @@
             "optional": false
           },
           "updatedAt": {
-            "type": "string",
+            "type": "number",
             "optional": true
           }
         },
@@ -279,7 +287,7 @@
             "optional": false
           },
           "createdAt": {
-            "type": "string",
+            "type": "number",
             "optional": true
           },
           "id": {
@@ -299,7 +307,7 @@
             "optional": true
           },
           "updatedAt": {
-            "type": "string",
+            "type": "number",
             "optional": true
           }
         },
@@ -331,7 +339,7 @@
         ],
         "columns": {
           "createdAt": {
-            "type": "string",
+            "type": "number",
             "optional": true
           },
           "id": {
@@ -343,7 +351,7 @@
             "optional": false
           },
           "updatedAt": {
-            "type": "string",
+            "type": "number",
             "optional": true
           }
         },

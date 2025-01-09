@@ -105,6 +105,8 @@ export const seed = async () => {
     booleanField: true,
     timestampField: new Date(),
     timestampTzField: new Date(),
+    timestampModeString: new Date().toISOString(),
+    timestampModeDate: new Date(),
     dateField: new Date().toISOString(),
     jsonField: { key: "value" },
     jsonbField: { key: "value" },

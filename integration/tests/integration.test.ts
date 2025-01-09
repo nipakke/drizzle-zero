@@ -152,8 +152,10 @@ describe("types", () => {
     expect(result?.varchar).toStrictEqual("varchar");
     expect(result?.boolean).toStrictEqual(true);
     expect(result?.timestamp).toBeDefined();
-    expect(result?.timestampTz).toBeDefined();
-    expect(result?.date).toBeDefined();
+    expect(typeof result?.timestamp_tz).toStrictEqual("number");
+    expect(typeof result?.timestamp_mode_date).toStrictEqual("number");
+    expect(typeof result?.timestamp_mode_string).toStrictEqual("number");
+    expect(typeof result?.date).toStrictEqual("number");
     expect(result?.json).toStrictEqual({ key: "value" });
     expect(result?.jsonb).toStrictEqual({ key: "value" });
     expect(result?.typed_json).toStrictEqual({ theme: "light", fontSize: 16 });
@@ -204,7 +206,9 @@ describe("types", () => {
       varchar: "varchar2",
       boolean: true,
       timestamp: currentDate.getTime(),
-      timestampTz: currentDate.getTime(),
+      timestamp_tz: currentDate.getTime(),
+      timestamp_mode_date: currentDate.getTime(),
+      timestamp_mode_string: currentDate.getTime(),
       date: currentDate.getTime(),
       json: { key: "value" },
       jsonb: { key: "value" },
@@ -236,7 +240,9 @@ describe("types", () => {
     expect(result?.varchar).toStrictEqual("varchar2");
     expect(result?.boolean).toStrictEqual(true);
     expect(result?.timestamp).toStrictEqual(currentDate.getTime());
-    expect(result?.timestampTz).toStrictEqual(currentDate.getTime());
+    expect(result?.timestamp_tz).toStrictEqual(currentDate.getTime());
+    expect(result?.timestamp_mode_date).toStrictEqual(currentDate.getTime());
+    expect(result?.timestamp_mode_string).toStrictEqual(currentDate.getTime());
     expect(result?.date).toStrictEqual(currentDate.getTime());
     expect(result?.json).toStrictEqual({ key: "value" });
     expect(result?.jsonb).toStrictEqual({ key: "value" });
@@ -265,6 +271,8 @@ describe("types", () => {
     expect(dbResult?.booleanField).toStrictEqual(true);
     expect(dbResult?.timestampField?.toISOString()).toStrictEqual(currentDate.toISOString());
     expect(dbResult?.timestampTzField?.toISOString()).toStrictEqual(currentDate.toISOString());
+    expect(dbResult?.timestampModeDate?.toISOString()).toStrictEqual(currentDate.toISOString());
+    expect(dbResult?.timestampModeString).toContain(currentDate.toISOString().split("T")[0]);
     expect(dbResult?.dateField).toStrictEqual(currentDate.toISOString().split("T")[0]);
     expect(dbResult?.jsonField).toStrictEqual({ key: "value" });
     expect(dbResult?.jsonbField).toStrictEqual({ key: "value" });

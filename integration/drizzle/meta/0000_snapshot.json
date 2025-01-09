@@ -1,5 +1,5 @@
 {
-  "id": "5493d16e-9973-485f-9b87-f2ac7b56295f",
+  "id": "569b6848-5841-49d2-81a7-6db27724a7a9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -130,9 +130,21 @@
           "primaryKey": false,
           "notNull": true
         },
-        "timestampTz": {
-          "name": "timestampTz",
+        "timestamp_tz": {
+          "name": "timestamp_tz",
           "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp_mode_string": {
+          "name": "timestamp_mode_string",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp_mode_date": {
+          "name": "timestamp_mode_date",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true
         },
