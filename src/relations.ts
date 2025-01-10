@@ -37,135 +37,142 @@ type ZeroSchemaWithRelations<
 >;
 
 type FindRelationsForTable<
-  TSchema extends Record<string, unknown>,
-  TableName extends string,
+  TDrizzleSchema extends Record<string, unknown>,
+  TTable extends Table,
 > = Extract<
-  TSchema[{
-    [P in keyof TSchema]: TSchema[P] extends Relations<TableName> ? P : never;
-  }[keyof TSchema]],
-  Relations<TableName>
+  TDrizzleSchema[{
+    [P in keyof TDrizzleSchema]: TDrizzleSchema[P] extends Relations<TableName<TTable>>
+      ? P
+      : never;
+  }[keyof TDrizzleSchema]],
+  Relations<TableName<TTable>>
 >;
 
 /**
  * The configuration for the tables to include in the Zero schema.
  */
-type TableColumnsConfig<TSchema extends Record<string, unknown>> = {
+type TableColumnsConfig<
+  TDrizzleSchema extends Record<string, unknown>,
+> = {
   /**
    * The columns to include in the Zero schema.
    */
-  readonly [K in keyof TSchema as TSchema[K] extends Table<any>
-    ? TableName<TSchema[K]>
-    : never]?: TSchema[K] extends Table<any>
-    ? ColumnsConfig<TSchema[K]>
+  readonly [K in keyof TDrizzleSchema as TDrizzleSchema[K] extends Table<any>
+    ? TableName<TDrizzleSchema[K]>
+    : never]?: TDrizzleSchema[K] extends Table<any>
+    ? ColumnsConfig<TDrizzleSchema[K]>
     : never;
 };
 
 type RelationsConfig<T extends Relations> = ReturnType<T["config"]>;
 
-type ColumnIndexKeys<T extends Table> = {
-  [K in keyof Columns<T>]: Columns<T>[K] extends {
+type ColumnIndexKeys<TTable extends Table> = {
+  [K in keyof Columns<TTable>]: Columns<TTable>[K] extends {
     dataType: "string" | "number";
   }
-    ? ColumnName<Columns<T>[K]>
+    ? ColumnName<Columns<TTable>[K]>
     : never;
-}[keyof Columns<T>];
+}[keyof Columns<TTable>];
 
 type ReferencedZeroSchemas<
-  TSchema extends Record<string, unknown>,
-  TColumns extends TableColumnsConfig<TSchema>,
-  TRelations extends Relations,
-  TTableName extends keyof TSchema,
-> = TRelations extends never
+  TDrizzleSchema extends Record<string, unknown>,
+  TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
+  TCurrentTable extends Table,
+  TCurrentTableRelations extends FindRelationsForTable<
+    TDrizzleSchema,
+    TCurrentTable
+  > = FindRelationsForTable<TDrizzleSchema, TCurrentTable>,
+> = TCurrentTableRelations extends never
   ? never
   : {
-      readonly [K in keyof RelationsConfig<TRelations> as {
-        readonly [P in keyof TSchema]: TSchema[P] extends {
+      readonly [K in keyof RelationsConfig<TCurrentTableRelations> as {
+        readonly [P in keyof TDrizzleSchema]: TDrizzleSchema[P] extends {
           _: {
-            name: RelationsConfig<TRelations>[K]["referencedTableName"];
+            name: RelationsConfig<TCurrentTableRelations>[K]["referencedTableName"];
           };
         }
-          ? TSchema[P] extends Table<any>
-            ? TColumns[TableName<TSchema[P]>] extends object
+          ? TDrizzleSchema[P] extends Table<any>
+            ? TColumnConfig[TableName<TDrizzleSchema[P]>] extends object
               ? K
               : never
             : never
           : never;
-      }[keyof TSchema] extends never
+      }[keyof TDrizzleSchema] extends never
         ? never
         : K]: {
-        readonly [P in keyof TSchema]: TSchema[P] extends {
+        readonly [P in keyof TDrizzleSchema]: TDrizzleSchema[P] extends {
           _: {
-            name: RelationsConfig<TRelations>[K]["referencedTableName"];
+            name: RelationsConfig<TCurrentTableRelations>[K]["referencedTableName"];
           };
         }
-          ? TSchema[P] extends Table<any>
-            ? TColumns[TableName<TSchema[P]>] extends object
+          ? TDrizzleSchema[P] extends Table<any>
+            ? TColumnConfig[TableName<TDrizzleSchema[P]>] extends object
               ? {
                   readonly sourceField: AtLeastOne<
                     Readonly<
                       {
-                        [P in keyof TSchema]: TSchema[P] extends {
+                        [P in keyof TDrizzleSchema]: TDrizzleSchema[P] extends {
                           _: {
-                            name: TTableName;
+                            name: TableName<TCurrentTable>;
                           };
                         }
-                          ? TSchema[P] extends Table<any>
-                            ? ColumnIndexKeys<TSchema[P]>
+                          ? TDrizzleSchema[P] extends Table<any>
+                            ? ColumnIndexKeys<TDrizzleSchema[P]>
                             : never
                           : never;
-                      }[keyof TSchema]
+                      }[keyof TDrizzleSchema]
                     >
                   >;
                   readonly destField: AtLeastOne<
                     Readonly<
                       {
-                        [ColumnName in keyof Columns<TSchema[P]>]: Columns<
-                          TSchema[P]
+                        [ColumnName in keyof Columns<
+                          TDrizzleSchema[P]
+                        >]: Columns<
+                          TDrizzleSchema[P]
                         >[ColumnName]["_"] extends {
                           name: string;
                         }
-                          ? ColumnIndexKeys<TSchema[P]>
+                          ? ColumnIndexKeys<TDrizzleSchema[P]>
                           : never;
-                      }[keyof Columns<TSchema[P]>]
+                      }[keyof Columns<TDrizzleSchema[P]>]
                     >
                   >;
                   readonly destSchema: () => ZeroSchemaWithRelations<
-                    TSchema[P],
-                    TColumns[TableName<TSchema[P]>],
+                    TDrizzleSchema[P],
+                    TColumnConfig[TableName<TDrizzleSchema[P]>],
                     ReferencedZeroSchemas<
-                      TSchema,
-                      TColumns,
-                      FindRelationsForTable<TSchema, TableName<TSchema[P]>>,
-                      TableName<TSchema[P]>
+                      TDrizzleSchema,
+                      TColumnConfig,
+                      TDrizzleSchema[P]
                     >
                   >;
                 }
               : never
             : never
           : never;
-      }[keyof TSchema];
+      }[keyof TDrizzleSchema];
     };
 
 type CreateZeroSchema<
-  TVersion extends number,
-  TSchema extends Record<string, unknown>,
-  TColumns extends TableColumnsConfig<TSchema>,
+  TSchemaVersion extends number,
+  TDrizzleSchema extends Record<string, unknown>,
+  TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
 > = {
-  readonly version: TVersion;
+  readonly version: TSchemaVersion;
   readonly tables: {
-    readonly [K in keyof TSchema as TSchema[K] extends Table<any>
-      ? TColumns[TableName<TSchema[K]>] extends object
-        ? TableName<TSchema[K]>
+    readonly [K in keyof TDrizzleSchema as TDrizzleSchema[K] extends Table<any>
+      ? TColumnConfig[TableName<TDrizzleSchema[K]>] extends object
+        ? TableName<TDrizzleSchema[K]>
         : never
-      : never]: TSchema[K] extends Table<any>
+      : never]: TDrizzleSchema[K] extends Table<any>
       ? ZeroSchemaWithRelations<
-          TSchema[K],
-          TColumns[TableName<TSchema[K]>],
+          TDrizzleSchema[K],
+          TColumnConfig[TableName<TDrizzleSchema[K]>],
           ReferencedZeroSchemas<
-            TSchema,
-            TColumns,
-            FindRelationsForTable<TSchema, TableName<TSchema[K]>>,
-            TableName<TSchema[K]>
+            TDrizzleSchema,
+            TColumnConfig,
+            TDrizzleSchema[K]
           >
         >
       : never;
@@ -180,15 +187,15 @@ type CreateZeroSchema<
  * @returns The generated Zero schema.
  */
 const createZeroSchema = <
-  const TVersion extends number,
-  const TSchema extends Record<string, unknown>,
-  const TColumns extends
-    TableColumnsConfig<TSchema> = TableColumnsConfig<TSchema>,
+  const TSchemaVersion extends number,
+  const TDrizzleSchema extends Record<string, unknown>,
+  const TColumnConfig extends
+    TableColumnsConfig<TDrizzleSchema> = TableColumnsConfig<TDrizzleSchema>,
 >(
   /**
    * The Drizzle schema to create a Zero schema from.
    */
-  schema: TSchema,
+  schema: TDrizzleSchema,
   /**
    * The configuration for the Zero schema.
    *
@@ -199,7 +206,7 @@ const createZeroSchema = <
     /**
      * The version of the schema, used for schema migrations.
      */
-    readonly version: TVersion;
+    readonly version: TSchemaVersion;
     /**
      * Specify the tables to include in the Zero schema.
      * This can include type overrides for columns, using `column.json()` for example.
@@ -219,9 +226,9 @@ const createZeroSchema = <
      * }
      * ```
      */
-    readonly tables: TColumns;
+    readonly tables: TColumnConfig;
   },
-): Flatten<CreateZeroSchema<TVersion, TSchema, TColumns>> => {
+): Flatten<CreateZeroSchema<TSchemaVersion, TDrizzleSchema, TColumnConfig>> => {
   let relationships = {} as Record<
     keyof typeof schemaConfig.tables,
     Record<string, unknown>
@@ -304,7 +311,7 @@ const createZeroSchema = <
 
       const tableName = getTableName(table);
 
-      const tableConfig = schemaConfig.tables[tableName as keyof TColumns];
+      const tableConfig = schemaConfig.tables[tableName as keyof TColumnConfig];
 
       // skip tables that don't have a config
       if (!tableConfig) {
@@ -360,7 +367,7 @@ const createZeroSchema = <
   return {
     version: schemaConfig.version,
     tables,
-  } as CreateZeroSchema<TVersion, TSchema, TColumns>;
+  } as CreateZeroSchema<TSchemaVersion, TDrizzleSchema, TColumnConfig>;
 };
 
 const findForeignKeySourceAndDestFields = (

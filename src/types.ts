@@ -5,32 +5,30 @@ import type {
   DrizzleDataTypeToZeroType,
 } from "./drizzle-to-zero";
 
-export type TableName<T extends Table> = T["_"]["name"];
-export type ColumnName<C extends Column> = C["_"]["name"];
+export type TableName<TTable extends Table> = TTable["_"]["name"];
+export type ColumnName<TColumn extends Column> = TColumn["_"]["name"];
 
-export type Columns<T extends Table> = T["_"]["columns"];
-export type ColumnNames<T extends Table> = ColumnName<
-  Columns<T>[keyof Columns<T>]
+export type Columns<TTable extends Table> = TTable["_"]["columns"];
+export type ColumnNames<TTable extends Table> = ColumnName<
+  Columns<TTable>[keyof Columns<TTable>]
 >;
-type ColumnDefinition<T extends Table, K extends ColumnNames<T>> = {
-  [C in keyof Columns<T>]: ColumnName<Columns<T>[C]> extends K
-    ? Columns<T>[C]
+type ColumnDefinition<TTable extends Table, K extends ColumnNames<TTable>> = {
+  [C in keyof Columns<TTable>]: ColumnName<Columns<TTable>[C]> extends K
+    ? Columns<TTable>[C]
+    : never;
+}[keyof Columns<TTable>];
+
+type PrimaryKeyColumns<T extends Table> = {
+  [K in keyof Columns<T>]: Columns<T>[K]["_"]["isPrimaryKey"] extends true
+    ? ColumnName<Columns<T>[K]>
     : never;
 }[keyof Columns<T>];
 
-export type FindPrimaryKeyFromTable<TTable extends Table> = {
-  [K in keyof Columns<TTable>]: Columns<TTable>[K]["_"]["isPrimaryKey"] extends true
-    ? ColumnName<Columns<TTable>[K]>
-    : never;
-}[keyof Columns<TTable>] extends never
+export type FindPrimaryKeyFromTable<T extends Table> = [
+  PrimaryKeyColumns<T>,
+] extends [never]
   ? Readonly<AtLeastOne<string>>
-  : readonly [
-      {
-        [K in keyof Columns<TTable>]: Columns<TTable>[K]["_"]["isPrimaryKey"] extends true
-          ? ColumnName<Columns<TTable>[K]>
-          : never;
-      }[keyof Columns<TTable>],
-    ];
+  : readonly [PrimaryKeyColumns<T>];
 
 /**
  * The type override for a column.
@@ -45,14 +43,14 @@ type TypeOverride<TCustomType> = {
 /**
  * The configuration for the columns to include in the Zero schema.
  */
-export type ColumnsConfig<T extends Table> = {
+export type ColumnsConfig<TTable extends Table> = {
   /**
    * The columns to include in the Zero schema.
    */
-  readonly [K in ColumnNames<T>]?:
+  readonly [KColumn in ColumnNames<TTable>]?:
     | boolean
     | TypeOverride<
-        ZeroTypeToTypescriptType[DrizzleDataTypeToZeroType[Columns<T>[K]["dataType"]]]
+        ZeroTypeToTypescriptType[DrizzleDataTypeToZeroType[Columns<TTable>[KColumn]["dataType"]]]
       >;
 };
 
@@ -65,9 +63,12 @@ export type ZeroTypeToTypescriptType = {
 };
 
 type ZeroMappedColumnType<
-  T extends Table,
-  K extends keyof Columns<T>,
-  CD extends ColumnDefinition<T, K>["_"] = ColumnDefinition<T, K>["_"],
+  TTable extends Table,
+  KColumn extends ColumnNames<TTable>,
+  CD extends ColumnDefinition<TTable, KColumn>["_"] = ColumnDefinition<
+    TTable,
+    KColumn
+  >["_"],
 > = CD extends {
   columnType: keyof DrizzleColumnTypeToZeroType;
 }
@@ -75,21 +76,27 @@ type ZeroMappedColumnType<
   : DrizzleDataTypeToZeroType[CD["dataType"]];
 
 type ZeroMappedCustomType<
-  T extends Table,
-  K extends ColumnNames<T>,
-  CD extends ColumnDefinition<T, K>["_"] = ColumnDefinition<T, K>["_"],
+  TTable extends Table,
+  KColumn extends ColumnNames<TTable>,
+  CD extends ColumnDefinition<TTable, KColumn>["_"] = ColumnDefinition<
+    TTable,
+    KColumn
+  >["_"],
 > = CD extends {
   columnType: "PgEnumColumn";
 }
   ? CD["data"]
   : CD extends { $type: any }
     ? CD["$type"]
-    : ZeroTypeToTypescriptType[ZeroMappedColumnType<T, K>];
+    : ZeroTypeToTypescriptType[ZeroMappedColumnType<TTable, KColumn>];
 
 type ZeroColumnDefinition<
-  T extends Table,
-  K extends ColumnNames<T>,
-  CD extends ColumnDefinition<T, K>["_"] = ColumnDefinition<T, K>["_"],
+  TTable extends Table,
+  KColumn extends ColumnNames<TTable>,
+  CD extends ColumnDefinition<TTable, KColumn>["_"] = ColumnDefinition<
+    TTable,
+    KColumn
+  >["_"],
 > = Readonly<
   {
     readonly optional: CD extends {
@@ -101,21 +108,26 @@ type ZeroColumnDefinition<
       : CD extends { notNull: true }
         ? false
         : true;
-    readonly type: ZeroMappedColumnType<T, K>;
-    readonly customType: ZeroMappedCustomType<T, K>;
+    readonly type: ZeroMappedColumnType<TTable, KColumn>;
+    readonly customType: ZeroMappedCustomType<TTable, KColumn>;
   } & (CD extends { columnType: "PgEnumColumn" }
     ? { readonly kind: "enum" }
     : {})
 >;
 
-export type ZeroColumns<T extends Table, C extends ColumnsConfig<T>> = {
-  readonly [K in keyof C as C[K] extends true | TypeOverride<any>
-    ? K
-    : never]: K extends ColumnNames<T>
-    ? C[K] extends TypeOverride<any>
-      ? C[K]
-      : C[K] extends true
-        ? ZeroColumnDefinition<T, K>
+export type ZeroColumns<
+  TTable extends Table,
+  TColumnConfig extends ColumnsConfig<TTable>,
+> = {
+  readonly [KColumn in keyof TColumnConfig as TColumnConfig[KColumn] extends
+    | true
+    | TypeOverride<any>
+    ? KColumn
+    : never]: KColumn extends ColumnNames<TTable>
+    ? TColumnConfig[KColumn] extends TypeOverride<any>
+      ? TColumnConfig[KColumn]
+      : TColumnConfig[KColumn] extends true
+        ? ZeroColumnDefinition<TTable, KColumn>
         : never
     : never;
 };

@@ -17,18 +17,21 @@ import type {
 import { typedEntries } from "./util";
 
 type CreateZeroTableSchema<
-  T extends Table = Table,
-  C extends ColumnsConfig<T> = ColumnsConfig<T>,
+  TTable extends Table = Table,
+  TColumnConfig extends ColumnsConfig<TTable> = ColumnsConfig<TTable>,
 > = Flatten<{
-  readonly tableName: TableName<T>;
-  readonly primaryKey: FindPrimaryKeyFromTable<T>;
-  readonly columns: ZeroColumns<T, C>;
+  readonly tableName: TableName<TTable>;
+  readonly primaryKey: FindPrimaryKeyFromTable<TTable>;
+  readonly columns: ZeroColumns<TTable, TColumnConfig>;
 }>;
 
-const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
-  table: T,
-  columns: C,
-): CreateZeroTableSchema<T, C> => {
+const createZeroTableSchema = <
+  TTable extends Table,
+  TColumnConfig extends ColumnsConfig<TTable>,
+>(
+  table: TTable,
+  columns: TColumnConfig,
+): CreateZeroTableSchema<TTable, TColumnConfig> => {
   const tableColumns = getTableColumns(table);
   const tableConfig = getTableConfigForDatabase(table);
 
@@ -38,7 +41,7 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
     (acc, [_key, column]) => {
       const name = column.name;
 
-      const columnConfig = columns[name as keyof C];
+      const columnConfig = columns[name as keyof TColumnConfig];
 
       if (
         typeof columnConfig !== "boolean" &&
@@ -105,7 +108,7 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
         [name]: schemaValue,
       };
     },
-    {} as ZeroColumns<T, C>,
+    {} as ZeroColumns<TTable, TColumnConfig>,
   );
 
   const tableName = getTableName(table);
@@ -126,8 +129,8 @@ const createZeroTableSchema = <T extends Table, C extends ColumnsConfig<T>>(
   return {
     tableName,
     columns: columnsMapped,
-    primaryKey: primaryKeys as unknown as FindPrimaryKeyFromTable<T>,
-  } as unknown as CreateZeroTableSchema<T, C>;
+    primaryKey: primaryKeys as unknown as FindPrimaryKeyFromTable<TTable>,
+  } as unknown as CreateZeroTableSchema<TTable, TColumnConfig>;
 };
 
 export { createZeroTableSchema, type CreateZeroTableSchema };
