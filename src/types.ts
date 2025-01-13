@@ -1,127 +1,119 @@
-import type { JSONValue } from "@rocicorp/zero";
-import type { Column, Table } from "drizzle-orm";
-import type {
-  DrizzleColumnTypeToZeroType,
-  DrizzleDataTypeToZeroType,
-} from "./drizzle-to-zero";
+import type { Column, Relations, Table } from "drizzle-orm";
 
-export type TableName<T extends Table> = T["_"]["name"];
-export type ColumnName<C extends Column> = C["_"]["name"];
+/**
+ * Extracts the table name from a Drizzle table type.
+ * @template TTable The Drizzle table type
+ */
+export type TableName<TTable extends Table> = TTable["_"]["name"];
 
-export type Columns<T extends Table> = T["_"]["columns"];
-export type ColumnNames<T extends Table> = ColumnName<
-  Columns<T>[keyof Columns<T>]
+/**
+ * Extracts the column name from a Drizzle column type.
+ * @template TColumn The Drizzle column type
+ */
+export type ColumnName<TColumn extends Column> = TColumn["_"]["name"];
+
+/**
+ * Gets all columns from a Drizzle table type.
+ * @template TTable The Drizzle table type
+ */
+export type Columns<TTable extends Table> = TTable["_"]["columns"];
+
+/**
+ * Gets all column names from a Drizzle table type.
+ * @template TTable The Drizzle table type
+ */
+export type ColumnNames<TTable extends Table> = ColumnName<
+  Columns<TTable>[keyof Columns<TTable>]
 >;
-type ColumnDefinition<T extends Table, K extends ColumnNames<T>> = {
-  [C in keyof Columns<T>]: ColumnName<Columns<T>[C]> extends K
-    ? Columns<T>[C]
+
+/**
+ * Helper type that extracts primary key columns from a table.
+ * @template T The Drizzle table type
+ */
+type PrimaryKeyColumns<T extends Table> = {
+  [K in keyof Columns<T>]: Columns<T>[K]["_"]["isPrimaryKey"] extends true
+    ? ColumnName<Columns<T>[K]>
     : never;
 }[keyof Columns<T>];
 
-export type FindPrimaryKeyFromTable<TTable extends Table> = {
-  [K in keyof Columns<TTable>]: Columns<TTable>[K]["_"]["isPrimaryKey"] extends true
-    ? ColumnName<Columns<TTable>[K]>
-    : never;
-}[keyof Columns<TTable>] extends never
+/**
+ * Finds the primary key(s) from a table. Returns either:
+ * - A readonly tuple of the primary key column name if one exists
+ * - A readonly array of at least one string if no primary key is defined
+ * @template T The Drizzle table type
+ */
+export type FindPrimaryKeyFromTable<T extends Table> = [
+  PrimaryKeyColumns<T>,
+] extends [never]
   ? Readonly<AtLeastOne<string>>
-  : readonly [
-      {
-        [K in keyof Columns<TTable>]: Columns<TTable>[K]["_"]["isPrimaryKey"] extends true
-          ? ColumnName<Columns<TTable>[K]>
-          : never;
-      }[keyof Columns<TTable>],
-    ];
+  : readonly [PrimaryKeyColumns<T>];
 
 /**
- * The type override for a column.
+ * Finds relations defined for a specific table in the Drizzle schema.
+ * @template TDrizzleSchema The complete Drizzle schema
+ * @template TTable The table to find relations for
  */
-type TypeOverride<TCustomType> = {
-  readonly type: "string" | "number" | "boolean" | "json";
-  readonly optional: boolean;
-  readonly customType: TCustomType;
-  readonly kind?: "enum";
-};
-
-/**
- * The configuration for the columns to include in the Zero schema.
- */
-export type ColumnsConfig<T extends Table> = {
-  /**
-   * The columns to include in the Zero schema.
-   */
-  readonly [K in ColumnNames<T>]?:
-    | boolean
-    | TypeOverride<
-        ZeroTypeToTypescriptType[DrizzleDataTypeToZeroType[Columns<T>[K]["dataType"]]]
-      >;
-};
-
-export type ZeroTypeToTypescriptType = {
-  number: number;
-  boolean: boolean;
-  date: string;
-  string: string;
-  json: JSONValue;
-};
-
-type ZeroMappedColumnType<
-  T extends Table,
-  K extends keyof Columns<T>,
-  CD extends ColumnDefinition<T, K>["_"] = ColumnDefinition<T, K>["_"],
-> = CD extends {
-  columnType: keyof DrizzleColumnTypeToZeroType;
-}
-  ? DrizzleColumnTypeToZeroType[CD["columnType"]]
-  : DrizzleDataTypeToZeroType[CD["dataType"]];
-
-type ZeroMappedCustomType<
-  T extends Table,
-  K extends ColumnNames<T>,
-  CD extends ColumnDefinition<T, K>["_"] = ColumnDefinition<T, K>["_"],
-> = CD extends {
-  columnType: "PgEnumColumn";
-}
-  ? CD["data"]
-  : CD extends { $type: any }
-    ? CD["$type"]
-    : ZeroTypeToTypescriptType[ZeroMappedColumnType<T, K>];
-
-type ZeroColumnDefinition<
-  T extends Table,
-  K extends ColumnNames<T>,
-  CD extends ColumnDefinition<T, K>["_"] = ColumnDefinition<T, K>["_"],
-> = Readonly<
-  {
-    readonly optional: CD extends {
-      hasDefault: true;
-      // Zero doesn't support runtime defaults yet
-      hasRuntimeDefault: false;
-    }
-      ? true
-      : CD extends { notNull: true }
-        ? false
-        : true;
-    readonly type: ZeroMappedColumnType<T, K>;
-    readonly customType: ZeroMappedCustomType<T, K>;
-  } & (CD extends { columnType: "PgEnumColumn" }
-    ? { readonly kind: "enum" }
-    : {})
+export type FindRelationsForTable<
+  TDrizzleSchema extends Record<string, unknown>,
+  TTable extends Table,
+> = Extract<
+  TDrizzleSchema[{
+    [P in keyof TDrizzleSchema]: TDrizzleSchema[P] extends Relations<
+      TableName<TTable>
+    >
+      ? P
+      : never;
+  }[keyof TDrizzleSchema]],
+  Relations<TableName<TTable>>
 >;
 
-export type ZeroColumns<T extends Table, C extends ColumnsConfig<T>> = {
-  readonly [K in keyof C as C[K] extends true | TypeOverride<any>
-    ? K
-    : never]: K extends ColumnNames<T>
-    ? C[K] extends TypeOverride<any>
-      ? C[K]
-      : C[K] extends true
-        ? ZeroColumnDefinition<T, K>
-        : never
-    : never;
-};
+/**
+ * Type guard that checks if a type is a Table with a specific name.
+ * @template T The type to check
+ * @template Name The name to check for
+ */
+type IsTableWithName<T, Name extends string> = T extends { _: { name: Name } }
+  ? T extends Table<any>
+    ? true
+    : false
+  : false;
 
+/**
+ * Finds a table in the schema by its name.
+ * @template TDrizzleSchema The complete Drizzle schema
+ * @template Name The name of the table to find
+ */
+export type FindTableByName<
+  TDrizzleSchema extends Record<string, unknown>,
+  Name extends string,
+> = Extract<
+  {
+    [P in keyof TDrizzleSchema]: IsTableWithName<
+      TDrizzleSchema[P],
+      Name
+    > extends true
+      ? TDrizzleSchema[P]
+      : never;
+  }[keyof TDrizzleSchema],
+  Table<any>
+>;
+
+/**
+ * Extracts the configuration type from a Relations type.
+ * @template T The Relations type to extract config from
+ */
+export type RelationsConfig<T extends Relations> = ReturnType<T["config"]>;
+
+/**
+ * Utility type that flattens an object type by removing any intermediate interfaces.
+ * @template T The type to flatten
+ */
 export type Flatten<T> = {
   [K in keyof T]: T[K];
 } & {};
 
+/**
+ * Utility type that ensures an array has at least one element.
+ * @template T The type of elements in the array
+ */
 export type AtLeastOne<T> = [T, ...T[]];

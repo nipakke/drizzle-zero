@@ -84,7 +84,7 @@ export const seed = async () => {
     id: "5",
     body: "Thomas!",
     senderId: "1",
-    mediumId: "2",
+    mediumId: "4",
     metadata: { key: "value5" },
   });
 

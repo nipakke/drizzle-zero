@@ -8,6 +8,31 @@ import {
 } from "./utils";
 
 describe.concurrent("relationships", () => {
+  test("relationships - many-to-many-subset", async () => {
+    await expect(
+      import("./schemas/one-to-one-missing-foreign-key.zero"),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[Error: No relationship found for: userPosts (One from users to posts). Did you forget to define foreign keys?]`,
+    );
+  });
+
+  test("relationships - many-to-many-missing-foreign-key", async () => {
+    await expect(
+      import("./schemas/many-to-many-missing-foreign-key.zero"),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invalid many-to-many configuration for user.groups: Could not find foreign key relationships in junction table users_to_group]`,
+    );
+  });
+
+
+  test("relationships - many-to-many-duplicate-relationship", async () => {
+    await expect(
+      import("./schemas/many-to-many-duplicate-relationship.zero"),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[Error: Duplicate relationship found for: usersToGroups (Many from user to users_to_group).]`,
+    );
+  });
+
   test("relationships - one-to-one-missing-foreign-key", async () => {
     await expect(
       import("./schemas/one-to-one-missing-foreign-key.zero"),
@@ -124,12 +149,7 @@ describe.concurrent("relationships", () => {
     });
 
     expectSchemaDeepEqual(oneToOneSelfZeroSchema).toEqual(expected);
-    Expect<
-      Equal<
-        typeof oneToOneSelfZeroSchema.tables.user.columns.name,
-        typeof expected.tables.user.columns.name
-      >
-    >;
+    Expect<Equal<typeof oneToOneSelfZeroSchema, typeof expected>>;
   });
 
   test("relationships - one-to-one", async () => {
@@ -199,7 +219,12 @@ describe.concurrent("relationships", () => {
     });
 
     expectSchemaDeepEqual(oneToOneZeroSchema).toEqual(expected);
-    Expect<Equal<typeof oneToOneZeroSchema, typeof expected>>;
+    Expect<
+      Equal<
+        typeof oneToOneZeroSchema.tables.user.relationships.profileInfo,
+        typeof expected.tables.user.relationships.profileInfo
+      >
+    >;
   });
 
   test("relationships - one-to-one-subset", async () => {
@@ -331,6 +356,22 @@ describe.concurrent("relationships", () => {
       },
       primaryKey: ["id"],
       relationships: {
+        mediums: [
+          {
+            sourceField: ["id"] as AtLeastOne<"id" | "name">,
+            destField: ["senderId"] as AtLeastOne<
+              "id" | "senderId" | "mediumId" | "body"
+            >,
+            destSchema: () => expectedMessage,
+          },
+          {
+            sourceField: ["mediumId"] as AtLeastOne<
+              "id" | "senderId" | "mediumId" | "body"
+            >,
+            destField: ["id"] as AtLeastOne<"id" | "name">,
+            destSchema: () => expectedMedium,
+          },
+        ],
         messages: {
           sourceField: ["id"] as AtLeastOne<"id" | "name">,
           destField: ["senderId"] as AtLeastOne<
@@ -655,6 +696,18 @@ describe.concurrent("relationships", () => {
       },
       primaryKey: ["id"],
       relationships: {
+        groups: [
+          {
+            sourceField: ["id"] as AtLeastOne<"id" | "name">,
+            destField: ["user_id"] as AtLeastOne<"user_id" | "group_id">,
+            destSchema: () => expectedUsersToGroups,
+          },
+          {
+            sourceField: ["group_id"] as AtLeastOne<"group_id" | "user_id">,
+            destField: ["id"] as AtLeastOne<"id" | "name">,
+            destSchema: () => expectedGroups,
+          },
+        ],
         usersToGroups: {
           sourceField: ["id"] as AtLeastOne<"id" | "name">,
           destField: ["user_id"] as AtLeastOne<"user_id" | "group_id">,
@@ -866,11 +919,6 @@ describe.concurrent("relationships", () => {
     });
 
     expectSchemaDeepEqual(customSchemaZeroSchema).toEqual(expected);
-    Expect<
-      Equal<
-        typeof customSchemaZeroSchema.tables.user.columns.invited_by,
-        typeof expected.tables.user.columns.invited_by
-      >
-    >;
+    Expect<Equal<typeof customSchemaZeroSchema, typeof expected>>;
   });
 });

@@ -356,6 +356,26 @@
           }
         },
         "relationships": {
+          "mediums": [
+            {
+              "sourceField": [
+                "id"
+              ],
+              "destField": [
+                "senderId"
+              ],
+              "destSchema": "message"
+            },
+            {
+              "sourceField": [
+                "mediumId"
+              ],
+              "destField": [
+                "id"
+              ],
+              "destSchema": "medium"
+            }
+          ],
           "messages": {
             "sourceField": [
               "id"

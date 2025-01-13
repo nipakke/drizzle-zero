@@ -38,56 +38,29 @@ export function expectTableSchemaDeepEqual<S extends ZeroTableSchema>(
 
       if (expected.relationships) {
         for (const key of Object.keys(expected.relationships)) {
-          expect(
-            (
-              actual.relationships?.[
-                key as keyof typeof actual.relationships
-              ] as {
-                sourceField: string;
-              }
-            )?.sourceField,
-          ).toStrictEqual(
-            (
-              expected.relationships?.[
-                key as keyof typeof expected.relationships
-              ] as {
-                sourceField: string;
-              }
-            )?.sourceField,
-          );
+          const expectedRelations = Array.isArray(expected.relationships[key])
+            ? expected.relationships[key]
+            : [expected.relationships[key]];
 
-          expect(
-            (
-              actual.relationships?.[
-                key as keyof typeof actual.relationships
-              ] as {
-                destField: string;
-              }
-            )?.destField,
-          ).toStrictEqual(
-            (
-              expected.relationships?.[
-                key as keyof typeof expected.relationships
-              ] as {
-                destField: string;
-              }
-            )?.destField,
-          );
+          const actualRelations = Array.isArray(actual.relationships?.[key])
+            ? actual.relationships?.[key]
+            : [actual.relationships?.[key]];
 
-          expectTableSchemaDeepEqual(
-            (
-              actual.relationships?.[
-                key as keyof typeof actual.relationships
-              ] as { destSchema: () => ZeroTableSchema }
-            )?.destSchema(),
-          ).toEqual(
-            (
-              expected.relationships?.[
-                key as keyof typeof expected.relationships
-              ] as { destSchema: () => ZeroTableSchema }
-            )?.destSchema(),
-            depth + 1,
-          );
+          expect(actualRelations).toHaveLength(expectedRelations.length);
+
+          for (let i = 0; i < expectedRelations.length; i++) {
+            expect(actualRelations[i]?.sourceField).toStrictEqual(
+              expectedRelations[i]?.sourceField,
+            );
+
+            expect(actualRelations[i]?.destField).toStrictEqual(
+              expectedRelations[i]?.destField,
+            );
+
+            expectTableSchemaDeepEqual(
+              expectedRelations[i]?.destSchema(),
+            ).toEqual(actualRelations[i]?.destSchema(), depth + 1);
+          }
         }
       }
     },

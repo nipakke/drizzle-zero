@@ -44,21 +44,21 @@ export const postsRelations = relations(posts, ({ one }) => ({
 }));
 ```
 
-You can then convert this Drizzle schema to a Zero schema:
+Convert this Drizzle schema to a Zero schema:
 
 ```ts
 import { createSchema } from "@rocicorp/zero";
-import { createZeroTableSchema } from "drizzle-zero";
+import { createZeroSchema } from "drizzle-zero";
 import * as drizzleSchema from "./drizzle-schema";
 
 // Convert to Zero schema
 export const schema = createSchema(
   createZeroSchema(drizzleSchema, {
     version: 1,
-    // Specify which tables and columns to include in the Zero schema
-    // this allows for the "expand/migrate/contract" pattern recommended in the Zero docs
-    // e.g. when a column is first added, it should be set to false, and then changed to true
-    // once the migration has been run
+    // Specify which tables and columns to include in the Zero schema.
+    // This allows for the "expand/migrate/contract" pattern recommended in the Zero docs.
+    // When a column is first added, it should be set to false, and then changed to true
+    // once the migration has been run.
     tables: {
       user: {
         id: true,
@@ -92,50 +92,140 @@ Use the generated Zero schema:
 ```tsx
 import { useQuery, useZero } from "@rocicorp/zero/react";
 
-function PostList({ selectedAuthorId }: { selectedAuthorId?: string }) {
+function PostList() {
   const z = useZero();
 
   // Build a query for posts with their authors
-  let postsQuery = z.query.post.related("author").limit(100);
+  const postsQuery = z.query.post.related("author").limit(10);
 
-  // Filter by author if selectedAuthorId is provided
-  if (selectedAuthorId) {
-    postsQuery = postsQuery.where("author_id", "=", selectedAuthorId);
-  }
-
-  const [posts, postsDetail] = useQuery(postsQuery);
+  const [posts] = useQuery(postsQuery);
 
   return (
     <div>
-      <div>
-        {postsDetail.type === "complete"
-          ? "Complete results"
-          : "Partial results"}
-      </div>
-      <div>
-        {posts.map((post) => (
-          <div key={post.id} className="post">
-            {/* this is the JSON type from Drizzle */}
-            <h2>{post.content.textValue}</h2>
-            <p>By: {post.author?.name}</p>
-          </div>
-        ))}
-      </div>
+      {posts.map((post) => (
+        <div key={post.id} className="post">
+          {/* Access the JSON content from Drizzle */}
+          <p>{post.content.textValue}</p>
+          <p>By: {post.author?.name}</p>
+        </div>
+      ))}
     </div>
   );
 }
 ```
 
+## Many-to-Many Relationships
+
+drizzle-zero supports many-to-many relationships with a junction table (in this case, `users_to_group`):
+
+```ts
+import { relations } from "drizzle-orm";
+import { pgTable, text, primaryKey } from "drizzle-orm/pg-core";
+
+export const users = pgTable("user", {
+  id: text("id").primaryKey(),
+  name: text("name"),
+});
+
+export const groups = pgTable("group", {
+  id: text("id").primaryKey(),
+  name: text("name"),
+});
+
+// Junction table
+export const usersToGroups = pgTable(
+  "users_to_group",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id),
+    groupId: text("group_id")
+      .notNull()
+      .references(() => groups.id),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.groupId] })],
+);
+
+// Define the relationships
+export const usersRelations = relations(users, ({ many }) => ({
+  usersToGroups: many(usersToGroups),
+}));
+
+export const groupsRelations = relations(groups, ({ many }) => ({
+  usersToGroups: many(usersToGroups),
+}));
+
+export const usersToGroupsRelations = relations(usersToGroups, ({ one }) => ({
+  group: one(groups, {
+    fields: [usersToGroups.groupId],
+    references: [groups.id],
+  }),
+  user: one(users, {
+    fields: [usersToGroups.userId],
+    references: [users.id],
+  }),
+}));
+```
+
+Configure the Zero schema to handle the many-to-many relationship:
+
+```ts
+export const schema = createSchema(
+  createZeroSchema(drizzleSchema, {
+    version: 1,
+    tables: {
+      user: {
+        id: true,
+        name: true,
+      },
+      group: {
+        id: true,
+        name: true,
+      },
+      users_to_group: {
+        user_id: true,
+        group_id: true,
+      },
+    },
+    manyToMany: {
+      // The origin table to define the many-to-many relationship on
+      user: {
+        // The key is the relation name and value is [junction table, target table]
+        groups: ["users_to_group", "group"],
+      },
+    },
+  }),
+);
+```
+
+Then, skip the junction table when querying:
+
+```tsx
+const userQuery = z.query.user.where("id", "=", "1").related("groups").one();
+
+const [user] = useQuery(userQuery);
+
+console.log(user);
+// {
+//   id: "user_1",
+//   name: "User 1",
+//   groups: [
+//     { id: "group_1", name: "Group 1" },
+//     { id: "group_2", name: "Group 2" },
+//   ],
+// }
+```
+
 ## Features
 
 - Convert Drizzle ORM schemas to Zero schemas
+  - Sync a subset of tables and columns
 - Handles all Drizzle column types that are supported by Zero
-- Type-safe schema generation, with inferred types from Drizzle
-- Sync a subset of tables
+- Type-safe schema generation with inferred types from Drizzle
 - Supports relationships:
   - One-to-one relationships
   - One-to-many relationships
-  - Many-to-many relationships
+  - Many-to-many relationships (skipping junction tables)
   - Self-referential relationships
 
 ## License

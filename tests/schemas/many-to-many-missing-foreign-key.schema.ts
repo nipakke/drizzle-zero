@@ -13,12 +13,8 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const usersToGroups = pgTable(
   "users_to_group",
   {
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id),
-    groupId: text("group_id")
-      .notNull()
-      .references(() => groups.id),
+    userId: text("user_id").notNull(),
+    groupId: text("group_id").notNull(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.groupId] })],
 );
