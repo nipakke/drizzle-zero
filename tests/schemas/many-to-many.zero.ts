@@ -24,6 +24,11 @@ export const schema = createSchema(
         group_id: true,
       },
     },
+    manyToMany: {
+      user: {
+        groups: ["users_to_group", "group"],
+      },
+    },
   }),
 );
 

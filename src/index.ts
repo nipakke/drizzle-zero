@@ -1,6 +1,10 @@
 import { createZeroSchema, type CreateZeroSchema } from "./relations";
-import { createZeroTableSchema, type CreateZeroTableSchema } from "./tables";
-import type { ColumnsConfig, ZeroColumns } from "./types";
+import {
+  createZeroTableSchema,
+  type CreateZeroTableSchema,
+  type ColumnsConfig,
+  type ZeroColumns,
+} from "./tables";
 
 export {
   createZeroSchema,

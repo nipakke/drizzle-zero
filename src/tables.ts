@@ -5,17 +5,155 @@ import {
   drizzleColumnTypeToZeroType,
   type DrizzleDataTypeToZeroType,
   drizzleDataTypeToZeroType,
+  type ZeroTypeToTypescriptType,
 } from "./drizzle-to-zero";
 import type {
-  ColumnsConfig,
+  ColumnName,
+  ColumnNames,
+  Columns,
   FindPrimaryKeyFromTable,
   Flatten,
   TableName,
-  ZeroColumns,
-  ZeroTypeToTypescriptType,
 } from "./types";
 import { typedEntries } from "./util";
 
+/**
+ * Represents a column definition from a Drizzle table, filtered by column name.
+ * @template TTable The Drizzle table type
+ * @template K The column name to filter by
+ */
+type ColumnDefinition<TTable extends Table, K extends ColumnNames<TTable>> = {
+  [C in keyof Columns<TTable>]: ColumnName<Columns<TTable>[C]> extends K
+    ? Columns<TTable>[C]
+    : never;
+}[keyof Columns<TTable>];
+
+/**
+ * The type override for a column.
+ * Used to customize how a Drizzle column is mapped to a Zero schema.
+ * @template TCustomType The TypeScript type that corresponds to the Zero type
+ */
+type TypeOverride<TCustomType> = {
+  readonly type: "string" | "number" | "boolean" | "json";
+  readonly optional: boolean;
+  readonly customType: TCustomType;
+  readonly kind?: "enum";
+};
+
+/**
+ * Configuration for specifying which columns to include in the Zero schema and how to map them.
+ * @template TTable The Drizzle table type
+ */
+export type ColumnsConfig<TTable extends Table> = {
+  /**
+   * The columns to include in the Zero schema.
+   * Set to true to use default mapping, or provide a TypeOverride for custom mapping.
+   */
+  readonly [KColumn in ColumnNames<TTable>]?:
+    | boolean
+    | TypeOverride<
+        ZeroTypeToTypescriptType[DrizzleDataTypeToZeroType[Columns<TTable>[KColumn]["dataType"]]]
+      >;
+};
+
+/**
+ * Maps a Drizzle column type to its corresponding Zero type.
+ * @template TTable The Drizzle table type
+ * @template KColumn The column name
+ * @template CD The column definition type
+ */
+type ZeroMappedColumnType<
+  TTable extends Table,
+  KColumn extends ColumnNames<TTable>,
+  CD extends ColumnDefinition<TTable, KColumn>["_"] = ColumnDefinition<
+    TTable,
+    KColumn
+  >["_"],
+> = CD extends {
+  columnType: keyof DrizzleColumnTypeToZeroType;
+}
+  ? DrizzleColumnTypeToZeroType[CD["columnType"]]
+  : DrizzleDataTypeToZeroType[CD["dataType"]];
+
+/**
+ * Maps a Drizzle column to its corresponding TypeScript type in Zero.
+ * Handles special cases like enums and custom types.
+ * @template TTable The Drizzle table type
+ * @template KColumn The column name
+ * @template CD The column definition type
+ */
+type ZeroMappedCustomType<
+  TTable extends Table,
+  KColumn extends ColumnNames<TTable>,
+  CD extends ColumnDefinition<TTable, KColumn>["_"] = ColumnDefinition<
+    TTable,
+    KColumn
+  >["_"],
+> = CD extends {
+  columnType: "PgEnumColumn";
+}
+  ? CD["data"]
+  : CD extends { $type: any }
+    ? CD["$type"]
+    : ZeroTypeToTypescriptType[ZeroMappedColumnType<TTable, KColumn>];
+
+/**
+ * Defines the structure of a column in the Zero schema.
+ * @template TTable The Drizzle table type
+ * @template KColumn The column name
+ * @template CD The column definition type
+ */
+type ZeroColumnDefinition<
+  TTable extends Table,
+  KColumn extends ColumnNames<TTable>,
+  CD extends ColumnDefinition<TTable, KColumn>["_"] = ColumnDefinition<
+    TTable,
+    KColumn
+  >["_"],
+> = Readonly<
+  {
+    readonly optional: CD extends {
+      hasDefault: true;
+      hasRuntimeDefault: false;
+    }
+      ? true
+      : CD extends { notNull: true }
+        ? false
+        : true;
+    readonly type: ZeroMappedColumnType<TTable, KColumn>;
+    readonly customType: ZeroMappedCustomType<TTable, KColumn>;
+  } & (CD extends { columnType: "PgEnumColumn" }
+    ? { readonly kind: "enum" }
+    : {})
+>;
+
+/**
+ * Maps the columns configuration to their Zero schema definitions.
+ * @template TTable The Drizzle table type
+ * @template TColumnConfig The columns configuration
+ */
+export type ZeroColumns<
+  TTable extends Table,
+  TColumnConfig extends ColumnsConfig<TTable>,
+> = {
+  readonly [KColumn in keyof TColumnConfig as TColumnConfig[KColumn] extends
+    | true
+    | TypeOverride<any>
+    ? KColumn
+    : never]: KColumn extends ColumnNames<TTable>
+    ? TColumnConfig[KColumn] extends TypeOverride<any>
+      ? TColumnConfig[KColumn]
+      : TColumnConfig[KColumn] extends true
+        ? ZeroColumnDefinition<TTable, KColumn>
+        : never
+    : never;
+};
+
+/**
+ * Represents the complete Zero schema for a Drizzle table.
+ * @template TTable The Drizzle table type
+ * @template TColumnConfig The columns configuration
+ */
 type CreateZeroTableSchema<
   TTable extends Table = Table,
   TColumnConfig extends ColumnsConfig<TTable> = ColumnsConfig<TTable>,
@@ -25,6 +163,15 @@ type CreateZeroTableSchema<
   readonly columns: ZeroColumns<TTable, TColumnConfig>;
 }>;
 
+/**
+ * Creates a Zero schema from a Drizzle table definition.
+ * @template TTable The Drizzle table type
+ * @template TColumnConfig The columns configuration type
+ * @param table The Drizzle table instance
+ * @param columns Configuration specifying which columns to include and how to map them
+ * @returns A Zero schema definition for the table
+ * @throws {Error} If primary key configuration is invalid or column types are unsupported
+ */
 const createZeroTableSchema = <
   TTable extends Table,
   TColumnConfig extends ColumnsConfig<TTable>,

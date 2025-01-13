@@ -5,31 +5,28 @@ import {
   type Schema,
 } from "@rocicorp/zero";
 import { createZeroSchema } from "../../src";
-import * as oneToOne2 from "./one-to-one-2.schema";
+import * as manyToManyForeignKey from "./many-to-many-missing-foreign-key.schema";
 
 export const schema = createSchema(
-  createZeroSchema(oneToOne2, {
-    version: 2.1,
+  createZeroSchema(manyToManyForeignKey, {
+    version: 1,
     tables: {
       user: {
         id: true,
         name: true,
-        partner: true,
       },
-      medium: {
+      group: {
         id: true,
         name: true,
       },
-      message: {
-        id: true,
-        senderId: true,
-        mediumId: true,
-        body: true,
+      users_to_group: {
+        user_id: true,
+        group_id: true,
       },
     },
     manyToMany: {
       user: {
-        mediums: ["message", "medium"],
+        groups: ["users_to_group", "group"],
       },
     },
   }),
@@ -37,14 +34,7 @@ export const schema = createSchema(
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {
-    medium: {
-      row: {
-        insert: ANYONE_CAN,
-        update: ANYONE_CAN,
-        delete: ANYONE_CAN,
-      },
-    },
-    message: {
+    group: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
@@ -52,6 +42,13 @@ export const permissions = definePermissions<{}, Schema>(schema, () => {
       },
     },
     user: {
+      row: {
+        insert: ANYONE_CAN,
+        update: ANYONE_CAN,
+        delete: ANYONE_CAN,
+      },
+    },
+    users_to_group: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,

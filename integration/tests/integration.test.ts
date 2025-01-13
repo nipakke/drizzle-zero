@@ -87,6 +87,23 @@ describe("relationships", () => {
     preloadedMessages.cleanup();
   });
 
+  test("can query many-to-many relationships", async () => {
+    const zero = await getNewZero();
+
+    const q = zero.query.user.related("mediums").one();
+
+    const preloadedUsers = await q.preload();
+    await preloadedUsers.complete;
+
+    const user = await q.one().run();
+
+    expect(user?.mediums).toHaveLength(2);
+    expect(user?.mediums[0]?.name).toBe("email");
+    expect(user?.mediums[1]?.name).toBe("whatsapp");
+
+    preloadedUsers.cleanup();
+  });
+
   test("can insert messages", async () => {
     const zero = await getNewZero();
 
@@ -269,14 +286,27 @@ describe("types", () => {
     expect(dbResult?.uuidField).toBeDefined();
     expect(dbResult?.varcharField).toStrictEqual("varchar2");
     expect(dbResult?.booleanField).toStrictEqual(true);
-    expect(dbResult?.timestampField?.toISOString()).toStrictEqual(currentDate.toISOString());
-    expect(dbResult?.timestampTzField?.toISOString()).toStrictEqual(currentDate.toISOString());
-    expect(dbResult?.timestampModeDate?.toISOString()).toStrictEqual(currentDate.toISOString());
-    expect(dbResult?.timestampModeString).toContain(currentDate.toISOString().split("T")[0]);
-    expect(dbResult?.dateField).toStrictEqual(currentDate.toISOString().split("T")[0]);
+    expect(dbResult?.timestampField?.toISOString()).toStrictEqual(
+      currentDate.toISOString(),
+    );
+    expect(dbResult?.timestampTzField?.toISOString()).toStrictEqual(
+      currentDate.toISOString(),
+    );
+    expect(dbResult?.timestampModeDate?.toISOString()).toStrictEqual(
+      currentDate.toISOString(),
+    );
+    expect(dbResult?.timestampModeString).toContain(
+      currentDate.toISOString().split("T")[0],
+    );
+    expect(dbResult?.dateField).toStrictEqual(
+      currentDate.toISOString().split("T")[0],
+    );
     expect(dbResult?.jsonField).toStrictEqual({ key: "value" });
     expect(dbResult?.jsonbField).toStrictEqual({ key: "value" });
-    expect(dbResult?.typedJsonField).toStrictEqual({ theme: "light", fontSize: 16 });
+    expect(dbResult?.typedJsonField).toStrictEqual({
+      theme: "light",
+      fontSize: 16,
+    });
     expect(dbResult?.statusField).toStrictEqual("active");
 
     expect(dbResult?.smallSerialField).toStrictEqual(2);

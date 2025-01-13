@@ -75,6 +75,11 @@ const zeroSchema = createZeroSchema(drizzleSchema, {
       optional_uuid: true,
     },
   },
+  manyToMany: {
+    user: {
+      mediums: ["message", "medium"],
+    },
+  },
 });
 
 export const schema = createSchema(zeroSchema);

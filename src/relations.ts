@@ -8,16 +8,22 @@ import {
   Table,
 } from "drizzle-orm";
 import { getTableConfigForDatabase } from "./db";
-import { createZeroTableSchema, type CreateZeroTableSchema } from "./tables";
+import {
+  createZeroTableSchema,
+  type ColumnsConfig,
+  type CreateZeroTableSchema,
+  type ZeroColumns,
+} from "./tables";
 import type {
   AtLeastOne,
   ColumnName,
   Columns,
-  ColumnsConfig,
   FindPrimaryKeyFromTable,
+  FindRelationsForTable,
+  FindTableByName,
   Flatten,
+  RelationsConfig,
   TableName,
-  ZeroColumns,
 } from "./types";
 import { typedEntries } from "./util";
 
@@ -43,25 +49,6 @@ type ZeroSchemaWithRelations<
 >;
 
 /**
- * Finds relations defined for a specific table in the Drizzle schema.
- * @template TDrizzleSchema - The complete Drizzle schema
- * @template TTable - The table to find relations for
- */
-type FindRelationsForTable<
-  TDrizzleSchema extends Record<string, unknown>,
-  TTable extends Table,
-> = Extract<
-  TDrizzleSchema[{
-    [P in keyof TDrizzleSchema]: TDrizzleSchema[P] extends Relations<
-      TableName<TTable>
-    >
-      ? P
-      : never;
-  }[keyof TDrizzleSchema]],
-  Relations<TableName<TTable>>
->;
-
-/**
  * Configuration type for specifying which tables and columns to include in the Zero schema.
  * @template TDrizzleSchema - The complete Drizzle schema
  */
@@ -77,91 +64,152 @@ type TableColumnsConfig<TDrizzleSchema extends Record<string, unknown>> = {
 };
 
 /**
- * Extracts the configuration type from a Relations type.
- * @template T - The Relations type to extract config from
- */
-type RelationsConfig<T extends Relations> = ReturnType<T["config"]>;
-
-/**
  * Gets the keys of columns that can be used as indexes (string or number types).
  * @template TTable - The table to get index keys from
  */
-type ColumnIndexKeys<TTable extends Table> = {
-  [K in keyof Columns<TTable>]: Columns<TTable>[K] extends {
-    dataType: "string" | "number";
-  }
-    ? ColumnName<Columns<TTable>[K]>
-    : never;
-}[keyof Columns<TTable>];
-
-/**
- * Type guard that checks if a type is a Table with a specific name.
- * @template T - The type to check
- * @template Name - The name to check for
- */
-type IsTableWithName<T, Name extends string> = T extends { _: { name: Name } }
-  ? T extends Table<any>
-    ? true
-    : false
-  : false;
-
-type UnionToIntersection<U> = (U extends any ? (x: U) => void : never) extends (
-  x: infer I,
-) => void
-  ? I
-  : never;
-
-type LastOf<U> =
-  UnionToIntersection<U extends any ? (x: U) => void : never> extends (
-    x: infer LAST,
-  ) => void
-    ? LAST
-    : never;
-
-type HasExactlyTwo<U> = [U] extends [never]
-  ? false
-  : Exclude<U, LastOf<U>> extends infer R
-    ? [R] extends [never]
-      ? false
-      : Exclude<R, LastOf<R>> extends never
-        ? true
-        : false
-    : false;
-
-type RelationConfigHasExactlyTwoOnes<TRelations extends Relations> =
-  RelationsConfig<TRelations> extends infer R
-    ? R extends Record<string, One>
-      ? HasExactlyTwo<keyof R>
-      : false
-    : false;
-
-/**
- * Finds a table in the schema by its name.
- * @template TDrizzleSchema - The complete Drizzle schema
- * @template Name - The name of the table to find
- */
-type FindTableByName<
-  TDrizzleSchema extends Record<string, unknown>,
-  Name extends string,
-> = Extract<
+type ColumnIndexKeys<TTable extends Table> = Readonly<
   {
-    [P in keyof TDrizzleSchema]: IsTableWithName<
-      TDrizzleSchema[P],
-      Name
-    > extends true
-      ? TDrizzleSchema[P]
+    [K in keyof Columns<TTable>]: Columns<TTable>[K] extends {
+      dataType: "string" | "number";
+    }
+      ? ColumnName<Columns<TTable>[K]>
       : never;
-  }[keyof TDrizzleSchema],
-  Table<any>
+  }[keyof Columns<TTable>]
 >;
 
 /**
- * Gets the valid relation keys for a table that have corresponding table configurations.
+ * Represents the structure of a many-to-many relationship through a junction table.
+ * @template TDrizzleSchema - The complete Drizzle schema
+ * @template TColumnConfig - Configuration for the tables
+ * @template TManyConfig - Configuration for many-to-many relationships
+ * @template TCurrentTable - The current table being processed
+ */
+type ManyToManyRelationship<
+  TDrizzleSchema extends Record<string, unknown>,
+  TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
+  TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
+  TCurrentTable extends Table,
+> =
+  TableName<TCurrentTable> extends keyof TColumnConfig & keyof TManyConfig
+    ? TManyConfig[TableName<TCurrentTable>] extends ManyTableConfig<
+        TDrizzleSchema,
+        TColumnConfig,
+        TableName<TCurrentTable>
+      >
+      ? {
+          readonly [K in keyof TManyConfig[TableName<TCurrentTable>]]: Readonly<
+            [
+              {
+                readonly sourceField: AtLeastOne<
+                  ColumnIndexKeys<TCurrentTable>
+                >;
+                readonly destField: AtLeastOne<
+                  ColumnIndexKeys<
+                    FindTableByName<
+                      TDrizzleSchema,
+                      Extract<
+                        TManyConfig[TableName<TCurrentTable>][K][0],
+                        string
+                      >
+                    >
+                  >
+                >;
+                readonly destSchema: () => ZeroSchemaWithRelations<
+                  FindTableByName<
+                    TDrizzleSchema,
+                    Extract<TManyConfig[TableName<TCurrentTable>][K][0], string>
+                  >,
+                  ResolveColumnConfig<
+                    TDrizzleSchema,
+                    TColumnConfig,
+                    FindTableByName<
+                      TDrizzleSchema,
+                      Extract<
+                        TManyConfig[TableName<TCurrentTable>][K][0],
+                        string
+                      >
+                    >
+                  >,
+                  ReferencedZeroSchemas<
+                    TDrizzleSchema,
+                    TColumnConfig,
+                    TManyConfig,
+                    FindTableByName<
+                      TDrizzleSchema,
+                      Extract<
+                        TManyConfig[TableName<TCurrentTable>][K][0],
+                        string
+                      >
+                    >
+                  >
+                >;
+              },
+              {
+                readonly sourceField: AtLeastOne<
+                  ColumnIndexKeys<
+                    FindTableByName<
+                      TDrizzleSchema,
+                      Extract<
+                        TManyConfig[TableName<TCurrentTable>][K][0],
+                        string
+                      >
+                    >
+                  >
+                >;
+                readonly destField: AtLeastOne<
+                  ColumnIndexKeys<
+                    FindTableByName<
+                      TDrizzleSchema,
+                      Extract<
+                        TManyConfig[TableName<TCurrentTable>][K][1],
+                        string
+                      >
+                    >
+                  >
+                >;
+                readonly destSchema: () => ZeroSchemaWithRelations<
+                  FindTableByName<
+                    TDrizzleSchema,
+                    Extract<TManyConfig[TableName<TCurrentTable>][K][1], string>
+                  >,
+                  ResolveColumnConfig<
+                    TDrizzleSchema,
+                    TColumnConfig,
+                    FindTableByName<
+                      TDrizzleSchema,
+                      Extract<
+                        TManyConfig[TableName<TCurrentTable>][K][1],
+                        string
+                      >
+                    >
+                  >,
+                  ReferencedZeroSchemas<
+                    TDrizzleSchema,
+                    TColumnConfig,
+                    TManyConfig,
+                    FindTableByName<
+                      TDrizzleSchema,
+                      Extract<
+                        TManyConfig[TableName<TCurrentTable>][K][1],
+                        string
+                      >
+                    >
+                  >
+                >;
+              },
+            ]
+          >;
+        }
+      : {}
+    : {};
+
+/**
+ * Gets the valid direct relation keys for a table that have corresponding table configurations.
  * @template TDrizzleSchema - The complete Drizzle schema
  * @template TColumnConfig - Configuration for the tables
  * @template TCurrentTableRelations - Relations defined for the current table
  */
-type ValidRelationKeys<
+type ValidDirectRelationKeys<
   TDrizzleSchema extends Record<string, unknown>,
   TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
   TCurrentTableRelations extends Relations,
@@ -183,38 +231,50 @@ type ValidRelationKeys<
   }[keyof RelationsConfig<TCurrentTableRelations>];
 
 /**
- * Builds the relationship schema for referenced tables in a Zero schema.
+ * Helper type to safely resolve column config for a table.
  * @template TDrizzleSchema - The complete Drizzle schema
  * @template TColumnConfig - Configuration for the tables
+ * @template TTable - The table to resolve column config for
+ */
+type ResolveColumnConfig<
+  TDrizzleSchema extends Record<string, unknown>,
+  TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
+  TTable extends Table,
+> =
+  TableName<TTable> extends keyof TColumnConfig
+    ? TColumnConfig[TableName<TTable>] extends ColumnsConfig<TTable>
+      ? TColumnConfig[TableName<TTable>]
+      : never
+    : never;
+
+/**
+ * Represents a direct relationship between tables.
+ * @template TDrizzleSchema - The complete Drizzle schema
+ * @template TColumnConfig - Configuration for the tables
+ * @template TManyConfig - Configuration for many-to-many relationships
  * @template TCurrentTable - The current table being processed
  * @template TCurrentTableRelations - Relations defined for the current table
  */
-type ReferencedZeroSchemas<
+type DirectRelationships<
   TDrizzleSchema extends Record<string, unknown>,
   TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
+  TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
   TCurrentTable extends Table,
-  TCurrentTableRelations extends FindRelationsForTable<
-    TDrizzleSchema,
-    TCurrentTable
-  > = FindRelationsForTable<TDrizzleSchema, TCurrentTable>,
+  TCurrentTableRelations extends Relations,
 > = TCurrentTableRelations extends never
   ? never
   : {
-      readonly [K in ValidRelationKeys<
+      readonly [K in ValidDirectRelationKeys<
         TDrizzleSchema,
         TColumnConfig,
         TCurrentTableRelations
       >]: {
-        readonly sourceField: AtLeastOne<
-          Readonly<ColumnIndexKeys<TCurrentTable>>
-        >;
+        readonly sourceField: AtLeastOne<ColumnIndexKeys<TCurrentTable>>;
         readonly destField: AtLeastOne<
-          Readonly<
-            ColumnIndexKeys<
-              FindTableByName<
-                TDrizzleSchema,
-                RelationsConfig<TCurrentTableRelations>[K]["referencedTableName"]
-              >
+          ColumnIndexKeys<
+            FindTableByName<
+              TDrizzleSchema,
+              RelationsConfig<TCurrentTableRelations>[K]["referencedTableName"]
             >
           >
         >;
@@ -223,15 +283,18 @@ type ReferencedZeroSchemas<
             TDrizzleSchema,
             RelationsConfig<TCurrentTableRelations>[K]["referencedTableName"]
           >,
-          TColumnConfig[TableName<
+          ResolveColumnConfig<
+            TDrizzleSchema,
+            TColumnConfig,
             FindTableByName<
               TDrizzleSchema,
               RelationsConfig<TCurrentTableRelations>[K]["referencedTableName"]
             >
-          >],
+          >,
           ReferencedZeroSchemas<
             TDrizzleSchema,
             TColumnConfig,
+            TManyConfig,
             FindTableByName<
               TDrizzleSchema,
               RelationsConfig<TCurrentTableRelations>[K]["referencedTableName"]
@@ -240,6 +303,72 @@ type ReferencedZeroSchemas<
         >;
       };
     };
+
+/**
+ * Configuration type for many-to-many relationships for a specific table.
+ * @template TDrizzleSchema - The complete Drizzle schema
+ * @template TColumnConfig - Configuration for the tables
+ * @template TSourceTableName - The name of the source table
+ */
+type ManyTableConfig<
+  TDrizzleSchema extends Record<string, unknown>,
+  TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
+  TSourceTableName extends keyof TColumnConfig,
+> = {
+  readonly [TRelationName: string]: {
+    [K in Exclude<keyof TColumnConfig, TSourceTableName>]: [
+      K,
+      Exclude<keyof TColumnConfig, TSourceTableName | K>,
+    ];
+  }[Exclude<keyof TColumnConfig, TSourceTableName>];
+};
+
+/**
+ * Configuration for many-to-many relationships across all tables.
+ * Organized by source table, with each relationship specifying a tuple of [junction table name, destination table name].
+ * The junction table and destination table must be different from the source table and each other.
+ */
+type ManyConfig<
+  TDrizzleSchema extends Record<string, unknown>,
+  TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
+> = [keyof TColumnConfig] extends [never]
+  ? never
+  : {
+      readonly [TSourceTableName in keyof TColumnConfig]?: ManyTableConfig<
+        TDrizzleSchema,
+        TColumnConfig,
+        TSourceTableName
+      >;
+    };
+
+/**
+ * Represents all referenced Zero schemas for a table, including both direct and many-to-many relationships.
+ * @template TDrizzleSchema - The complete Drizzle schema
+ * @template TColumnConfig - Configuration for the tables
+ * @template TManyConfig - Configuration for many-to-many relationships
+ * @template TCurrentTable - The current table being processed
+ * @template TCurrentTableRelations - Relations defined for the current table
+ */
+type ReferencedZeroSchemas<
+  TDrizzleSchema extends Record<string, unknown>,
+  TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
+  TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
+  TCurrentTable extends Table,
+> = Readonly<
+  DirectRelationships<
+    TDrizzleSchema,
+    TColumnConfig,
+    TManyConfig,
+    TCurrentTable,
+    FindRelationsForTable<TDrizzleSchema, TCurrentTable>
+  > &
+    ManyToManyRelationship<
+      TDrizzleSchema,
+      TColumnConfig,
+      TManyConfig,
+      TCurrentTable
+    >
+>;
 
 /**
  * The complete Zero schema type with version and tables.
@@ -251,6 +380,7 @@ type CreateZeroSchema<
   TSchemaVersion extends number,
   TDrizzleSchema extends Record<string, unknown>,
   TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
+  TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
 > = {
   readonly version: TSchemaVersion;
   readonly tables: {
@@ -265,6 +395,7 @@ type CreateZeroSchema<
           ReferencedZeroSchemas<
             TDrizzleSchema,
             TColumnConfig,
+            TManyConfig,
             TDrizzleSchema[K]
           >
         >
@@ -284,6 +415,10 @@ const createZeroSchema = <
   const TDrizzleSchema extends Record<string, unknown>,
   const TColumnConfig extends
     TableColumnsConfig<TDrizzleSchema> = TableColumnsConfig<TDrizzleSchema>,
+  const TManyConfig extends ManyConfig<
+    TDrizzleSchema,
+    TColumnConfig
+  > = ManyConfig<TDrizzleSchema, TColumnConfig>,
 >(
   /**
    * The Drizzle schema to create a Zero schema from.
@@ -294,6 +429,7 @@ const createZeroSchema = <
    *
    * @param schemaConfig.version - The version of the schema.
    * @param schemaConfig.tables - The tables to include in the Zero schema.
+   * @param schemaConfig.many - Configuration for many-to-many relationships.
    */
   schemaConfig: {
     /**
@@ -320,12 +456,104 @@ const createZeroSchema = <
      * ```
      */
     readonly tables: TColumnConfig;
+    /**
+     * Configuration for many-to-many relationships.
+     * Organized by source table, with each relationship specifying a tuple of [junction table name, destination table name].
+     *
+     * @example
+     * ```ts
+     * {
+     *   user: {
+     *     comments: ['message', 'comment']
+     *   }
+     * }
+     * ```
+     */
+    readonly manyToMany?: TManyConfig;
   },
-): Flatten<CreateZeroSchema<TSchemaVersion, TDrizzleSchema, TColumnConfig>> => {
+): Flatten<
+  CreateZeroSchema<TSchemaVersion, TDrizzleSchema, TColumnConfig, TManyConfig>
+> => {
   let relationships = {} as Record<
     keyof typeof schemaConfig.tables,
     Record<string, unknown>
   >;
+
+  for (const tableOrRelations of Object.values(schema)) {
+    if (is(tableOrRelations, Table)) {
+      const tableName = getTableName(tableOrRelations);
+
+      relationships[tableName as keyof typeof relationships] =
+        relationships[tableName as keyof typeof relationships] || {};
+    }
+  }
+
+  // Map many-to-many relationships
+  if (schemaConfig.manyToMany) {
+    for (const [sourceTableName, manyConfig] of Object.entries(
+      schemaConfig.manyToMany,
+    )) {
+      if (!manyConfig) continue;
+
+      for (const [
+        relationName,
+        [junctionTableName, destTableName],
+      ] of Object.entries(manyConfig)) {
+        const sourceTable = Object.values(schema).find(
+          (t): t is Table =>
+            is(t, Table) && getTableName(t) === sourceTableName,
+        );
+        const destTable = Object.values(schema).find(
+          (t): t is Table => is(t, Table) && getTableName(t) === destTableName,
+        );
+
+        if (!sourceTable || !destTable) {
+          throw new Error(
+            `Invalid many-to-many configuration for ${String(sourceTableName)}.${relationName}: Could not find ${!sourceTable ? "source" : !destTable ? "destination" : "junction"} table`,
+          );
+        }
+
+        // Find source->junction and junction->dest relationships
+        const sourceJunctionFields = findForeignKeySourceAndDestFields(schema, {
+          sourceTable: sourceTable,
+          referencedTableName: junctionTableName,
+        });
+
+        const junctionDestFields = findForeignKeySourceAndDestFields(schema, {
+          sourceTable: destTable,
+          referencedTableName: junctionTableName,
+        });
+
+        if (
+          !sourceJunctionFields.sourceFieldNames.length ||
+          !junctionDestFields.sourceFieldNames.length ||
+          !junctionDestFields.destFieldNames.length ||
+          !sourceJunctionFields.destFieldNames.length
+        ) {
+          throw new Error(
+            `Invalid many-to-many configuration for ${String(sourceTableName)}.${relationName}: Could not find foreign key relationships in junction table ${junctionTableName}`,
+          );
+        }
+
+        (
+          relationships[
+            sourceTableName as keyof typeof relationships
+          ] as Record<string, unknown>
+        )[relationName] = [
+          {
+            sourceField: sourceJunctionFields.sourceFieldNames,
+            destField: sourceJunctionFields.destFieldNames,
+            destSchemaTableName: junctionTableName,
+          },
+          {
+            sourceField: junctionDestFields.destFieldNames,
+            destField: junctionDestFields.sourceFieldNames,
+            destSchemaTableName: destTableName,
+          },
+        ];
+      }
+    }
+  }
 
   for (const tableOrRelations of Object.values(schema)) {
     if (is(tableOrRelations, Relations)) {
@@ -369,6 +597,16 @@ const createZeroSchema = <
           );
         }
 
+        if (
+          relationships[tableName as keyof typeof relationships]?.[
+            relation.fieldName
+          ]
+        ) {
+          throw new Error(
+            `Duplicate relationship found for: ${relation.fieldName} (${is(relation, One) ? "One" : "Many"} from ${tableName} to ${relation.referencedTableName}).`,
+          );
+        }
+
         relationships[tableName as keyof typeof relationships] = {
           ...(relationships?.[tableName as keyof typeof relationships] ?? {}),
           [relation.fieldName]: {
@@ -389,11 +627,23 @@ const createZeroSchema = <
       primaryKey: FindPrimaryKeyFromTable<Table>;
       relationships?: Record<
         string,
-        {
-          sourceField: string;
-          destField: string;
-          destSchemaTableName: string;
-        }
+        | {
+            sourceField: string;
+            destField: string;
+            destSchemaTableName: string;
+          }
+        | [
+            {
+              sourceField: string;
+              destField: string;
+              destSchemaTableName: string;
+            },
+            {
+              sourceField: string;
+              destField: string;
+              destSchemaTableName: string;
+            },
+          ]
       >;
     }
   > = {};
@@ -434,15 +684,29 @@ const createZeroSchema = <
     )
       // filter out relationships that don't have a corresponding table
       .filter(([_key, relationship]) =>
-        Boolean(tablesWithoutDestSchema[relationship.destSchemaTableName]),
+        Boolean(
+          Array.isArray(relationship)
+            ? relationship.every((r) =>
+                Boolean(tablesWithoutDestSchema[r.destSchemaTableName]),
+              )
+            : Boolean(
+                tablesWithoutDestSchema[relationship.destSchemaTableName],
+              ),
+        ),
       )
       .reduce(
         (acc, [key, relationship]) => {
-          acc[key] = {
-            sourceField: relationship.sourceField,
-            destField: relationship.destField,
-            destSchema: () => tables[relationship.destSchemaTableName],
-          };
+          acc[key] = Array.isArray(relationship)
+            ? relationship.map((r) => ({
+                sourceField: r.sourceField,
+                destField: r.destField,
+                destSchema: () => tables[r.destSchemaTableName],
+              }))
+            : {
+                sourceField: relationship.sourceField,
+                destField: relationship.destField,
+                destSchema: () => tables[relationship.destSchemaTableName],
+              };
 
           return acc;
         },
@@ -460,12 +724,26 @@ const createZeroSchema = <
   return {
     version: schemaConfig.version,
     tables,
-  } as CreateZeroSchema<TSchemaVersion, TDrizzleSchema, TColumnConfig>;
+  } as CreateZeroSchema<
+    TSchemaVersion,
+    TDrizzleSchema,
+    TColumnConfig,
+    TManyConfig
+  >;
 };
 
+/**
+ * Helper function to find source and destination fields for foreign key relationships.
+ * @param schema - The complete Drizzle schema
+ * @param relation - The minimal relation info needed to find fields
+ * @returns Object containing source and destination field names
+ */
 const findForeignKeySourceAndDestFields = (
   schema: Record<string, unknown>,
-  relation: One | Many<any>,
+  relation: {
+    sourceTable: Table;
+    referencedTableName: string;
+  },
 ) => {
   for (const tableOrRelations of Object.values(schema)) {
     if (is(tableOrRelations, Table)) {
@@ -497,6 +775,12 @@ const findForeignKeySourceAndDestFields = (
   };
 };
 
+/**
+ * Helper function to find source and destination fields for named relationships.
+ * @param schema - The complete Drizzle schema
+ * @param relation - The One or Many relation to find fields for
+ * @returns Object containing source and destination field names
+ */
 const findNamedSourceAndDestFields = (
   schema: Record<string, unknown>,
   relation: One | Many<any>,
@@ -527,6 +811,11 @@ const findNamedSourceAndDestFields = (
   };
 };
 
+/**
+ * Helper function to get the relations configuration from a Relations object.
+ * @param relations - The Relations object to get configuration from
+ * @returns Record of relation configurations
+ */
 const getRelationsConfig = (relations: Relations) => {
   return relations.config(
     createTableRelationsHelpers(relations.table),
