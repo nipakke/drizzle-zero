@@ -12,7 +12,7 @@ describe.concurrent("relationships", () => {
     await expect(
       import("./schemas/one-to-one-missing-foreign-key.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: No relationship found for: userPosts (One from users to posts). Did you forget to define foreign keys?]`,
+      `[Error: drizzle-zero: No relationship found for: userPosts (One from users to posts). Did you forget to define foreign keys?]`,
     );
   });
 
@@ -20,7 +20,7 @@ describe.concurrent("relationships", () => {
     await expect(
       import("./schemas/many-to-many-missing-foreign-key.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invalid many-to-many configuration for user.groups: Could not find foreign key relationships in junction table users_to_group]`,
+      `[Error: drizzle-zero: Invalid many-to-many configuration for user.groups: Could not find foreign key relationships in junction table users_to_group]`,
     );
   });
 
@@ -29,7 +29,7 @@ describe.concurrent("relationships", () => {
     await expect(
       import("./schemas/many-to-many-duplicate-relationship.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Duplicate relationship found for: usersToGroups (Many from user to users_to_group).]`,
+      `[Error: drizzle-zero: Duplicate relationship found for: usersToGroups (Many from user to users_to_group).]`,
     );
   });
 
@@ -37,7 +37,7 @@ describe.concurrent("relationships", () => {
     await expect(
       import("./schemas/one-to-one-missing-foreign-key.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: No relationship found for: userPosts (One from users to posts). Did you forget to define foreign keys?]`,
+      `[Error: drizzle-zero: No relationship found for: userPosts (One from users to posts). Did you forget to define foreign keys?]`,
     );
   });
 
@@ -45,7 +45,7 @@ describe.concurrent("relationships", () => {
     await expect(
       import("./schemas/one-to-many-missing-named.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: No relationship found for: author (Many from users to posts). Did you forget to define foreign keys for named relation "author"?]`,
+      `[Error: drizzle-zero: No relationship found for: author (Many from users to posts). Did you forget to define foreign keys for named relation "author"?]`,
     );
   });
 

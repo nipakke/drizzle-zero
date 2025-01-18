@@ -194,7 +194,7 @@ describe.concurrent("tables", () => {
         scores: true,
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Unsupported column type: array. It must be supported by Zero, e.g.: number | bigint | boolean | date | string | json]`,
+      `[Error: drizzle-zero: Unsupported column type: array. It must be supported by Zero, e.g.: number | bigint | boolean | date | string | json]`,
     );
   });
 
@@ -1237,7 +1237,7 @@ describe.concurrent("tables", () => {
         invalid: "someinvalidtype",
       } as unknown as ColumnsConfig<typeof table>),
     ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invalid column config for column invalid - expected boolean or object but was string]`,
+      `[Error: drizzle-zero: Invalid column config for column invalid - expected boolean or object but was string]`,
     );
   });
 
@@ -1251,7 +1251,7 @@ describe.concurrent("tables", () => {
         id: true,
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: No primary keys found in table - test. Did you forget to define a primary key?]`,
+      `[Error: drizzle-zero: No primary keys found in table - test. Did you forget to define a primary key?]`,
     );
   });
 
@@ -1267,7 +1267,7 @@ describe.concurrent("tables", () => {
         name: true,
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Primary key column id cannot have a default value defined on the database level and cannot be optional, since auto-incrementing primary keys can cause race conditions with concurrent inserts. See the Zero docs for more information.]`,
+      `[Error: drizzle-zero: Primary key column id cannot have a default value defined on the database level and cannot be optional, since auto-incrementing primary keys can cause race conditions with concurrent inserts. See the Zero docs for more information.]`,
     );
   });
 
@@ -1283,7 +1283,7 @@ describe.concurrent("tables", () => {
         name: true,
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Unsupported table type: test. Only Postgres tables are supported.]`,
+      `[Error: drizzle-zero: Unsupported table type: test. Only Postgres tables are supported.]`,
     );
   });
 });
