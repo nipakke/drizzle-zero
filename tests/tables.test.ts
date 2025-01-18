@@ -5,15 +5,22 @@ import {
   bigserial,
   boolean,
   char,
+  cidr,
   date,
   doublePrecision,
+  geometry,
+  inet,
   integer,
+  interval,
   json,
   jsonb,
+  line,
+  macaddr,
   numeric,
   pgEnum,
   pgSchema,
   pgTable,
+  point,
   primaryKey,
   real,
   serial,
@@ -178,24 +185,6 @@ describe.concurrent("tables", () => {
 
     expectTableSchemaDeepEqual(result).toEqual(expected);
     Expect<Equal<typeof result, typeof expected>>;
-  });
-
-  test("pg - array types", () => {
-    const table = pgTable("test", {
-      id: text().primaryKey(),
-      tags: text().array().notNull(),
-      scores: jsonb().array(),
-    });
-
-    expect(() =>
-      createZeroTableSchema(table, {
-        id: true,
-        tags: true,
-        scores: true,
-      }),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: drizzle-zero: Unsupported column type: array. It must be supported by Zero, e.g.: number | bigint | boolean | date | string | json]`,
-    );
   });
 
   test("pg - complex custom types", () => {
@@ -1225,6 +1214,22 @@ describe.concurrent("tables", () => {
     Expect<Equal<typeof result, typeof expected>>;
   });
 
+  test("pg - invalid column type", () => {
+    const table = pgTable("test", {
+      id: text().primaryKey(),
+      invalid: text().notNull(),
+    });
+
+    expect(() =>
+      createZeroTableSchema(table, {
+        id: true,
+        invalid: "someinvalidtype",
+      } as unknown as ColumnsConfig<typeof table>),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: drizzle-zero: Invalid column config for column invalid - expected boolean or object but was string]`,
+    );
+  });
+
   test("pg - invalid column selection", () => {
     const table = pgTable("test", {
       id: text().primaryKey(),
@@ -1238,6 +1243,140 @@ describe.concurrent("tables", () => {
       } as unknown as ColumnsConfig<typeof table>),
     ).toThrowErrorMatchingInlineSnapshot(
       `[Error: drizzle-zero: Invalid column config for column invalid - expected boolean or object but was string]`,
+    );
+  });
+
+  test("pg - array types", () => {
+    const table = pgTable("test", {
+      id: text().primaryKey(),
+      tags: text().array().notNull(),
+      scores: jsonb().array(),
+    });
+
+    expect(() =>
+      createZeroTableSchema(table, {
+        id: true,
+        tags: true,
+        scores: true,
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: drizzle-zero: Unsupported column type: PgArray (array). It must be supported by Zero, e.g.: number | bigint | boolean | date | PgText | PgChar | PgVarchar | PgUUID | PgEnumColumn | PgJsonb | PgJson | PgNumeric | PgDateString | PgTimestampString]`,
+    );
+  });
+
+  test("pg - interval types", () => {
+    const table = pgTable("test", {
+      id: text().primaryKey(),
+      interval: interval().notNull(),
+    });
+
+    expect(() =>
+      createZeroTableSchema(table, {
+        id: true,
+        interval: true,
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: drizzle-zero: Unsupported column type: PgInterval (string). It must be supported by Zero, e.g.: number | bigint | boolean | date | PgText | PgChar | PgVarchar | PgUUID | PgEnumColumn | PgJsonb | PgJson | PgNumeric | PgDateString | PgTimestampString]`,
+    );
+  });
+
+  test("pg - cidr types", () => {
+    const table = pgTable("test", {
+      id: text().primaryKey(),
+      cidr: cidr().notNull(),
+    });
+
+    expect(() =>
+      createZeroTableSchema(table, {
+        id: true,
+        cidr: true,
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: drizzle-zero: Unsupported column type: PgCidr (string). It must be supported by Zero, e.g.: number | bigint | boolean | date | PgText | PgChar | PgVarchar | PgUUID | PgEnumColumn | PgJsonb | PgJson | PgNumeric | PgDateString | PgTimestampString]`,
+    );
+  });
+
+  test("pg - macaddr types", () => {
+    const table = pgTable("test", {
+      id: text().primaryKey(),
+      macaddr: macaddr().notNull(),
+    });
+
+    expect(() =>
+      createZeroTableSchema(table, {
+        id: true,
+        macaddr: true,
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: drizzle-zero: Unsupported column type: PgMacaddr (string). It must be supported by Zero, e.g.: number | bigint | boolean | date | PgText | PgChar | PgVarchar | PgUUID | PgEnumColumn | PgJsonb | PgJson | PgNumeric | PgDateString | PgTimestampString]`,
+    );
+  });
+
+  test("pg - inet types", () => {
+    const table = pgTable("test", {
+      id: text().primaryKey(),
+      inet: inet().notNull(),
+    });
+
+    expect(() =>
+      createZeroTableSchema(table, {
+        id: true,
+        inet: true,
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: drizzle-zero: Unsupported column type: PgInet (string). It must be supported by Zero, e.g.: number | bigint | boolean | date | PgText | PgChar | PgVarchar | PgUUID | PgEnumColumn | PgJsonb | PgJson | PgNumeric | PgDateString | PgTimestampString]`,
+    );
+  });
+
+  test("pg - point types", () => {
+    const table = pgTable("test", {
+      id: text().primaryKey(),
+      point: point().notNull(),
+    });
+
+    expect(() =>
+      createZeroTableSchema(table, {
+        id: true,
+        point: true,
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: drizzle-zero: Unsupported column type: PgPointTuple (array). It must be supported by Zero, e.g.: number | bigint | boolean | date | PgText | PgChar | PgVarchar | PgUUID | PgEnumColumn | PgJsonb | PgJson | PgNumeric | PgDateString | PgTimestampString]`,
+    );
+  });
+
+  test("pg - line types", () => {
+    const table = pgTable("test", {
+      id: text().primaryKey(),
+      line: line().notNull(),
+    });
+
+    expect(() =>
+      createZeroTableSchema(table, {
+        id: true,
+        line: true,
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: drizzle-zero: Unsupported column type: PgLine (array). It must be supported by Zero, e.g.: number | bigint | boolean | date | PgText | PgChar | PgVarchar | PgUUID | PgEnumColumn | PgJsonb | PgJson | PgNumeric | PgDateString | PgTimestampString]`,
+    );
+  });
+
+  test("pg - geometry types", () => {
+    const table = pgTable("test", {
+      id: text().primaryKey(),
+      location: geometry("location", {
+        type: "point",
+        mode: "xy",
+        srid: 4326,
+      }).notNull(),
+    });
+
+    expect(() =>
+      createZeroTableSchema(table, {
+        id: true,
+        location: true,
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: drizzle-zero: Unsupported column type: PgGeometryObject (json). It must be supported by Zero, e.g.: number | bigint | boolean | date | PgText | PgChar | PgVarchar | PgUUID | PgEnumColumn | PgJsonb | PgJson | PgNumeric | PgDateString | PgTimestampString]`,
     );
   });
 
