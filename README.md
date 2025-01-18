@@ -216,6 +216,8 @@ console.log(user);
 // }
 ```
 
+*Note: many-to-many relationships are only supported with explicit foreign keys.*
+
 ## Features
 
 - Convert Drizzle ORM schemas to Zero schemas
@@ -230,4 +232,4 @@ console.log(user);
 
 ## License
 
-MIT
+[Unlicense](LICENSE)

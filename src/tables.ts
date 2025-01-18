@@ -196,7 +196,7 @@ const createZeroTableSchema = <
         typeof columnConfig !== "undefined"
       ) {
         throw new Error(
-          `Invalid column config for column ${name} - expected boolean or object but was ${typeof columnConfig}`,
+          `drizzle-zero: Invalid column config for column ${name} - expected boolean or object but was ${typeof columnConfig}`,
         );
       }
 
@@ -218,7 +218,7 @@ const createZeroTableSchema = <
 
       if (!type) {
         throw new Error(
-          `Unsupported column type: ${column.dataType}. It must be supported by Zero, e.g.: ${Object.keys(drizzleDataTypeToZeroType).join(" | ")}`,
+          `drizzle-zero: Unsupported column type: ${column.dataType}. It must be supported by Zero, e.g.: ${Object.keys(drizzleDataTypeToZeroType).join(" | ")}`,
         );
       }
 
@@ -232,7 +232,7 @@ const createZeroTableSchema = <
       if (column.primary) {
         if (isColumnOptional) {
           throw new Error(
-            `Primary key column ${name} cannot have a default value defined on the database level and cannot be optional, since auto-incrementing primary keys can cause race conditions with concurrent inserts. See the Zero docs for more information.`,
+            `drizzle-zero: Primary key column ${name} cannot have a default value defined on the database level and cannot be optional, since auto-incrementing primary keys can cause race conditions with concurrent inserts. See the Zero docs for more information.`,
           );
         }
 
@@ -269,7 +269,7 @@ const createZeroTableSchema = <
 
   if (!primaryKeys.length) {
     throw new Error(
-      `No primary keys found in table - ${tableName}. Did you forget to define a primary key?`,
+      `drizzle-zero: No primary keys found in table - ${tableName}. Did you forget to define a primary key?`,
     );
   }
 

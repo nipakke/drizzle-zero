@@ -509,7 +509,7 @@ const createZeroSchema = <
 
         if (!sourceTable || !destTable) {
           throw new Error(
-            `Invalid many-to-many configuration for ${String(sourceTableName)}.${relationName}: Could not find ${!sourceTable ? "source" : !destTable ? "destination" : "junction"} table`,
+            `drizzle-zero: Invalid many-to-many configuration for ${String(sourceTableName)}.${relationName}: Could not find ${!sourceTable ? "source" : !destTable ? "destination" : "junction"} table`,
           );
         }
 
@@ -531,7 +531,7 @@ const createZeroSchema = <
           !sourceJunctionFields.destFieldNames.length
         ) {
           throw new Error(
-            `Invalid many-to-many configuration for ${String(sourceTableName)}.${relationName}: Could not find foreign key relationships in junction table ${junctionTableName}`,
+            `drizzle-zero: Invalid many-to-many configuration for ${String(sourceTableName)}.${relationName}: Could not find foreign key relationships in junction table ${junctionTableName}`,
           );
         }
 
@@ -593,7 +593,7 @@ const createZeroSchema = <
 
         if (!sourceFieldNames.length || !destFieldNames.length) {
           throw new Error(
-            `No relationship found for: ${relation.fieldName} (${is(relation, One) ? "One" : "Many"} from ${tableName} to ${relation.referencedTableName}). Did you forget to define foreign keys${relation.relationName ? ` for named relation "${relation.relationName}"` : ""}?`,
+            `drizzle-zero: No relationship found for: ${relation.fieldName} (${is(relation, One) ? "One" : "Many"} from ${tableName} to ${relation.referencedTableName}). Did you forget to define foreign keys${relation.relationName ? ` for named relation "${relation.relationName}"` : ""}?`,
           );
         }
 
@@ -603,7 +603,7 @@ const createZeroSchema = <
           ]
         ) {
           throw new Error(
-            `Duplicate relationship found for: ${relation.fieldName} (${is(relation, One) ? "One" : "Many"} from ${tableName} to ${relation.referencedTableName}).`,
+            `drizzle-zero: Duplicate relationship found for: ${relation.fieldName} (${is(relation, One) ? "One" : "Many"} from ${tableName} to ${relation.referencedTableName}).`,
           );
         }
 
