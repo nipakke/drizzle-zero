@@ -218,7 +218,7 @@ const createZeroTableSchema = <
 
       if (!type) {
         throw new Error(
-          `drizzle-zero: Unsupported column type: ${column.dataType}. It must be supported by Zero, e.g.: ${Object.keys(drizzleDataTypeToZeroType).join(" | ")}`,
+          `drizzle-zero: Unsupported column type: ${column.columnType} (${column.dataType}). It must be supported by Zero, e.g.: ${Object.keys({ ...drizzleDataTypeToZeroType, ...drizzleColumnTypeToZeroType }).join(" | ")}`,
         );
       }
 

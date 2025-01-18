@@ -4,13 +4,7 @@ import type { JSONValue } from "@rocicorp/zero";
  * Represents the basic data types supported by Drizzle ORM.
  * These are the fundamental types that can be used in table column definitions.
  */
-type DrizzleDataType =
-  | "number"
-  | "bigint"
-  | "boolean"
-  | "date"
-  | "string"
-  | "json";
+type DrizzleDataType = "number" | "bigint" | "boolean" | "date";
 
 /**
  * Maps Drizzle data types to their corresponding Zero schema types.
@@ -21,8 +15,6 @@ export const drizzleDataTypeToZeroType = {
   bigint: "number",
   boolean: "boolean",
   date: "number",
-  string: "string",
-  json: "json",
 } as const satisfies Record<DrizzleDataType, string>;
 
 /**
@@ -33,15 +25,31 @@ export type DrizzleDataTypeToZeroType = typeof drizzleDataTypeToZeroType;
 
 /**
  * Represents specific Postgres column types supported by Drizzle ORM.
- * These are more specialized types that need custom handling when converting to Zero.
  */
-type DrizzleColumnType = "PgNumeric" | "PgDateString" | "PgTimestampString";
+type DrizzleColumnType =
+  | "PgText"
+  | "PgChar"
+  | "PgVarchar"
+  | "PgUUID"
+  | "PgEnumColumn"
+  | "PgJsonb"
+  | "PgJson"
+  | "PgNumeric"
+  | "PgDateString"
+  | "PgTimestampString";
 
 /**
  * Maps Postgres-specific Drizzle column types to their corresponding Zero schema types.
  * Handles special cases where Postgres types need specific Zero type representations.
  */
 export const drizzleColumnTypeToZeroType = {
+  PgText: "string",
+  PgChar: "string",
+  PgVarchar: "string",
+  PgUUID: "string",
+  PgEnumColumn: "string",
+  PgJsonb: "json",
+  PgJson: "json",
   PgNumeric: "number",
   PgDateString: "number",
   PgTimestampString: "number",
