@@ -40,13 +40,10 @@ describe.concurrent("compile", () => {
   test("compile - no-relations", async () => {
     const result = await runZeroBuildSchema("no-relations");
     expect(result.schema.tables.user).toBeTruthy();
-    expect(Object.keys(result.schema.tables)).toStrictEqual(["profile_info", "user"]);
-  });
-
-  test("compile - one-to-one", async () => {
-    const result = await runZeroBuildSchema("one-to-one");
-    expect(result.schema.tables.user).toBeTruthy();
-    expect(Object.keys(result.schema.tables)).toStrictEqual(["profile_info", "user"]);
+    expect(Object.keys(result.schema.tables)).toStrictEqual([
+      "profile_info",
+      "user",
+    ]);
   });
 
   test("compile - one-to-one-2", async () => {
@@ -55,6 +52,15 @@ describe.concurrent("compile", () => {
     expect(Object.keys(result.schema.tables)).toStrictEqual([
       "medium",
       "message",
+      "user",
+    ]);
+  });
+
+  test("compile - one-to-one", async () => {
+    const result = await runZeroBuildSchema("one-to-one");
+    expect(result.schema.tables.user).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toStrictEqual([
+      "profile_info",
       "user",
     ]);
   });
@@ -115,6 +121,15 @@ describe.concurrent("compile", () => {
     expect(Object.keys(result.schema.tables)).toStrictEqual([
       "user",
       "users_to_group",
+    ]);
+  });
+
+  test("compile - many-to-many-self-referential", async () => {
+    const result = await runZeroBuildSchema("many-to-many-self-referential");
+    expect(result.schema.tables.user).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toStrictEqual([
+      "friendship",
+      "user",
     ]);
   });
 

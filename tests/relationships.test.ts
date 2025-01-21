@@ -8,6 +8,14 @@ import {
 } from "./utils";
 
 describe.concurrent("relationships", () => {
+  test("relationships - many-to-many-incorrect-many", async () => {
+    await expect(
+      import("./schemas/many-to-many-incorrect-many.zero"),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[Error: drizzle-zero: Invalid many-to-many configuration for user.groups: Not all required fields were provided.]`,
+    );
+  });
+
   test("relationships - many-to-many-subset", async () => {
     await expect(
       import("./schemas/one-to-one-missing-foreign-key.zero"),
@@ -23,7 +31,6 @@ describe.concurrent("relationships", () => {
       `[Error: drizzle-zero: Invalid many-to-many configuration for user.groups: Could not find foreign key relationships in junction table users_to_group]`,
     );
   });
-
 
   test("relationships - many-to-many-duplicate-relationship", async () => {
     await expect(
@@ -219,12 +226,7 @@ describe.concurrent("relationships", () => {
     });
 
     expectSchemaDeepEqual(oneToOneZeroSchema).toEqual(expected);
-    Expect<
-      Equal<
-        typeof oneToOneZeroSchema.tables.user.relationships.profileInfo,
-        typeof expected.tables.user.relationships.profileInfo
-      >
-    >;
+    Expect<Equal<typeof oneToOneZeroSchema, typeof expected>>;
   });
 
   test("relationships - one-to-one-subset", async () => {
@@ -873,6 +875,191 @@ describe.concurrent("relationships", () => {
 
     expectSchemaDeepEqual(manyToManySubset2ZeroSchema).toEqual(expected);
     Expect<Equal<typeof manyToManySubset2ZeroSchema, typeof expected>>;
+  });
+
+  test("relationships - many-to-many-self-referential", async () => {
+    const { schema: manyToManySelfReferentialZeroSchema } = await import(
+      "./schemas/many-to-many-self-referential.zero"
+    );
+
+    const expectedUsers = {
+      tableName: "user",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+        name: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+      },
+      primaryKey: ["id"],
+      relationships: {
+        friends: [
+          {
+            sourceField: ["id"] as AtLeastOne<"id" | "name">,
+            destField: ["requesting_id"] as AtLeastOne<
+              "requesting_id" | "accepting_id"
+            >,
+            destSchema: () => expectedFriendship,
+          },
+          {
+            sourceField: ["accepting_id"] as AtLeastOne<
+              "accepting_id" | "requesting_id"
+            >,
+            destField: ["id"] as AtLeastOne<"id" | "name">,
+            destSchema: () => expectedUsers,
+          },
+        ],
+      },
+    } as const;
+
+    const expectedFriendship = {
+      tableName: "friendship",
+      columns: {
+        requesting_id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+        accepting_id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+        accepted: {
+          type: "boolean",
+          optional: false,
+          customType: null as unknown as boolean,
+        },
+      },
+      primaryKey: ["requesting_id", "accepting_id"] as Readonly<
+        AtLeastOne<string>
+      >,
+    } as const;
+
+    const expected = createSchema({
+      version: 1,
+      tables: {
+        user: expectedUsers,
+        friendship: expectedFriendship,
+      },
+    });
+
+    expectSchemaDeepEqual(manyToManySelfReferentialZeroSchema).toEqual(
+      expected,
+    );
+    Expect<Equal<typeof manyToManySelfReferentialZeroSchema, typeof expected>>;
+  });
+
+  test("relationships - many-to-many-extended-config", async () => {
+    const { schema: manyToManyExtendedConfigZeroSchema } = await import(
+      "./schemas/many-to-many-extended-config.zero"
+    );
+
+    const expectedUsers = {
+      tableName: "user",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+        name: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as string,
+        },
+      },
+      primaryKey: ["id"],
+      relationships: {
+        groups: [
+          {
+            sourceField: ["id"] as AtLeastOne<"id" | "name">,
+            destField: ["user_id"] as AtLeastOne<"user_id" | "group_id">,
+            destSchema: () => expectedUsersToGroups,
+          },
+          {
+            sourceField: ["group_id"] as AtLeastOne<"group_id" | "user_id">,
+            destField: ["id"] as AtLeastOne<"id" | "name">,
+            destSchema: () => expectedGroups,
+          },
+        ],
+        usersToGroups: {
+          sourceField: ["id"] as AtLeastOne<"id" | "name">,
+          destField: ["user_id"] as AtLeastOne<"user_id" | "group_id">,
+          destSchema: () => expectedUsersToGroups,
+        },
+      },
+    } as const;
+
+    const expectedUsersToGroups = {
+      tableName: "users_to_group",
+      columns: {
+        user_id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+        group_id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+      },
+      primaryKey: ["user_id", "group_id"] as Readonly<AtLeastOne<string>>,
+      relationships: {
+        group: {
+          sourceField: ["group_id"] as AtLeastOne<"user_id" | "group_id">,
+          destField: ["id"] as AtLeastOne<"id" | "name">,
+          destSchema: () => expectedGroups,
+        },
+        user: {
+          sourceField: ["user_id"] as AtLeastOne<"user_id" | "group_id">,
+          destField: ["id"] as AtLeastOne<"id" | "name">,
+          destSchema: () => expectedUsers,
+        },
+      },
+    } as const;
+
+    const expectedGroups = {
+      tableName: "group",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as string,
+        },
+        name: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as string,
+        },
+      },
+      primaryKey: ["id"],
+      relationships: {
+        usersToGroups: {
+          sourceField: ["id"] as AtLeastOne<"id" | "name">,
+          destField: ["group_id"] as AtLeastOne<"user_id" | "group_id">,
+          destSchema: () => expectedUsersToGroups,
+        },
+      },
+    } as const;
+
+    const expected = createSchema({
+      version: 1,
+      tables: {
+        user: expectedUsers,
+        users_to_group: expectedUsersToGroups,
+        group: expectedGroups,
+      },
+    });
+
+    expectSchemaDeepEqual(manyToManyExtendedConfigZeroSchema).toEqual(expected);
+    Expect<Equal<typeof manyToManyExtendedConfigZeroSchema, typeof expected>>;
   });
 
   test("relationships - custom-schema", async () => {
