@@ -216,7 +216,7 @@ console.log(user);
 // }
 ```
 
-*Note: many-to-many relationships are only supported with explicit foreign keys.*
+*Note: see an example of many-to-many relationships with an explicit mapping of the junction/target columns in [many-to-many-extended-config.zero.ts](tests/schemas/many-to-many-extended-config.zero.ts).*
 
 ## Features
 
