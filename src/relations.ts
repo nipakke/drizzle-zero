@@ -78,6 +78,18 @@ type ColumnIndexKeys<TTable extends Table> = Readonly<
 >;
 
 /**
+ * Extracts the table name from a configuration object or string.
+ * @template TTableConfig - The configuration object or string
+ */
+type ExtractTableConfigName<TTableConfig> = TTableConfig extends {
+  readonly destTable: string;
+}
+  ? TTableConfig["destTable"]
+  : TTableConfig extends string
+    ? TTableConfig
+    : never;
+
+/**
  * Represents the structure of a many-to-many relationship through a junction table.
  * @template TDrizzleSchema - The complete Drizzle schema
  * @template TColumnConfig - Configuration for the tables
@@ -107,9 +119,8 @@ type ManyToManyRelationship<
                   ColumnIndexKeys<
                     FindTableByName<
                       TDrizzleSchema,
-                      Extract<
-                        TManyConfig[TableName<TCurrentTable>][K][0],
-                        string
+                      ExtractTableConfigName<
+                        TManyConfig[TableName<TCurrentTable>][K][0]
                       >
                     >
                   >
@@ -117,16 +128,17 @@ type ManyToManyRelationship<
                 readonly destSchema: () => ZeroSchemaWithRelations<
                   FindTableByName<
                     TDrizzleSchema,
-                    Extract<TManyConfig[TableName<TCurrentTable>][K][0], string>
+                    ExtractTableConfigName<
+                      TManyConfig[TableName<TCurrentTable>][K][0]
+                    >
                   >,
                   ResolveColumnConfig<
                     TDrizzleSchema,
                     TColumnConfig,
                     FindTableByName<
                       TDrizzleSchema,
-                      Extract<
-                        TManyConfig[TableName<TCurrentTable>][K][0],
-                        string
+                      ExtractTableConfigName<
+                        TManyConfig[TableName<TCurrentTable>][K][0]
                       >
                     >
                   >,
@@ -136,9 +148,8 @@ type ManyToManyRelationship<
                     TManyConfig,
                     FindTableByName<
                       TDrizzleSchema,
-                      Extract<
-                        TManyConfig[TableName<TCurrentTable>][K][0],
-                        string
+                      ExtractTableConfigName<
+                        TManyConfig[TableName<TCurrentTable>][K][0]
                       >
                     >
                   >
@@ -149,9 +160,8 @@ type ManyToManyRelationship<
                   ColumnIndexKeys<
                     FindTableByName<
                       TDrizzleSchema,
-                      Extract<
-                        TManyConfig[TableName<TCurrentTable>][K][0],
-                        string
+                      ExtractTableConfigName<
+                        TManyConfig[TableName<TCurrentTable>][K][0]
                       >
                     >
                   >
@@ -160,9 +170,8 @@ type ManyToManyRelationship<
                   ColumnIndexKeys<
                     FindTableByName<
                       TDrizzleSchema,
-                      Extract<
-                        TManyConfig[TableName<TCurrentTable>][K][1],
-                        string
+                      ExtractTableConfigName<
+                        TManyConfig[TableName<TCurrentTable>][K][1]
                       >
                     >
                   >
@@ -170,16 +179,17 @@ type ManyToManyRelationship<
                 readonly destSchema: () => ZeroSchemaWithRelations<
                   FindTableByName<
                     TDrizzleSchema,
-                    Extract<TManyConfig[TableName<TCurrentTable>][K][1], string>
+                    ExtractTableConfigName<
+                      TManyConfig[TableName<TCurrentTable>][K][1]
+                    >
                   >,
                   ResolveColumnConfig<
                     TDrizzleSchema,
                     TColumnConfig,
                     FindTableByName<
                       TDrizzleSchema,
-                      Extract<
-                        TManyConfig[TableName<TCurrentTable>][K][1],
-                        string
+                      ExtractTableConfigName<
+                        TManyConfig[TableName<TCurrentTable>][K][1]
                       >
                     >
                   >,
@@ -189,9 +199,8 @@ type ManyToManyRelationship<
                     TManyConfig,
                     FindTableByName<
                       TDrizzleSchema,
-                      Extract<
-                        TManyConfig[TableName<TCurrentTable>][K][1],
-                        string
+                      ExtractTableConfigName<
+                        TManyConfig[TableName<TCurrentTable>][K][1]
                       >
                     >
                   >
@@ -261,8 +270,8 @@ type DirectRelationships<
   TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
   TCurrentTable extends Table,
   TCurrentTableRelations extends Relations,
-> = TCurrentTableRelations extends never
-  ? never
+> = [TCurrentTableRelations] extends [never]
+  ? {}
   : {
       readonly [K in ValidDirectRelationKeys<
         TDrizzleSchema,
@@ -315,12 +324,29 @@ type ManyTableConfig<
   TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
   TSourceTableName extends keyof TColumnConfig,
 > = {
-  readonly [TRelationName: string]: {
-    [K in Exclude<keyof TColumnConfig, TSourceTableName>]: [
-      K,
-      Exclude<keyof TColumnConfig, TSourceTableName | K>,
-    ];
-  }[Exclude<keyof TColumnConfig, TSourceTableName>];
+  readonly [TRelationName: string]:
+    | {
+        [K in Exclude<keyof TColumnConfig, TSourceTableName>]: readonly [
+          K,
+          Exclude<keyof TColumnConfig, TSourceTableName | K>,
+        ];
+      }[Exclude<keyof TColumnConfig, TSourceTableName>]
+    | {
+        [K in Exclude<keyof TColumnConfig, TSourceTableName>]: {
+          [L in Exclude<keyof TColumnConfig, K>]: readonly [
+            {
+              readonly sourceField: keyof TColumnConfig[TSourceTableName];
+              readonly destTable: K;
+              readonly destField: keyof TColumnConfig[K];
+            },
+            {
+              readonly sourceField: keyof TColumnConfig[K];
+              readonly destTable: L;
+              readonly destField: keyof TColumnConfig[L];
+            },
+          ];
+        }[Exclude<keyof TColumnConfig, K>];
+      }[Exclude<keyof TColumnConfig, TSourceTableName>];
 };
 
 /**
@@ -497,60 +523,114 @@ const createZeroSchema = <
 
       for (const [
         relationName,
-        [junctionTableName, destTableName],
+        [junctionTableNameOrObject, destTableNameOrObject],
       ] of Object.entries(manyConfig)) {
-        const sourceTable = Object.values(schema).find(
-          (t): t is Table =>
-            is(t, Table) && getTableName(t) === sourceTableName,
-        );
-        const destTable = Object.values(schema).find(
-          (t): t is Table => is(t, Table) && getTableName(t) === destTableName,
-        );
-
-        if (!sourceTable || !destTable) {
-          throw new Error(
-            `drizzle-zero: Invalid many-to-many configuration for ${String(sourceTableName)}.${relationName}: Could not find ${!sourceTable ? "source" : !destTable ? "destination" : "junction"} table`,
-          );
-        }
-
-        // Find source->junction and junction->dest relationships
-        const sourceJunctionFields = findForeignKeySourceAndDestFields(schema, {
-          sourceTable: sourceTable,
-          referencedTableName: junctionTableName,
-        });
-
-        const junctionDestFields = findForeignKeySourceAndDestFields(schema, {
-          sourceTable: destTable,
-          referencedTableName: junctionTableName,
-        });
-
         if (
-          !sourceJunctionFields.sourceFieldNames.length ||
-          !junctionDestFields.sourceFieldNames.length ||
-          !junctionDestFields.destFieldNames.length ||
-          !sourceJunctionFields.destFieldNames.length
+          typeof junctionTableNameOrObject === "string" &&
+          typeof destTableNameOrObject === "string"
         ) {
-          throw new Error(
-            `drizzle-zero: Invalid many-to-many configuration for ${String(sourceTableName)}.${relationName}: Could not find foreign key relationships in junction table ${junctionTableName}`,
-          );
-        }
+          const junctionTableName = junctionTableNameOrObject;
 
-        (
-          relationships[
-            sourceTableName as keyof typeof relationships
-          ] as Record<string, unknown>
-        )[relationName] = [
-          {
-            sourceField: sourceJunctionFields.sourceFieldNames,
-            destField: sourceJunctionFields.destFieldNames,
-            destSchemaTableName: junctionTableName,
-          },
-          {
-            sourceField: junctionDestFields.destFieldNames,
-            destField: junctionDestFields.sourceFieldNames,
-            destSchemaTableName: destTableName,
-          },
-        ];
+          const destTableName = destTableNameOrObject;
+
+          const sourceTable = Object.values(schema).find(
+            (t): t is Table =>
+              is(t, Table) && getTableName(t) === sourceTableName,
+          );
+          const destTable = Object.values(schema).find(
+            (t): t is Table =>
+              is(t, Table) && getTableName(t) === destTableName,
+          );
+
+          if (!sourceTable || !destTable) {
+            throw new Error(
+              `drizzle-zero: Invalid many-to-many configuration for ${String(sourceTableName)}.${relationName}: Could not find ${!sourceTable ? "source" : !destTable ? "destination" : "junction"} table`,
+            );
+          }
+
+          // Find source->junction and junction->dest relationships
+          const sourceJunctionFields = findForeignKeySourceAndDestFields(
+            schema,
+            {
+              sourceTable: sourceTable,
+              referencedTableName: junctionTableName,
+            },
+          );
+
+          const junctionDestFields = findForeignKeySourceAndDestFields(schema, {
+            sourceTable: destTable,
+            referencedTableName: junctionTableName,
+          });
+
+          if (
+            !sourceJunctionFields.sourceFieldNames.length ||
+            !junctionDestFields.sourceFieldNames.length ||
+            !junctionDestFields.destFieldNames.length ||
+            !sourceJunctionFields.destFieldNames.length
+          ) {
+            throw new Error(
+              `drizzle-zero: Invalid many-to-many configuration for ${String(sourceTableName)}.${relationName}: Could not find foreign key relationships in junction table ${junctionTableName}`,
+            );
+          }
+
+          (
+            relationships[
+              sourceTableName as keyof typeof relationships
+            ] as Record<string, unknown>
+          )[relationName] = [
+            {
+              sourceField: sourceJunctionFields.sourceFieldNames,
+              destField: sourceJunctionFields.destFieldNames,
+              destSchemaTableName: junctionTableName,
+            },
+            {
+              sourceField: junctionDestFields.destFieldNames,
+              destField: junctionDestFields.sourceFieldNames,
+              destSchemaTableName: destTableName,
+            },
+          ];
+        } else {
+          const junctionTableName =
+            junctionTableNameOrObject?.destTable ?? null;
+          const junctionSourceField =
+            junctionTableNameOrObject?.sourceField ?? null;
+          const junctionDestField =
+            junctionTableNameOrObject?.destField ?? null;
+
+          const destTableName = destTableNameOrObject?.destTable ?? null;
+          const destSourceField = destTableNameOrObject?.sourceField ?? null;
+          const destDestField = destTableNameOrObject?.destField ?? null;
+
+          if (
+            !junctionSourceField ||
+            !junctionDestField ||
+            !destSourceField ||
+            !destDestField ||
+            !junctionTableName ||
+            !destTableName
+          ) {
+            throw new Error(
+              `drizzle-zero: Invalid many-to-many configuration for ${String(sourceTableName)}.${relationName}: Not all required fields were provided.`,
+            );
+          }
+
+          (
+            relationships[
+              sourceTableName as keyof typeof relationships
+            ] as Record<string, unknown>
+          )[relationName] = [
+            {
+              sourceField: [junctionSourceField],
+              destField: [junctionDestField],
+              destSchemaTableName: junctionTableName,
+            },
+            {
+              sourceField: [destSourceField],
+              destField: [destDestField],
+              destSchemaTableName: destTableName,
+            },
+          ];
+        }
       }
     }
   }

@@ -118,6 +118,15 @@ describe.concurrent("compile", () => {
     ]);
   });
 
+  test("compile - many-to-many-self-referential", async () => {
+    const result = await runZeroBuildSchema("many-to-many-self-referential");
+    expect(result.schema.tables.user).toBeTruthy();
+    expect(Object.keys(result.schema.tables)).toStrictEqual([
+      "friendship",
+      "user",
+    ]);
+  });
+
   test("compile - custom-schema", async () => {
     const result = await runZeroBuildSchema("custom-schema");
     expect(result.schema.tables.user).toBeTruthy();
