@@ -330,13 +330,13 @@ type ManyTableConfig<
         [K in keyof TColumnConfig]: {
           [L in keyof TColumnConfig]: readonly [
             {
-              readonly sourceField: keyof TColumnConfig[TSourceTableName];
               readonly destTable: K;
+              readonly sourceField: keyof TColumnConfig[TSourceTableName];
               readonly destField: keyof TColumnConfig[K];
             },
             {
-              readonly sourceField: keyof TColumnConfig[K];
               readonly destTable: L;
+              readonly sourceField: keyof TColumnConfig[K];
               readonly destField: keyof TColumnConfig[L];
             },
           ];
