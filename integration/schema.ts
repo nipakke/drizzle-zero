@@ -152,5 +152,13 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
         delete: ANYONE_CAN,
       },
     },
+    friendship: {
+      row: {
+        select: ANYONE_CAN,
+        insert: ANYONE_CAN,
+        update: ANYONE_CAN,
+        delete: ANYONE_CAN,
+      },
+    },
   };
 });

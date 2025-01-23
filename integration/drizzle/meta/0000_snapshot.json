@@ -1,5 +1,5 @@
 {
-  "id": "569b6848-5841-49d2-81a7-6db27724a7a9",
+  "id": "5766e473-f7c4-4a8e-a85a-0663fbd8a0d0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -262,6 +262,72 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.friendship": {
+      "name": "friendship",
+      "schema": "",
+      "columns": {
+        "requesting_id": {
+          "name": "requesting_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accepting_id": {
+          "name": "accepting_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accepted": {
+          "name": "accepted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "friendship_requesting_id_user_id_fk": {
+          "name": "friendship_requesting_id_user_id_fk",
+          "tableFrom": "friendship",
+          "tableTo": "user",
+          "columnsFrom": [
+            "requesting_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "friendship_accepting_id_user_id_fk": {
+          "name": "friendship_accepting_id_user_id_fk",
+          "tableFrom": "friendship",
+          "tableTo": "user",
+          "columnsFrom": [
+            "accepting_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "friendship_requesting_id_accepting_id_pk": {
+          "name": "friendship_requesting_id_accepting_id_pk",
+          "columns": [
+            "requesting_id",
+            "accepting_id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},

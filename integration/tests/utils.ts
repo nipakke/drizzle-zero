@@ -8,6 +8,7 @@ import { GenericContainer, Network, PullPolicy } from "testcontainers";
 import * as drizzleSchema from "../drizzle/schema";
 import {
   allTypesTable,
+  friendshipTable,
   mediumTable,
   messageTable,
   userTable,
@@ -112,6 +113,12 @@ export const seed = async () => {
     jsonbField: { key: "value" },
     typedJsonField: { theme: "light", fontSize: 16 },
     statusField: "pending",
+  });
+
+  await db.insert(friendshipTable).values({
+    requestingId: "1",
+    acceptingId: "2",
+    accepted: true,
   });
 };
 

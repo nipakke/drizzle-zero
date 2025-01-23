@@ -47,6 +47,13 @@ CREATE TABLE "all_types" (
 	"optional_uuid" uuid
 );
 --> statement-breakpoint
+CREATE TABLE "friendship" (
+	"requesting_id" text NOT NULL,
+	"accepting_id" text NOT NULL,
+	"accepted" boolean NOT NULL,
+	CONSTRAINT "friendship_requesting_id_accepting_id_pk" PRIMARY KEY("requesting_id","accepting_id")
+);
+--> statement-breakpoint
 CREATE TABLE "medium" (
 	"createdAt" timestamp(3) with time zone DEFAULT now() NOT NULL,
 	"updatedAt" timestamp(3) with time zone DEFAULT now() NOT NULL,
@@ -79,5 +86,7 @@ CREATE TABLE "zero"."schemaVersions" (
 	CONSTRAINT "zero_schema_versions_single_row_constraint" CHECK ("zero"."schemaVersions"."lock")
 );
 --> statement-breakpoint
+ALTER TABLE "friendship" ADD CONSTRAINT "friendship_requesting_id_user_id_fk" FOREIGN KEY ("requesting_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "friendship" ADD CONSTRAINT "friendship_accepting_id_user_id_fk" FOREIGN KEY ("accepting_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "message" ADD CONSTRAINT "message_senderId_user_id_fk" FOREIGN KEY ("senderId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "message" ADD CONSTRAINT "message_mediumId_medium_id_fk" FOREIGN KEY ("mediumId") REFERENCES "public"."medium"("id") ON DELETE no action ON UPDATE no action;
