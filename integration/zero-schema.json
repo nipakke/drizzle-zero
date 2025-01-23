@@ -71,6 +71,11 @@
       "row": {
         "update": {}
       }
+    },
+    "friendship": {
+      "row": {
+        "update": {}
+      }
     }
   },
   "schema": {
@@ -241,6 +246,28 @@
         },
         "relationships": {}
       },
+      "friendship": {
+        "tableName": "friendship",
+        "primaryKey": [
+          "requesting_id",
+          "accepting_id"
+        ],
+        "columns": {
+          "accepted": {
+            "type": "boolean",
+            "optional": false
+          },
+          "accepting_id": {
+            "type": "string",
+            "optional": false
+          },
+          "requesting_id": {
+            "type": "string",
+            "optional": false
+          }
+        },
+        "relationships": {}
+      },
       "medium": {
         "tableName": "medium",
         "primaryKey": [
@@ -356,6 +383,26 @@
           }
         },
         "relationships": {
+          "friends": [
+            {
+              "sourceField": [
+                "id"
+              ],
+              "destField": [
+                "requesting_id"
+              ],
+              "destSchema": "friendship"
+            },
+            {
+              "sourceField": [
+                "accepting_id"
+              ],
+              "destField": [
+                "id"
+              ],
+              "destSchema": "user"
+            }
+          ],
           "mediums": [
             {
               "sourceField": [

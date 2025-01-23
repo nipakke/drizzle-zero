@@ -104,6 +104,22 @@ describe("relationships", () => {
     preloadedUsers.cleanup();
   });
 
+  test("can query many-to-many extended relationships", async () => {
+    const zero = await getNewZero();
+
+    const q = zero.query.user.related("friends").one();
+
+    const preloadedUsers = await q.preload();
+    await preloadedUsers.complete;
+
+    const user = await q.one().run();
+
+    expect(user?.friends).toHaveLength(1);
+    expect(user?.friends[0]?.name).toBe("John");
+
+    preloadedUsers.cleanup();
+  });
+
   test("can insert messages", async () => {
     const zero = await getNewZero();
 

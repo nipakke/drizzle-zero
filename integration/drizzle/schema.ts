@@ -12,6 +12,7 @@ import {
   numeric,
   pgEnum,
   pgTable,
+  primaryKey,
   real,
   serial,
   smallint,
@@ -137,3 +138,17 @@ export const allTypesTable = pgTable("all_types", {
   optionalVarchar: varchar("optional_varchar"),
   optionalUuid: uuid("optional_uuid"),
 });
+
+export const friendshipTable = pgTable(
+  "friendship",
+  {
+    requestingId: text("requesting_id")
+      .notNull()
+      .references(() => userTable.id),
+    acceptingId: text("accepting_id")
+      .notNull()
+      .references(() => userTable.id),
+    accepted: boolean("accepted").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.requestingId, t.acceptingId] })],
+);
