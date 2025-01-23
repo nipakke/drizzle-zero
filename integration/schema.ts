@@ -74,10 +74,27 @@ const zeroSchema = createZeroSchema(drizzleSchema, {
       optional_varchar: true,
       optional_uuid: true,
     },
+    friendship: {
+      accepting_id: true,
+      requesting_id: true,
+      accepted: true,
+    },
   },
   manyToMany: {
     user: {
       mediums: ["message", "medium"],
+      friends: [
+        {
+          sourceField: "id",
+          destTable: "friendship",
+          destField: "requesting_id",
+        },
+        {
+          sourceField: "accepting_id",
+          destTable: "user",
+          destField: "id",
+        },
+      ],
     },
   },
 });

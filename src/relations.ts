@@ -325,15 +325,10 @@ type ManyTableConfig<
   TSourceTableName extends keyof TColumnConfig,
 > = {
   readonly [TRelationName: string]:
+    | readonly [keyof TColumnConfig, keyof TColumnConfig]
     | {
-        [K in Exclude<keyof TColumnConfig, TSourceTableName>]: readonly [
-          K,
-          Exclude<keyof TColumnConfig, TSourceTableName | K>,
-        ];
-      }[Exclude<keyof TColumnConfig, TSourceTableName>]
-    | {
-        [K in Exclude<keyof TColumnConfig, TSourceTableName>]: {
-          [L in Exclude<keyof TColumnConfig, K>]: readonly [
+        [K in keyof TColumnConfig]: {
+          [L in keyof TColumnConfig]: readonly [
             {
               readonly sourceField: keyof TColumnConfig[TSourceTableName];
               readonly destTable: K;
@@ -345,8 +340,8 @@ type ManyTableConfig<
               readonly destField: keyof TColumnConfig[L];
             },
           ];
-        }[Exclude<keyof TColumnConfig, K>];
-      }[Exclude<keyof TColumnConfig, TSourceTableName>];
+        }[keyof TColumnConfig];
+      }[keyof TColumnConfig];
 };
 
 /**
