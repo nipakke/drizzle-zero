@@ -12,6 +12,7 @@ yarn add drizzle-zero
 pnpm add drizzle-zero
 ```
 
+
 ## Usage
 
 Here's an example of how to convert a Drizzle schema to a Zero schema with bidirectional relationships:
@@ -46,8 +47,9 @@ export const postsRelations = relations(posts, ({ one }) => ({
 
 Convert this Drizzle schema to a Zero schema:
 
+> **Note:** Starting from version 0.3.0, the API no longer uses `createSchema` from Zero. The examples below show the current API usage.
+
 ```ts
-import { createSchema } from "@rocicorp/zero";
 import { createZeroSchema } from "drizzle-zero";
 import * as drizzleSchema from "./drizzle-schema";
 
