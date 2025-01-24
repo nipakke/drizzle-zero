@@ -433,27 +433,19 @@
         "friends": [
           {
             "sourceField": [
-              [
-                "id"
-              ]
+              "id"
             ],
             "destField": [
-              [
-                "requesting_id"
-              ]
+              "requesting_id"
             ],
             "destSchemaTableName": "friendship"
           },
           {
             "sourceField": [
-              [
-                "accepting_id"
-              ]
+              "accepting_id"
             ],
             "destField": [
-              [
-                "id"
-              ]
+              "id"
             ],
             "destSchemaTableName": "user"
           }
