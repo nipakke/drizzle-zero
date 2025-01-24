@@ -144,6 +144,24 @@ export const schema = createZeroSchema(drizzleSchema, {
 });
 ```
 
+Then query as usual, skipping the junction table:
+
+```tsx
+const userQuery = z.query.user.where("id", "=", "1").related("groups").one();
+
+const [user] = useQuery(userQuery);
+
+console.log(user);
+// {
+//   id: "user_1",
+//   name: "User 1",
+//   groups: [
+//     { id: "group_1", name: "Group 1" },
+//     { id: "group_2", name: "Group 2" },
+//   ],
+// }
+```
+
 ### Extended Configuration
 
 For more complex scenarios like self-referential relationships:
@@ -179,24 +197,6 @@ export const schema = createZeroSchema(drizzleSchema, {
     },
   },
 });
-```
-
-Then query as usual, skipping the junction table:
-
-```tsx
-const userQuery = z.query.user.where("id", "=", "1").related("groups").one();
-
-const [user] = useQuery(userQuery);
-
-console.log(user);
-// {
-//   id: "user_1",
-//   name: "User 1",
-//   groups: [
-//     { id: "group_1", name: "Group 1" },
-//     { id: "group_2", name: "Group 2" },
-//   ],
-// }
 ```
 
 ## Features
