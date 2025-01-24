@@ -1,36 +1,29 @@
-import {
-  ANYONE_CAN,
-  createSchema,
-  definePermissions,
-  type Schema,
-} from "@rocicorp/zero";
+import { ANYONE_CAN, definePermissions, type Schema } from "@rocicorp/zero";
 import { createZeroSchema } from "../../src";
 import * as manyToMany from "./many-to-many.schema";
 
-export const schema = createSchema(
-  createZeroSchema(manyToMany, {
-    version: 1,
-    tables: {
-      user: {
-        id: true,
-        name: true,
-      },
-      group: {
-        id: true,
-        name: true,
-      },
-      users_to_group: {
-        user_id: true,
-        group_id: true,
-      },
+export const schema = createZeroSchema(manyToMany, {
+  version: 1,
+  tables: {
+    user: {
+      id: true,
+      name: true,
     },
-    manyToMany: {
-      user: {
-        usersToGroups: ["users_to_group", "group"],
-      },
+    group: {
+      id: true,
+      name: true,
     },
-  }),
-);
+    users_to_group: {
+      user_id: true,
+      group_id: true,
+    },
+  },
+  manyToMany: {
+    user: {
+      usersToGroups: ["users_to_group", "group"],
+    },
+  },
+});
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {

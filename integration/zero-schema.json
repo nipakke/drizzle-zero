@@ -82,357 +82,430 @@
     "version": 1,
     "tables": {
       "all_types": {
-        "tableName": "all_types",
-        "primaryKey": [
-          "id"
-        ],
+        "name": "all_types",
         "columns": {
-          "bigint": {
-            "type": "number",
-            "optional": false
-          },
-          "bigint_number": {
-            "type": "number",
-            "optional": false
-          },
-          "bigserial": {
-            "type": "number",
-            "optional": true
-          },
-          "boolean": {
-            "type": "boolean",
-            "optional": false
-          },
-          "char": {
-            "type": "string",
-            "optional": false
-          },
-          "date": {
-            "type": "number",
-            "optional": false
-          },
-          "decimal": {
-            "type": "number",
-            "optional": false
-          },
-          "double_precision": {
-            "type": "number",
-            "optional": false
-          },
           "id": {
             "type": "string",
-            "optional": false
-          },
-          "integer": {
-            "type": "number",
-            "optional": false
-          },
-          "json": {
-            "type": "json",
-            "optional": false
-          },
-          "jsonb": {
-            "type": "json",
-            "optional": false
-          },
-          "numeric": {
-            "type": "number",
-            "optional": false
-          },
-          "optional_bigint": {
-            "type": "number",
-            "optional": true
-          },
-          "optional_boolean": {
-            "type": "boolean",
-            "optional": true
-          },
-          "optional_double_precision": {
-            "type": "number",
-            "optional": true
-          },
-          "optional_enum": {
-            "type": "string",
-            "optional": true
-          },
-          "optional_integer": {
-            "type": "number",
-            "optional": true
-          },
-          "optional_json": {
-            "type": "json",
-            "optional": true
-          },
-          "optional_numeric": {
-            "type": "number",
-            "optional": true
-          },
-          "optional_real": {
-            "type": "number",
-            "optional": true
-          },
-          "optional_smallint": {
-            "type": "number",
-            "optional": true
-          },
-          "optional_text": {
-            "type": "string",
-            "optional": true
-          },
-          "optional_timestamp": {
-            "type": "number",
-            "optional": true
-          },
-          "optional_uuid": {
-            "type": "string",
-            "optional": true
-          },
-          "optional_varchar": {
-            "type": "string",
-            "optional": true
-          },
-          "real": {
-            "type": "number",
-            "optional": false
-          },
-          "serial": {
-            "type": "number",
-            "optional": true
+            "optional": false,
+            "customType": null
           },
           "smallint": {
             "type": "number",
-            "optional": false
+            "optional": false,
+            "customType": null
+          },
+          "integer": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "bigint": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "bigint_number": {
+            "type": "number",
+            "optional": false,
+            "customType": null
           },
           "smallserial": {
             "type": "number",
-            "optional": true
+            "optional": true,
+            "customType": null
           },
-          "status": {
-            "type": "string",
-            "optional": false
+          "serial": {
+            "type": "number",
+            "optional": true,
+            "customType": null
+          },
+          "bigserial": {
+            "type": "number",
+            "optional": true,
+            "customType": null
+          },
+          "numeric": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "decimal": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "real": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "double_precision": {
+            "type": "number",
+            "optional": false,
+            "customType": null
           },
           "text": {
             "type": "string",
-            "optional": false
+            "optional": false,
+            "customType": null
           },
-          "timestamp": {
-            "type": "number",
-            "optional": false
-          },
-          "timestamp_mode_date": {
-            "type": "number",
-            "optional": false
-          },
-          "timestamp_mode_string": {
-            "type": "number",
-            "optional": false
-          },
-          "timestamp_tz": {
-            "type": "number",
-            "optional": false
-          },
-          "typed_json": {
-            "type": "json",
-            "optional": false
+          "char": {
+            "type": "string",
+            "optional": false,
+            "customType": null
           },
           "uuid": {
             "type": "string",
-            "optional": false
+            "optional": false,
+            "customType": null
           },
           "varchar": {
             "type": "string",
-            "optional": false
+            "optional": false,
+            "customType": null
+          },
+          "boolean": {
+            "type": "boolean",
+            "optional": false,
+            "customType": null
+          },
+          "timestamp": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "timestamp_tz": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "timestamp_mode_string": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "timestamp_mode_date": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "date": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "json": {
+            "type": "json",
+            "optional": false,
+            "customType": null
+          },
+          "jsonb": {
+            "type": "json",
+            "optional": false,
+            "customType": null
+          },
+          "typed_json": {
+            "type": "json",
+            "optional": false,
+            "customType": null
+          },
+          "status": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "optional_smallint": {
+            "type": "number",
+            "optional": true,
+            "customType": null
+          },
+          "optional_integer": {
+            "type": "number",
+            "optional": true,
+            "customType": null
+          },
+          "optional_bigint": {
+            "type": "number",
+            "optional": true,
+            "customType": null
+          },
+          "optional_numeric": {
+            "type": "number",
+            "optional": true,
+            "customType": null
+          },
+          "optional_real": {
+            "type": "number",
+            "optional": true,
+            "customType": null
+          },
+          "optional_double_precision": {
+            "type": "number",
+            "optional": true,
+            "customType": null
+          },
+          "optional_text": {
+            "type": "string",
+            "optional": true,
+            "customType": null
+          },
+          "optional_boolean": {
+            "type": "boolean",
+            "optional": true,
+            "customType": null
+          },
+          "optional_timestamp": {
+            "type": "number",
+            "optional": true,
+            "customType": null
+          },
+          "optional_json": {
+            "type": "json",
+            "optional": true,
+            "customType": null
+          },
+          "optional_enum": {
+            "type": "string",
+            "optional": true,
+            "customType": null
+          },
+          "optional_varchar": {
+            "type": "string",
+            "optional": true,
+            "customType": null
+          },
+          "optional_uuid": {
+            "type": "string",
+            "optional": true,
+            "customType": null
           }
         },
-        "relationships": {}
+        "primaryKey": [
+          "id"
+        ]
       },
       "friendship": {
-        "tableName": "friendship",
-        "primaryKey": [
-          "requesting_id",
-          "accepting_id"
-        ],
+        "name": "friendship",
         "columns": {
-          "accepted": {
-            "type": "boolean",
-            "optional": false
+          "requesting_id": {
+            "type": "string",
+            "optional": false,
+            "customType": null
           },
           "accepting_id": {
             "type": "string",
-            "optional": false
+            "optional": false,
+            "customType": null
           },
-          "requesting_id": {
-            "type": "string",
-            "optional": false
+          "accepted": {
+            "type": "boolean",
+            "optional": false,
+            "customType": null
           }
         },
-        "relationships": {}
+        "primaryKey": [
+          "requesting_id",
+          "accepting_id"
+        ]
       },
       "medium": {
-        "tableName": "medium",
-        "primaryKey": [
-          "id"
-        ],
+        "name": "medium",
         "columns": {
           "createdAt": {
             "type": "number",
-            "optional": true
-          },
-          "id": {
-            "type": "string",
-            "optional": false
-          },
-          "name": {
-            "type": "string",
-            "optional": false
+            "optional": true,
+            "customType": null
           },
           "updatedAt": {
             "type": "number",
-            "optional": true
-          }
-        },
-        "relationships": {
-          "messages": {
-            "sourceField": [
-              "id"
-            ],
-            "destField": [
-              "mediumId"
-            ],
-            "destSchema": "message"
-          }
-        }
-      },
-      "message": {
-        "tableName": "message",
-        "primaryKey": [
-          "id"
-        ],
-        "columns": {
-          "body": {
-            "type": "string",
-            "optional": false
-          },
-          "createdAt": {
-            "type": "number",
-            "optional": true
+            "optional": true,
+            "customType": null
           },
           "id": {
             "type": "string",
-            "optional": false
+            "optional": false,
+            "customType": null
           },
-          "mediumId": {
+          "name": {
             "type": "string",
-            "optional": true
+            "optional": false,
+            "customType": null
+          }
+        },
+        "primaryKey": [
+          "id"
+        ]
+      },
+      "message": {
+        "name": "message",
+        "columns": {
+          "createdAt": {
+            "type": "number",
+            "optional": true,
+            "customType": null
           },
-          "metadata": {
-            "type": "json",
-            "optional": false
+          "updatedAt": {
+            "type": "number",
+            "optional": true,
+            "customType": null
+          },
+          "id": {
+            "type": "string",
+            "optional": false,
+            "customType": null
           },
           "senderId": {
             "type": "string",
-            "optional": true
+            "optional": true,
+            "customType": null
+          },
+          "mediumId": {
+            "type": "string",
+            "optional": true,
+            "customType": null
+          },
+          "body": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "metadata": {
+            "type": "json",
+            "optional": false,
+            "customType": null
+          }
+        },
+        "primaryKey": [
+          "id"
+        ]
+      },
+      "user": {
+        "name": "user",
+        "columns": {
+          "createdAt": {
+            "type": "number",
+            "optional": true,
+            "customType": null
           },
           "updatedAt": {
             "type": "number",
-            "optional": true
+            "optional": true,
+            "customType": null
+          },
+          "id": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "name": {
+            "type": "string",
+            "optional": false,
+            "customType": null
           }
         },
-        "relationships": {
-          "medium": {
+        "primaryKey": [
+          "id"
+        ]
+      }
+    },
+    "relationships": {
+      "user": {
+        "mediums": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "senderId"
+            ],
+            "destSchema": "message",
+            "cardinality": "many"
+          },
+          {
             "sourceField": [
               "mediumId"
             ],
             "destField": [
               "id"
             ],
-            "destSchema": "medium"
-          },
-          "sender": {
-            "sourceField": [
-              "senderId"
-            ],
-            "destField": [
-              "id"
-            ],
-            "destSchema": "user"
+            "destSchema": "medium",
+            "cardinality": "many"
           }
-        }
-      },
-      "user": {
-        "tableName": "user",
-        "primaryKey": [
-          "id"
         ],
-        "columns": {
-          "createdAt": {
-            "type": "number",
-            "optional": true
+        "friends": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "requesting_id"
+            ],
+            "destSchema": "friendship",
+            "cardinality": "many"
           },
-          "id": {
-            "type": "string",
-            "optional": false
-          },
-          "name": {
-            "type": "string",
-            "optional": false
-          },
-          "updatedAt": {
-            "type": "number",
-            "optional": true
+          {
+            "sourceField": [
+              "accepting_id"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "user",
+            "cardinality": "many"
           }
-        },
-        "relationships": {
-          "friends": [
-            {
-              "sourceField": [
-                "id"
-              ],
-              "destField": [
-                "requesting_id"
-              ],
-              "destSchema": "friendship"
-            },
-            {
-              "sourceField": [
-                "accepting_id"
-              ],
-              "destField": [
-                "id"
-              ],
-              "destSchema": "user"
-            }
-          ],
-          "mediums": [
-            {
-              "sourceField": [
-                "id"
-              ],
-              "destField": [
-                "senderId"
-              ],
-              "destSchema": "message"
-            },
-            {
-              "sourceField": [
-                "mediumId"
-              ],
-              "destField": [
-                "id"
-              ],
-              "destSchema": "medium"
-            }
-          ],
-          "messages": {
+        ],
+        "messages": [
+          {
             "sourceField": [
               "id"
             ],
             "destField": [
               "senderId"
             ],
-            "destSchema": "message"
+            "destSchema": "message",
+            "cardinality": "many"
           }
-        }
+        ]
+      },
+      "medium": {
+        "messages": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "mediumId"
+            ],
+            "destSchema": "message",
+            "cardinality": "many"
+          }
+        ]
+      },
+      "message": {
+        "medium": [
+          {
+            "sourceField": [
+              "mediumId"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "medium",
+            "cardinality": "one"
+          }
+        ],
+        "sender": [
+          {
+            "sourceField": [
+              "senderId"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "user",
+            "cardinality": "one"
+          }
+        ]
       }
     }
   }

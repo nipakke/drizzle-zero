@@ -1,4 +1,4 @@
-import type { JSONValue } from "@rocicorp/zero";
+import type { ReadonlyJSONValue } from "@rocicorp/zero";
 
 /**
  * Represents the basic data types supported by Drizzle ORM.
@@ -69,5 +69,5 @@ export type ZeroTypeToTypescriptType = {
   boolean: boolean;
   date: string;
   string: string;
-  json: JSONValue;
+  json: ReadonlyJSONValue;
 };

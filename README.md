@@ -12,6 +12,7 @@ yarn add drizzle-zero
 pnpm add drizzle-zero
 ```
 
+
 ## Usage
 
 Here's an example of how to convert a Drizzle schema to a Zero schema with bidirectional relationships:
@@ -46,41 +47,40 @@ export const postsRelations = relations(posts, ({ one }) => ({
 
 Convert this Drizzle schema to a Zero schema:
 
+> **Note:** Starting from version 0.3.0, the API no longer uses `createSchema` from Zero. The examples below show the current API usage.
+
 ```ts
-import { createSchema } from "@rocicorp/zero";
 import { createZeroSchema } from "drizzle-zero";
 import * as drizzleSchema from "./drizzle-schema";
 
 // Convert to Zero schema
-export const schema = createSchema(
-  createZeroSchema(drizzleSchema, {
-    version: 1,
-    // Specify which tables and columns to include in the Zero schema.
-    // This allows for the "expand/migrate/contract" pattern recommended in the Zero docs.
-    // When a column is first added, it should be set to false, and then changed to true
-    // once the migration has been run.
-    tables: {
-      user: {
-        id: true,
-        name: true,
-      },
-      post: {
-        id: true,
-        content: true,
-        author_id: true,
-      },
+export const schema = createZeroSchema(drizzleSchema, {
+  version: 1,
+  // Specify which tables and columns to include in the Zero schema.
+  // This allows for the "expand/migrate/contract" pattern recommended in the Zero docs.
+  // When a column is first added, it should be set to false, and then changed to true
+  // once the migration has been run.
+  tables: {
+    user: {
+      id: true,
+      name: true,
     },
-  }),
-);
+    post: {
+      id: true,
+      content: true,
+      author_id: true,
+    },
+  },
+});
 
 // Define permissions with the inferred types from Drizzle
 type Schema = typeof schema;
-type User = typeof schema.tables.user;
+type User = Row<typeof schema.tables.user>;
 
 export const permissions = definePermissions<AuthData, Schema>(schema, () => {
   const allowIfUserIsSelf = (
     authData: AuthData,
-    { cmp }: ExpressionBuilder<User>,
+    { cmp }: ExpressionBuilder<Schema, "user">,
   ) => cmp("id", "=", authData.sub);
 
   // ...further permissions definitions
@@ -116,89 +116,37 @@ function PostList() {
 
 ## Many-to-Many Relationships
 
-drizzle-zero supports many-to-many relationships with a junction table (in this case, `users_to_group`):
+drizzle-zero supports many-to-many relationships with a junction table. You can configure them in two ways:
+
+### Simple Configuration
 
 ```ts
-import { relations } from "drizzle-orm";
-import { pgTable, text, primaryKey } from "drizzle-orm/pg-core";
-
-export const users = pgTable("user", {
-  id: text("id").primaryKey(),
-  name: text("name"),
-});
-
-export const groups = pgTable("group", {
-  id: text("id").primaryKey(),
-  name: text("name"),
-});
-
-// Junction table
-export const usersToGroups = pgTable(
-  "users_to_group",
-  {
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id),
-    groupId: text("group_id")
-      .notNull()
-      .references(() => groups.id),
+export const schema = createZeroSchema(drizzleSchema, {
+  version: 1,
+  tables: {
+    user: {
+      id: true,
+      name: true,
+    },
+    users_to_group: {
+      user_id: true,
+      group_id: true,
+    },
+    group: {
+      id: true,
+      name: true,
+    },
   },
-  (t) => [primaryKey({ columns: [t.userId, t.groupId] })],
-);
-
-// Define the relationships
-export const usersRelations = relations(users, ({ many }) => ({
-  usersToGroups: many(usersToGroups),
-}));
-
-export const groupsRelations = relations(groups, ({ many }) => ({
-  usersToGroups: many(usersToGroups),
-}));
-
-export const usersToGroupsRelations = relations(usersToGroups, ({ one }) => ({
-  group: one(groups, {
-    fields: [usersToGroups.groupId],
-    references: [groups.id],
-  }),
-  user: one(users, {
-    fields: [usersToGroups.userId],
-    references: [users.id],
-  }),
-}));
+  manyToMany: {
+    user: {
+      // Simple format: [junction table, target table]
+      groups: ["users_to_group", "group"],
+    },
+  },
+});
 ```
 
-Configure the Zero schema to handle the many-to-many relationship:
-
-```ts
-export const schema = createSchema(
-  createZeroSchema(drizzleSchema, {
-    version: 1,
-    tables: {
-      user: {
-        id: true,
-        name: true,
-      },
-      group: {
-        id: true,
-        name: true,
-      },
-      users_to_group: {
-        user_id: true,
-        group_id: true,
-      },
-    },
-    manyToMany: {
-      // The origin table to define the many-to-many relationship on
-      user: {
-        // The key is the relation name and value is [junction table, target table]
-        groups: ["users_to_group", "group"],
-      },
-    },
-  }),
-);
-```
-
-Then, skip the junction table when querying:
+Then query as usual, skipping the junction table:
 
 ```tsx
 const userQuery = z.query.user.where("id", "=", "1").related("groups").one();
@@ -216,7 +164,42 @@ console.log(user);
 // }
 ```
 
-*Note: see an example of many-to-many relationships with an explicit mapping of the junction/target columns in [many-to-many-extended-config.zero.ts](tests/schemas/many-to-many-extended-config.zero.ts).*
+### Extended Configuration
+
+For more complex scenarios like self-referential relationships:
+
+```ts
+export const schema = createZeroSchema(drizzleSchema, {
+  version: 1,
+  tables: {
+    user: {
+      id: true,
+      name: true,
+    },
+    friendship: {
+      requesting_id: true,
+      accepting_id: true,
+    },
+  },
+  manyToMany: {
+    user: {
+      // Extended format with explicit field mappings
+      friends: [
+        {
+          sourceField: ["id"],
+          destTable: "friendship",
+          destField: ["requesting_id"],
+        },
+        {
+          sourceField: ["accepting_id"],
+          destTable: "user",
+          destField: ["id"],
+        },
+      ],
+    },
+  },
+});
+```
 
 ## Features
 
@@ -227,7 +210,7 @@ console.log(user);
 - Supports relationships:
   - One-to-one relationships
   - One-to-many relationships
-  - Many-to-many relationships (skipping junction tables)
+  - Many-to-many relationships with simple or extended configuration
   - Self-referential relationships
 
 ## License

@@ -1,6 +1,5 @@
 import {
   ANYONE_CAN,
-  createSchema,
   definePermissions,
   type ExpressionBuilder,
   type Row,
@@ -85,21 +84,21 @@ const zeroSchema = createZeroSchema(drizzleSchema, {
       mediums: ["message", "medium"],
       friends: [
         {
-          sourceField: "id",
+          sourceField: ["id"],
           destTable: "friendship",
-          destField: "requesting_id",
+          destField: ["requesting_id"],
         },
         {
-          sourceField: "accepting_id",
+          sourceField: ["accepting_id"],
           destTable: "user",
-          destField: "id",
+          destField: ["id"],
         },
       ],
     },
   },
 });
 
-export const schema = createSchema(zeroSchema);
+export const schema = zeroSchema;
 
 export type Schema = typeof schema;
 export type Message = Row<typeof schema.tables.message>;
@@ -114,7 +113,7 @@ type AuthData = {
 export const permissions = definePermissions<AuthData, Schema>(schema, () => {
   const allowIfSenderIs1 = (
     _authData: AuthData,
-    { cmp }: ExpressionBuilder<typeof schema.tables.message>,
+    { cmp }: ExpressionBuilder<Schema, "message">,
   ) => cmp("senderId", "=", "1");
 
   return {

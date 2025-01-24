@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ES2020",
+    "target": "ESNext",
+    "module": "ESNext",
     "verbatimModuleSyntax": true,
     "esModuleInterop": true,
     "moduleResolution": "bundler",
@@ -13,6 +13,7 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "strictNullChecks": true,
     "declarationMap": true,
     "sourceMap": true,
     "declaration": true,
@@ -20,10 +21,10 @@
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
     "preserveSymlinks": true,
-    "types": ["node", "vitest/globals"],
+    "types": ["node", "vitest"],
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "lib": ["dom", "es2022"],
+    "lib": ["dom", "ESNext"],
     "jsx": "react-jsx",
     "outDir": "out"
   },

@@ -1,3 +1,13 @@
+import {
+  type ColumnBuilder,
+  type TableBuilderWithColumns,
+  boolean as zeroBoolean,
+  json as zeroJson,
+  number as zeroNumber,
+  string as zeroString,
+  enumeration as zeroEnumeration,
+  table as zeroTable,
+} from "@rocicorp/zero";
 import { getTableColumns, getTableName, Table } from "drizzle-orm";
 import { getTableConfigForDatabase } from "./db";
 import {
@@ -12,7 +22,6 @@ import type {
   ColumnNames,
   Columns,
   FindPrimaryKeyFromTable,
-  Flatten,
   TableName,
 } from "./types";
 import { typedEntries } from "./util";
@@ -51,8 +60,10 @@ export type ColumnsConfig<TTable extends Table> = {
    */
   readonly [KColumn in ColumnNames<TTable>]?:
     | boolean
-    | TypeOverride<
-        ZeroTypeToTypescriptType[DrizzleDataTypeToZeroType[Columns<TTable>[KColumn]["dataType"]]]
+    | ColumnBuilder<
+        TypeOverride<
+          ZeroTypeToTypescriptType[DrizzleDataTypeToZeroType[Columns<TTable>[KColumn]["dataType"]]]
+        >
       >;
 };
 
@@ -110,22 +121,23 @@ type ZeroColumnDefinition<
     TTable,
     KColumn
   >["_"],
-> = Readonly<
-  {
-    readonly optional: CD extends {
-      hasDefault: true;
-      hasRuntimeDefault: false;
-    }
-      ? true
-      : CD extends { notNull: true }
-        ? false
-        : true;
-    readonly type: ZeroMappedColumnType<TTable, KColumn>;
-    readonly customType: ZeroMappedCustomType<TTable, KColumn>;
-  } & (CD extends { columnType: "PgEnumColumn" }
-    ? { readonly kind: "enum" }
-    : {})
->;
+  BaseDefinition extends {
+    optional: false;
+    type: ZeroMappedColumnType<TTable, KColumn>;
+    customType: ZeroMappedCustomType<TTable, KColumn>;
+  } = {
+    optional: false;
+    type: ZeroMappedColumnType<TTable, KColumn>;
+    customType: ZeroMappedCustomType<TTable, KColumn>;
+  },
+> = CD extends {
+  hasDefault: true;
+  hasRuntimeDefault: false;
+}
+  ? Omit<BaseDefinition, "optional"> & { optional: true }
+  : CD extends { notNull: true }
+    ? BaseDefinition
+    : Omit<BaseDefinition, "optional"> & { optional: true };
 
 /**
  * Maps the columns configuration to their Zero schema definitions.
@@ -136,13 +148,13 @@ export type ZeroColumns<
   TTable extends Table,
   TColumnConfig extends ColumnsConfig<TTable>,
 > = {
-  readonly [KColumn in keyof TColumnConfig as TColumnConfig[KColumn] extends
+  [KColumn in keyof TColumnConfig as TColumnConfig[KColumn] extends
     | true
-    | TypeOverride<any>
+    | ColumnBuilder<any>
     ? KColumn
     : never]: KColumn extends ColumnNames<TTable>
-    ? TColumnConfig[KColumn] extends TypeOverride<any>
-      ? TColumnConfig[KColumn]
+    ? TColumnConfig[KColumn] extends ColumnBuilder<any>
+      ? TColumnConfig[KColumn]["schema"]
       : TColumnConfig[KColumn] extends true
         ? ZeroColumnDefinition<TTable, KColumn>
         : never
@@ -150,18 +162,30 @@ export type ZeroColumns<
 };
 
 /**
+ * Represents the underlying schema for a Zero table.
+ * @template TTable The Drizzle table type
+ * @template TColumnConfig The columns configuration
+ */
+export type ZeroTableBuilderSchema<
+  TTable extends Table = Table,
+  TColumnConfig extends ColumnsConfig<TTable> = ColumnsConfig<TTable>,
+> = {
+  name: TableName<TTable>;
+  primaryKey: any; // FindPrimaryKeyFromTable<TTable>;
+  columns: ZeroColumns<TTable, TColumnConfig>;
+};
+
+/**
  * Represents the complete Zero schema for a Drizzle table.
  * @template TTable The Drizzle table type
  * @template TColumnConfig The columns configuration
  */
-type CreateZeroTableSchema<
+type ZeroTableBuilder<
   TTable extends Table = Table,
   TColumnConfig extends ColumnsConfig<TTable> = ColumnsConfig<TTable>,
-> = Flatten<{
-  readonly tableName: TableName<TTable>;
-  readonly primaryKey: FindPrimaryKeyFromTable<TTable>;
-  readonly columns: ZeroColumns<TTable, TColumnConfig>;
-}>;
+> = TableBuilderWithColumns<
+  Readonly<ZeroTableBuilderSchema<TTable, TColumnConfig>>
+>;
 
 /**
  * Creates a Zero schema from a Drizzle table definition.
@@ -172,13 +196,13 @@ type CreateZeroTableSchema<
  * @returns A Zero schema definition for the table
  * @throws {Error} If primary key configuration is invalid or column types are unsupported
  */
-const createZeroTableSchema = <
+const createZeroTableBuilder = <
   TTable extends Table,
   TColumnConfig extends ColumnsConfig<TTable>,
 >(
   table: TTable,
   columns: TColumnConfig,
-): CreateZeroTableSchema<TTable, TColumnConfig> => {
+): ZeroTableBuilder<TTable, TColumnConfig> => {
   const tableColumns = getTableColumns(table);
   const tableConfig = getTableConfigForDatabase(table);
 
@@ -205,7 +229,7 @@ const createZeroTableSchema = <
       }
 
       if (typeof columnConfig !== "boolean") {
-        columnConfig.customType;
+        columnConfig.schema.customType;
       }
 
       const type =
@@ -214,9 +238,10 @@ const createZeroTableSchema = <
         ] ??
         drizzleDataTypeToZeroType[
           column.dataType as keyof DrizzleDataTypeToZeroType
-        ];
+        ] ??
+        null;
 
-      if (!type) {
+      if (type === null) {
         throw new Error(
           `drizzle-zero: Unsupported column type: ${column.columnType} (${column.dataType}). It must be supported by Zero, e.g.: ${Object.keys({ ...drizzleDataTypeToZeroType, ...drizzleColumnTypeToZeroType }).join(" | ")}`,
         );
@@ -227,7 +252,7 @@ const createZeroTableSchema = <
           ? column.hasDefault && column.defaultFn === undefined
             ? true
             : !column.notNull
-          : columnConfig.optional;
+          : columnConfig.schema.optional;
 
       if (column.primary) {
         if (isColumnOptional) {
@@ -239,23 +264,29 @@ const createZeroTableSchema = <
         primaryKeysFromColumns.push(name);
       }
 
-      const schemaValue = {
-        type: typeof columnConfig === "boolean" ? type : columnConfig.type,
-        optional: isColumnOptional,
-        customType: null as unknown as ZeroTypeToTypescriptType[typeof type],
-        ...(typeof columnConfig !== "boolean" && columnConfig.kind
-          ? { kind: columnConfig.kind }
-          : column.enumValues
-            ? { kind: "enum" }
-            : {}),
-      };
+      if (columnConfig && typeof columnConfig !== "boolean") {
+        return {
+          ...acc,
+          [name]: columnConfig,
+        };
+      }
+
+      const schemaValue = column.enumValues
+        ? zeroEnumeration<typeof column.enumValues>()
+        : type === "string"
+          ? zeroString()
+          : type === "number"
+            ? zeroNumber()
+            : type === "json"
+              ? zeroJson()
+              : zeroBoolean();
 
       return {
         ...acc,
-        [name]: schemaValue,
+        [name]: isColumnOptional ? schemaValue.optional() : schemaValue,
       };
     },
-    {} as ZeroColumns<TTable, TColumnConfig>,
+    {} as Record<string, any>,
   );
 
   const tableName = getTableName(table);
@@ -273,11 +304,11 @@ const createZeroTableSchema = <
     );
   }
 
-  return {
-    tableName,
-    columns: columnsMapped,
-    primaryKey: primaryKeys as unknown as FindPrimaryKeyFromTable<TTable>,
-  } as unknown as CreateZeroTableSchema<TTable, TColumnConfig>;
+  const zeroTableSchemaBuilder = zeroTable(tableName)
+    .columns(columnsMapped)
+    .primaryKey(...(primaryKeys as unknown as FindPrimaryKeyFromTable<TTable>));
+
+  return zeroTableSchemaBuilder as ZeroTableBuilder<TTable, TColumnConfig>;
 };
 
-export { createZeroTableSchema, type CreateZeroTableSchema };
+export { createZeroTableBuilder, type ZeroTableBuilder };
