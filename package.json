@@ -4,6 +4,7 @@
   "description": "Generate Zero schemas from Drizzle ORM schemas",
   "type": "module",
   "scripts": {
+    "clean": "rm -rf dist node_modules coverage && cd integration && rm -rf node_modules",
     "build": "tsup src/index.ts src/pg/index.ts --format cjs,esm --dts --sourcemap",
     "release": "pnpm run build && pnpm publish",
     "test": "vitest run --typecheck --coverage",

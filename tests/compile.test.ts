@@ -2,7 +2,7 @@ import { execSync } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { test, describe } from "vitest";
+import { test, describe, TestAPI } from "vitest";
 
 const runZeroBuildSchema = async (testName: string) => {
   const schemaPath = path.join(
@@ -37,7 +37,7 @@ const runZeroBuildSchema = async (testName: string) => {
 };
 
 describe.concurrent("compile", () => {
-  test("compile - no-relations", async ({ expect }) => {
+  test("compile - no-relations", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("no-relations");
     expect(result.schema.tables.user).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot( `
@@ -48,7 +48,7 @@ describe.concurrent("compile", () => {
     `);
   });
 
-  test("compile - one-to-one-2", async ({ expect }) => {
+  test("compile - one-to-one-2", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("one-to-one-2");
     expect(result.schema.tables.user).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot( `
@@ -60,7 +60,7 @@ describe.concurrent("compile", () => {
     `);
   });
 
-  test("compile - one-to-one", async ({ expect }) => {
+  test("compile - one-to-one", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("one-to-one");
     expect(result.schema.tables.user).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot( `
@@ -71,7 +71,7 @@ describe.concurrent("compile", () => {
     `);
   });
 
-  test("compile - one-to-one-subset", async ({ expect }) => {
+  test("compile - one-to-one-subset", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("one-to-one-subset");
     expect(result.schema.tables.user).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
@@ -93,7 +93,7 @@ describe.concurrent("compile", () => {
     `);
   });
 
-  test("compile - one-to-one-foreign-key", async ({ expect }) => {
+  test("compile - one-to-one-foreign-key", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("one-to-one-foreign-key");
     expect(result.schema.tables.users).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
@@ -104,7 +104,7 @@ describe.concurrent("compile", () => {
     `);
   });
 
-  test("compile - one-to-one-self", async ({ expect }) => {
+  test("compile - one-to-one-self", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("one-to-one-self");
     expect(result.schema.tables.user).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
@@ -114,7 +114,7 @@ describe.concurrent("compile", () => {
     `);
   });
 
-  test("compile - one-to-many", async ({ expect }) => {
+  test("compile - one-to-many", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("one-to-many");
     expect(result.schema.tables.user).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
@@ -126,7 +126,7 @@ describe.concurrent("compile", () => {
     `);
   });
 
-  test("compile - one-to-many-named", async ({ expect }) => {
+  test("compile - one-to-many-named", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("one-to-many-named");
     expect(result.schema.tables.users).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
@@ -137,7 +137,7 @@ describe.concurrent("compile", () => {
     `);
   });
 
-  test("compile - many-to-many", async ({ expect }) => {
+  test("compile - many-to-many", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("many-to-many");
     expect(result.schema.tables.user).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
@@ -149,7 +149,7 @@ describe.concurrent("compile", () => {
     `);
   });
 
-  test("compile - many-to-many-subset", async ({ expect }) => {
+  test("compile - many-to-many-subset", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("many-to-many-subset");
     expect(result.schema.tables.user).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
@@ -159,7 +159,7 @@ describe.concurrent("compile", () => {
     `);
   });
 
-  test("compile - many-to-many-subset-2", async ({ expect }) => {
+  test("compile - many-to-many-subset-2", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("many-to-many-subset-2");
     expect(result.schema.tables.user).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
@@ -170,7 +170,7 @@ describe.concurrent("compile", () => {
     `);
   });
 
-  test("compile - many-to-many-self-referential", async ({ expect }) => {
+  test("compile - many-to-many-self-referential", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("many-to-many-self-referential");
     expect(result.schema.tables.user).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
@@ -192,7 +192,7 @@ describe.concurrent("compile", () => {
     `);
   });
 
-  test("compile - custom-schema", async ({ expect }) => {
+  test("compile - custom-schema", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("custom-schema");
     expect(result.schema.tables.user).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`

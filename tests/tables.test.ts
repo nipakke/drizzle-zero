@@ -40,7 +40,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { createZeroTableBuilder, type ColumnsConfig } from "../src";
 import { assertEqual, expectTableSchemaDeepEqual } from "./utils";
-import { describe, test } from "vitest";
+import { describe, test, TestAPI } from "vitest";
 
 describe.concurrent("tables", () => {
   test("pg - basic", () => {
@@ -757,7 +757,7 @@ describe.concurrent("tables", () => {
     assertEqual(result, expected);
   });
 
-  test("pg - invalid column type", ({ expect }) => {
+  test("pg - invalid column type", ({ expect }: TestAPI) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       invalid: text().notNull(),
@@ -773,7 +773,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - invalid column selection", ({ expect }) => {
+  test("pg - invalid column selection", ({ expect }: TestAPI) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       invalid: text().notNull(),
@@ -789,7 +789,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - array types", ({ expect }) => {
+  test("pg - array types", ({ expect }: TestAPI) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       tags: text().array().notNull(),
@@ -807,7 +807,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - interval types", ({ expect }) => {
+  test("pg - interval types", ({ expect }: TestAPI) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       interval: interval().notNull(),
@@ -823,7 +823,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - cidr types", ({ expect }) => {
+  test("pg - cidr types", ({ expect }: TestAPI) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       cidr: cidr().notNull(),
@@ -839,7 +839,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - macaddr types", ({ expect }) => {
+  test("pg - macaddr types", ({ expect }: TestAPI) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       macaddr: macaddr().notNull(),
@@ -855,7 +855,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - inet types", ({ expect }) => {
+  test("pg - inet types", ({ expect }: TestAPI) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       inet: inet().notNull(),
@@ -871,7 +871,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - point types", ({ expect }) => {
+  test("pg - point types", ({ expect }: TestAPI) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       point: point().notNull(),
@@ -887,7 +887,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - line types", ({ expect }) => {
+  test("pg - line types", ({ expect }: TestAPI) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       line: line().notNull(),
@@ -903,7 +903,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - geometry types", ({ expect }) => {
+  test("pg - geometry types", ({ expect }: TestAPI) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       location: geometry("location", {
@@ -923,7 +923,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - no primary key", ({ expect }) => {
+  test("pg - no primary key", ({ expect }: TestAPI) => {
     const testTable = pgTable("test", {
       id: text(),
     });
@@ -937,7 +937,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - auto-increment primary key not supported", ({ expect }) => {
+  test("pg - auto-increment primary key not supported", ({ expect }: TestAPI) => {
     const testTable = pgTable("test", {
       id: serial().primaryKey(),
       name: text(),
@@ -953,7 +953,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - fail if table is not pg", ({ expect }) => {
+  test("pg - fail if table is not pg", ({ expect }: TestAPI) => {
     const testTable = mysqlTable("test", {
       id: textMysql().primaryKey(),
       name: textMysql(),
