@@ -6,11 +6,11 @@ import {
   string,
   table,
 } from "@rocicorp/zero";
-import { describe, test, expect, type TestAPI } from "vitest";
+import { describe, test } from "vitest";
 import { assertEqual, expectSchemaDeepEqual } from "./utils";
 
 describe.concurrent("relationships", () => {
-  test("relationships - many-to-many-incorrect-many", async ({ expect }: TestAPI) => {
+  test("relationships - many-to-many-incorrect-many", async ({ expect }) => {
     await expect(
       import("./schemas/many-to-many-incorrect-many.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -140,7 +140,7 @@ describe.concurrent("relationships", () => {
       })
       .primaryKey("id");
 
-    const expectedUsersRelationships = relationships(expectedUsers, ({ one }) => ({
+    const expectedUsersRelations = relationships(expectedUsers, ({ one }) => ({
       profileInfo: one({
         sourceField: ["id"],
         destField: ["user_id"],
@@ -161,7 +161,7 @@ describe.concurrent("relationships", () => {
 
     const expected = createSchema(1, {
       tables: [expectedUsers, expectedProfileInfo],
-      relationships: [expectedUsersRelationships, expectedProfileInfoRelations],
+      relationships: [expectedUsersRelations, expectedProfileInfoRelations],
     });
 
     expectSchemaDeepEqual(oneToOneZeroSchema).toEqual(expected);
