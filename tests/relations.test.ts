@@ -6,11 +6,11 @@ import {
   string,
   table,
 } from "@rocicorp/zero";
-import { describe, expect, test } from "vitest";
+import { describe, test, expect, type TestAPI } from "vitest";
 import { assertEqual, expectSchemaDeepEqual } from "./utils";
 
 describe.concurrent("relationships", () => {
-  test("relationships - many-to-many-incorrect-many", async () => {
+  test("relationships - many-to-many-incorrect-many", async ({ expect }: TestAPI) => {
     await expect(
       import("./schemas/many-to-many-incorrect-many.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -18,7 +18,7 @@ describe.concurrent("relationships", () => {
     );
   });
 
-  test("relationships - many-to-many-subset", async () => {
+  test("relationships - many-to-many-subset", async ({ expect }) => {
     await expect(
       import("./schemas/one-to-one-missing-foreign-key.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -26,7 +26,9 @@ describe.concurrent("relationships", () => {
     );
   });
 
-  test("relationships - many-to-many-missing-foreign-key", async () => {
+  test("relationships - many-to-many-missing-foreign-key", async ({
+    expect,
+  }) => {
     await expect(
       import("./schemas/many-to-many-missing-foreign-key.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -34,7 +36,9 @@ describe.concurrent("relationships", () => {
     );
   });
 
-  test("relationships - many-to-many-duplicate-relationship", async () => {
+  test("relationships - many-to-many-duplicate-relationship", async ({
+    expect,
+  }) => {
     await expect(
       import("./schemas/many-to-many-duplicate-relationship.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -42,7 +46,7 @@ describe.concurrent("relationships", () => {
     );
   });
 
-  test("relationships - one-to-one-missing-foreign-key", async () => {
+  test("relationships - one-to-one-missing-foreign-key", async ({ expect }) => {
     await expect(
       import("./schemas/one-to-one-missing-foreign-key.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -50,7 +54,7 @@ describe.concurrent("relationships", () => {
     );
   });
 
-  test("relationships - one-to-many-missing-named", async () => {
+  test("relationships - one-to-many-missing-named", async ({ expect }) => {
     await expect(
       import("./schemas/one-to-many-missing-named.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -136,7 +140,7 @@ describe.concurrent("relationships", () => {
       })
       .primaryKey("id");
 
-    const expectedUsersRelations = relationships(expectedUsers, ({ one }) => ({
+    const expectedUsersRelationships = relationships(expectedUsers, ({ one }) => ({
       profileInfo: one({
         sourceField: ["id"],
         destField: ["user_id"],
@@ -157,7 +161,7 @@ describe.concurrent("relationships", () => {
 
     const expected = createSchema(1, {
       tables: [expectedUsers, expectedProfileInfo],
-      relationships: [expectedUsersRelations, expectedProfileInfoRelations],
+      relationships: [expectedUsersRelationships, expectedProfileInfoRelations],
     });
 
     expectSchemaDeepEqual(oneToOneZeroSchema).toEqual(expected);

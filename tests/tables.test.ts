@@ -38,12 +38,9 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import { describe, expect, test } from "vitest";
 import { createZeroTableBuilder, type ColumnsConfig } from "../src";
-import {
-  assertEqual,
-  expectTableSchemaDeepEqual
-} from "./utils";
+import { assertEqual, expectTableSchemaDeepEqual } from "./utils";
+import { describe, test } from "vitest";
 
 describe.concurrent("tables", () => {
   test("pg - basic", () => {
@@ -760,7 +757,7 @@ describe.concurrent("tables", () => {
     assertEqual(result, expected);
   });
 
-  test("pg - invalid column type", () => {
+  test("pg - invalid column type", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       invalid: text().notNull(),
@@ -776,7 +773,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - invalid column selection", () => {
+  test("pg - invalid column selection", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       invalid: text().notNull(),
@@ -792,7 +789,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - array types", () => {
+  test("pg - array types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       tags: text().array().notNull(),
@@ -810,7 +807,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - interval types", () => {
+  test("pg - interval types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       interval: interval().notNull(),
@@ -826,7 +823,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - cidr types", () => {
+  test("pg - cidr types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       cidr: cidr().notNull(),
@@ -842,7 +839,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - macaddr types", () => {
+  test("pg - macaddr types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       macaddr: macaddr().notNull(),
@@ -858,7 +855,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - inet types", () => {
+  test("pg - inet types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       inet: inet().notNull(),
@@ -874,7 +871,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - point types", () => {
+  test("pg - point types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       point: point().notNull(),
@@ -890,7 +887,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - line types", () => {
+  test("pg - line types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       line: line().notNull(),
@@ -906,7 +903,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - geometry types", () => {
+  test("pg - geometry types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       location: geometry("location", {
@@ -926,7 +923,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - no primary key", () => {
+  test("pg - no primary key", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text(),
     });
@@ -940,7 +937,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - auto-increment primary key not supported", () => {
+  test("pg - auto-increment primary key not supported", ({ expect }) => {
     const testTable = pgTable("test", {
       id: serial().primaryKey(),
       name: text(),
@@ -956,7 +953,7 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - fail if table is not pg", () => {
+  test("pg - fail if table is not pg", ({ expect }) => {
     const testTable = mysqlTable("test", {
       id: textMysql().primaryKey(),
       name: textMysql(),

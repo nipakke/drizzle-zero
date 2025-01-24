@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ES2020",
+    "target": "ESNext",
+    "module": "ESNext",
     "verbatimModuleSyntax": true,
     "esModuleInterop": true,
     "moduleResolution": "bundler",
@@ -21,12 +21,10 @@
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
     "preserveSymlinks": true,
-    "types": ["node", "vitest/globals"],
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "lib": ["dom", "es2022"],
+    "lib": ["dom", "ESNext"],
     "jsx": "react-jsx",
     "outDir": "out"
-  },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "integration/**/*.ts"]
+  }
 }

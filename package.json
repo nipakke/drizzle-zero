@@ -48,12 +48,12 @@
     "url": "https://github.com/BriefHQ/drizzle-zero/issues"
   },
   "peerDependencies": {
-    "@rocicorp/zero": ">=0.12.XXX",
+    "@rocicorp/zero": ">=0.12.2025012403",
     "drizzle-orm": ">=0.36.0"
   },
   "devDependencies": {
     "@rocicorp/zero": "^0.12.2025012403",
-    "@types/node": "^22.10.9",
+    "@types/node": "^22.10.10",
     "@vitest/coverage-v8": "3.0.4",
     "@vitest/ui": "^3.0.4",
     "drizzle-orm": "^0.38.4",
