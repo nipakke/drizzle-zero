@@ -1,29 +1,22 @@
-import {
-  ANYONE_CAN,
-  createSchema,
-  definePermissions,
-  type Schema,
-} from "@rocicorp/zero";
+import { ANYONE_CAN, definePermissions, type Schema } from "@rocicorp/zero";
 import { createZeroSchema } from "../../src";
 import * as oneToManyNamed from "./one-to-many-named.schema";
 
-export const schema = createSchema(
-  createZeroSchema(oneToManyNamed, {
-    version: 1,
-    tables: {
-      users: {
-        id: true,
-        name: true,
-      },
-      posts: {
-        id: true,
-        content: true,
-        author_id: true,
-        reviewer_id: true,
-      },
+export const schema = createZeroSchema(oneToManyNamed, {
+  version: 1,
+  tables: {
+    users: {
+      id: true,
+      name: true,
     },
-  }),
-);
+    posts: {
+      id: true,
+      content: true,
+      author_id: true,
+      reviewer_id: true,
+    },
+  },
+});
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {

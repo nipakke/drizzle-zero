@@ -1,4 +1,21 @@
 import type { Column, Relations, Table } from "drizzle-orm";
+import type { ColumnsConfig } from "./tables";
+
+/**
+ * Configuration type for specifying which tables and columns to include in the Zero schema.
+ * @template TDrizzleSchema - The complete Drizzle schema
+ */
+export type TableColumnsConfig<TDrizzleSchema extends Record<string, unknown>> =
+  {
+    /**
+     * The columns to include in the Zero schema.
+     */
+    readonly [K in keyof TDrizzleSchema as TDrizzleSchema[K] extends Table<any>
+      ? TableName<TDrizzleSchema[K]>
+      : never]?: TDrizzleSchema[K] extends Table<any>
+      ? ColumnsConfig<TDrizzleSchema[K]>
+      : never;
+  };
 
 /**
  * Extracts the table name from a Drizzle table type.
@@ -116,4 +133,18 @@ export type Flatten<T> = {
  * Utility type that ensures an array has at least one element.
  * @template T The type of elements in the array
  */
-export type AtLeastOne<T> = [T, ...T[]];
+type AtLeastOne<T> = [T, ...T[]];
+
+/**
+ * Utility type that converts a union to a tuple.
+ * @template T The union type to convert
+ */
+export type UnionToTuple<T> = (
+  (T extends any ? (t: T) => T : never) extends infer U
+    ? (U extends any ? (u: U) => any : never) extends (v: infer V) => any
+      ? V
+      : never
+    : never
+) extends (_: any) => infer W
+  ? [...UnionToTuple<Exclude<T, W>>, W]
+  : [];

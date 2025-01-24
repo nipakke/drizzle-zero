@@ -79,10 +79,10 @@ describe("relationships", () => {
     const messages = await q.one().run();
 
     expect(messages?.medium).toHaveLength(1);
-    expect(messages?.medium[0]?.name).toBe("email");
+    expect(messages?.medium?.name).toBe("email");
 
     expect(messages?.sender).toHaveLength(1);
-    expect(messages?.sender[0]?.name).toBe("James");
+    expect(messages?.sender?.name).toBe("James");
 
     preloadedMessages.cleanup();
   });

@@ -13,6 +13,7 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "strictNullChecks": true,
     "declarationMap": true,
     "sourceMap": true,
     "declaration": true,

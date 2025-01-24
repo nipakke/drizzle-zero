@@ -1,13 +1,12 @@
 import {
   ANYONE_CAN,
-  createSchema,
   definePermissions,
-  type Schema,
+  type Schema
 } from "@rocicorp/zero";
 import { createZeroSchema } from "../../src";
 import * as manyToMany from "./many-to-many.schema";
 
-export const schema = createSchema(
+export const schema =  
   createZeroSchema(manyToMany, {
     version: 1,
     tables: {
@@ -28,20 +27,19 @@ export const schema = createSchema(
       user: {
         groups: [
           {
-            sourceField: "id",
+            sourceField: ["id"],
             destTable: "group",
-            destField: "id",
+            destField: ["id"],
           },
           {
-            sourceField: "id",
+            sourceField: ["id"],
             destTable: "users_to_group",
             // destField: "group_id", // missing field
           } as any,
         ],
       },
     },
-  }),
-);
+  }) 
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {

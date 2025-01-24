@@ -1,39 +1,32 @@
-import {
-  ANYONE_CAN,
-  createSchema,
-  definePermissions,
-  type Schema,
-} from "@rocicorp/zero";
+import { ANYONE_CAN, definePermissions, type Schema } from "@rocicorp/zero";
 import { createZeroSchema } from "../../src";
 import * as oneToOne2 from "./one-to-one-2.schema";
 
-export const schema = createSchema(
-  createZeroSchema(oneToOne2, {
-    version: 2.1,
-    tables: {
-      user: {
-        id: true,
-        name: true,
-        partner: true,
-      },
-      medium: {
-        id: true,
-        name: true,
-      },
-      message: {
-        id: true,
-        senderId: true,
-        mediumId: true,
-        body: true,
-      },
+export const schema = createZeroSchema(oneToOne2, {
+  version: 2.1,
+  tables: {
+    user: {
+      id: true,
+      name: true,
+      partner: true,
     },
-    manyToMany: {
-      user: {
-        mediums: ["message", "medium"],
-      },
+    medium: {
+      id: true,
+      name: true,
     },
-  }),
-);
+    message: {
+      id: true,
+      senderId: true,
+      mediumId: true,
+      body: true,
+    },
+  },
+  manyToMany: {
+    user: {
+      mediums: ["message", "medium"],
+    },
+  },
+});
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {
