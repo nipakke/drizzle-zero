@@ -52,7 +52,7 @@
     "drizzle-orm": ">=0.36.0"
   },
   "devDependencies": {
-    "@rocicorp/zero": "canary",
+    "@rocicorp/zero": "^0.12.2025012403",
     "@types/node": "^22.10.9",
     "@vitest/coverage-v8": "3.0.4",
     "@vitest/ui": "^3.0.4",
