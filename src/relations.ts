@@ -383,7 +383,7 @@ const createZeroSchema = <
 
   let relationships = {} as Record<
     keyof typeof schemaConfig.tables,
-    Record<string, unknown>
+    Record<string, Array<unknown>>
   >;
 
   // Map many-to-many relationships
@@ -468,12 +468,14 @@ const createZeroSchema = <
               {
                 sourceField: sourceJunctionFields.sourceFieldNames,
                 destField: sourceJunctionFields.destFieldNames,
-                destSchemaTableName: junctionTableName,
+                destSchema: junctionTableName,
+                cardinality: "many",
               },
               {
                 sourceField: junctionDestFields.destFieldNames,
                 destField: junctionDestFields.sourceFieldNames,
-                destSchemaTableName: destTableName,
+                destSchema: destTableName,
+                cardinality: "many",
               },
             ],
           };
@@ -525,12 +527,14 @@ const createZeroSchema = <
               {
                 sourceField: junctionSourceField,
                 destField: junctionDestField,
-                destSchemaTableName: junctionTableName,
+                destSchema: junctionTableName,
+                cardinality: "many",
               },
               {
                 sourceField: destSourceField,
                 destField: destDestField,
-                destSchemaTableName: destTableName,
+                destSchema: destTableName,
+                cardinality: "many",
               },
             ],
           };
@@ -604,11 +608,12 @@ const createZeroSchema = <
 
         relationships[tableName as keyof typeof relationships] = {
           ...(relationships?.[tableName as keyof typeof relationships] ?? {}),
-          [relation.fieldName]: {
+          [relation.fieldName]: [{
             sourceField: sourceFieldNames,
             destField: destFieldNames,
-            destSchemaTableName: relation.referencedTableName,
-          },
+            destSchema: relation.referencedTableName,
+            cardinality: is(relation, One) ? "one" : "many",
+          }],
         } as unknown as (typeof relationships)[keyof typeof relationships];
       }
     }

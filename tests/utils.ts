@@ -59,39 +59,26 @@ export function expectRelationsSchemaDeepEqual<S extends RelationshipsSchema>(
     toEqual(expected: S) {
       if (expected) {
         for (const key of Object.keys(expected)) {
-          const expectedRelations = Array.isArray(expected[key])
-            ? expected[key]
-            : [expected[key]];
+          expect(Array.isArray(expected[key])).toBe(true);
+          expect(Array.isArray(actual[key])).toBe(true);
 
-          const actualRelations = Array.isArray(actual[key])
-            ? actual[key]
-            : [actual[key]];
+          const expectedRelations = expected[key];
+
+          const actualRelations = actual[key];
+
+          if (!expectedRelations || !actualRelations) {
+            throw new Error("Expected or actual relations are not defined");
+          }
 
           expect(actualRelations).toHaveLength(expectedRelations.length);
 
           for (let i = 0; i < expectedRelations.length; i++) {
             expect({
-              __testKey: "sourceField",
-              sourceField: actualRelations[i]?.sourceField,
+              __testKey: "expectedRelations",
+              sourceField: actualRelations[i],
             }).toStrictEqual({
-              __testKey: "sourceField",
-              sourceField: expectedRelations[i]?.sourceField,
-            });
-
-            expect({
-              __testKey: "destField",
-              destField: actualRelations[i]?.destField,
-            }).toStrictEqual({
-              __testKey: "destField",
-              destField: expectedRelations[i]?.destField,
-            });
-
-            expectTableSchemaDeepEqual({
-              __testKey: "destSchema",
-              ...expectedRelations[i]?.destSchema,
-            }).toEqual({
-              __testKey: "destSchema",
-              ...actualRelations[i]?.destSchema,
+              __testKey: "expectedRelations",
+              sourceField: expectedRelations[i],
             });
           }
         }

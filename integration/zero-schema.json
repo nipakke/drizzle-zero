@@ -418,7 +418,8 @@
             "destField": [
               "senderId"
             ],
-            "destSchemaTableName": "message"
+            "destSchema": "message",
+            "cardinality": "many"
           },
           {
             "sourceField": [
@@ -427,7 +428,8 @@
             "destField": [
               "id"
             ],
-            "destSchemaTableName": "medium"
+            "destSchema": "medium",
+            "cardinality": "many"
           }
         ],
         "friends": [
@@ -438,7 +440,8 @@
             "destField": [
               "requesting_id"
             ],
-            "destSchemaTableName": "friendship"
+            "destSchema": "friendship",
+            "cardinality": "many"
           },
           {
             "sourceField": [
@@ -447,49 +450,62 @@
             "destField": [
               "id"
             ],
-            "destSchemaTableName": "user"
+            "destSchema": "user",
+            "cardinality": "many"
           }
         ],
-        "messages": {
-          "sourceField": [
-            "id"
-          ],
-          "destField": [
-            "senderId"
-          ],
-          "destSchemaTableName": "message"
-        }
+        "messages": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "senderId"
+            ],
+            "destSchema": "message",
+            "cardinality": "many"
+          }
+        ]
       },
       "medium": {
-        "messages": {
-          "sourceField": [
-            "id"
-          ],
-          "destField": [
-            "mediumId"
-          ],
-          "destSchemaTableName": "message"
-        }
+        "messages": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "mediumId"
+            ],
+            "destSchema": "message",
+            "cardinality": "many"
+          }
+        ]
       },
       "message": {
-        "medium": {
-          "sourceField": [
-            "mediumId"
-          ],
-          "destField": [
-            "id"
-          ],
-          "destSchemaTableName": "medium"
-        },
-        "sender": {
-          "sourceField": [
-            "senderId"
-          ],
-          "destField": [
-            "id"
-          ],
-          "destSchemaTableName": "user"
-        }
+        "medium": [
+          {
+            "sourceField": [
+              "mediumId"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "medium",
+            "cardinality": "one"
+          }
+        ],
+        "sender": [
+          {
+            "sourceField": [
+              "senderId"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "user",
+            "cardinality": "one"
+          }
+        ]
       }
     }
   }

@@ -78,10 +78,9 @@ describe("relationships", () => {
 
     const messages = await q.one().run();
 
-    expect(messages?.medium).toHaveLength(1);
+    expect(messages?.medium?.id).toBe("1");
     expect(messages?.medium?.name).toBe("email");
 
-    expect(messages?.sender).toHaveLength(1);
     expect(messages?.sender?.name).toBe("James");
 
     preloadedMessages.cleanup();
