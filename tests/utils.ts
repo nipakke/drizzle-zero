@@ -1,12 +1,6 @@
-import type {
-  Schema,
-  TableBuilderWithColumns,
-  TableSchema,
-  relationships,
-} from "@rocicorp/zero";
+import type { Schema, TableSchema, relationships } from "@rocicorp/zero";
 import { expect } from "vitest";
 
-export type ZeroTableSchema = TableBuilderWithColumns<any>;
 export type ZeroSchema = Schema;
 
 export function expectTableSchemaDeepEqual<S extends TableSchema>(actual: S) {

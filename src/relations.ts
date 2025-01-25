@@ -608,12 +608,14 @@ const createZeroSchema = <
 
         relationships[tableName as keyof typeof relationships] = {
           ...(relationships?.[tableName as keyof typeof relationships] ?? {}),
-          [relation.fieldName]: [{
-            sourceField: sourceFieldNames,
-            destField: destFieldNames,
-            destSchema: relation.referencedTableName,
-            cardinality: is(relation, One) ? "one" : "many",
-          }],
+          [relation.fieldName]: [
+            {
+              sourceField: sourceFieldNames,
+              destField: destFieldNames,
+              destSchema: relation.referencedTableName,
+              cardinality: is(relation, One) ? "one" : "many",
+            },
+          ],
         } as unknown as (typeof relationships)[keyof typeof relationships];
       }
     }
