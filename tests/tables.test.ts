@@ -65,7 +65,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - named fields", () => {
@@ -87,7 +87,7 @@ describe.concurrent("tables", () => {
       .primaryKey("custom_id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - custom types", () => {
@@ -109,7 +109,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - optional fields", () => {
@@ -137,7 +137,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - complex custom types", () => {
@@ -170,7 +170,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - partial column selection", () => {
@@ -196,7 +196,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - partial column selection with omit", () => {
@@ -220,7 +220,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - partial column selection with false", () => {
@@ -246,7 +246,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - composite primary key", () => {
@@ -275,7 +275,7 @@ describe.concurrent("tables", () => {
       .primaryKey("userId", "orgId");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - timestamp fields", () => {
@@ -315,7 +315,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - custom column mapping", () => {
@@ -346,7 +346,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - enum field", () => {
@@ -373,7 +373,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - simple enum field", () => {
@@ -400,7 +400,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - all supported data types", () => {
@@ -542,7 +542,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - override column json type", () => {
@@ -564,7 +564,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - compound primary key", () => {
@@ -596,7 +596,7 @@ describe.concurrent("tables", () => {
       .primaryKey("orderId", "productId");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - default values", () => {
@@ -637,7 +637,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - mixed required and optional json fields", () => {
@@ -678,7 +678,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - custom column selection with type overrides", () => {
@@ -706,7 +706,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - override enum column", () => {
@@ -730,7 +730,7 @@ describe.concurrent("tables", () => {
       .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - custom schema", () => {
@@ -754,7 +754,7 @@ describe.concurrent("tables", () => {
       .primaryKey("custom_id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result, expected);
+    assertEqual(result.schema, expected.schema);
   });
 
   test("pg - invalid column type", ({ expect }: TestAPI) => {

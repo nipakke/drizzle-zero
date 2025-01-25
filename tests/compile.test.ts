@@ -39,12 +39,68 @@ const runZeroBuildSchema = async (testName: string) => {
 describe.concurrent("compile", () => {
   test("compile - no-relations", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("no-relations");
-    expect(result.schema.tables.user).toBeTruthy();
-    expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot( `
-      [
-        "profile_info",
-        "user",
-      ]
+    expect(result).toMatchInlineSnapshot( `
+      {
+        "permissions": {
+          "profile_info": {
+            "row": {
+              "update": {},
+            },
+          },
+          "user": {
+            "row": {
+              "update": {},
+            },
+          },
+        },
+        "schema": {
+          "relationships": {},
+          "tables": {
+            "profile_info": {
+              "columns": {
+                "id": {
+                  "customType": null,
+                  "optional": false,
+                  "type": "string",
+                },
+                "metadata": {
+                  "customType": null,
+                  "optional": true,
+                  "type": "json",
+                },
+                "user_id": {
+                  "customType": null,
+                  "optional": true,
+                  "type": "string",
+                },
+              },
+              "name": "profile_info",
+              "primaryKey": [
+                "id",
+              ],
+            },
+            "user": {
+              "columns": {
+                "id": {
+                  "customType": null,
+                  "optional": false,
+                  "type": "string",
+                },
+                "name": {
+                  "customType": null,
+                  "optional": true,
+                  "type": "string",
+                },
+              },
+              "name": "user",
+              "primaryKey": [
+                "id",
+              ],
+            },
+          },
+          "version": 1,
+        },
+      }
     `);
   });
 
@@ -62,34 +118,136 @@ describe.concurrent("compile", () => {
 
   test("compile - one-to-one", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("one-to-one");
-    expect(result.schema.tables.user).toBeTruthy();
-    expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot( `
-      [
-        "profile_info",
-        "user",
-      ]
+    expect(result).toMatchInlineSnapshot( `
+      {
+        "permissions": {
+          "profile_info": {
+            "row": {
+              "update": {},
+            },
+          },
+          "user": {
+            "row": {
+              "update": {},
+            },
+          },
+        },
+        "schema": {
+          "relationships": {
+            "profile_info": {
+              "user": [
+                {
+                  "cardinality": "one",
+                  "destField": [
+                    "id",
+                  ],
+                  "destSchema": "user",
+                  "sourceField": [
+                    "user_id",
+                  ],
+                },
+              ],
+            },
+            "user": {
+              "profileInfo": [
+                {
+                  "cardinality": "one",
+                  "destField": [
+                    "user_id",
+                  ],
+                  "destSchema": "profile_info",
+                  "sourceField": [
+                    "id",
+                  ],
+                },
+              ],
+            },
+          },
+          "tables": {
+            "profile_info": {
+              "columns": {
+                "id": {
+                  "customType": null,
+                  "optional": false,
+                  "type": "string",
+                },
+                "metadata": {
+                  "customType": null,
+                  "optional": true,
+                  "type": "json",
+                },
+                "user_id": {
+                  "customType": null,
+                  "optional": true,
+                  "type": "string",
+                },
+              },
+              "name": "profile_info",
+              "primaryKey": [
+                "id",
+              ],
+            },
+            "user": {
+              "columns": {
+                "id": {
+                  "customType": null,
+                  "optional": false,
+                  "type": "string",
+                },
+                "name": {
+                  "customType": null,
+                  "optional": true,
+                  "type": "string",
+                },
+              },
+              "name": "user",
+              "primaryKey": [
+                "id",
+              ],
+            },
+          },
+          "version": 1,
+        },
+      }
     `);
   });
 
   test("compile - one-to-one-subset", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("one-to-one-subset");
-    expect(result.schema.tables.user).toBeTruthy();
-    expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
-      [
-        "user",
-      ]
-    `);
-    expect(Object.keys(result.schema.relationships)).toMatchInlineSnapshot(`[]`);
-    expect(result.schema.tables.user.primaryKey).toMatchInlineSnapshot(`
-      [
-        "id",
-      ]
-    `);
-    expect(Object.keys(result.schema.tables.user.columns)).toMatchInlineSnapshot(`
-      [
-        "id",
-        "name",
-      ]
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "permissions": {
+          "user": {
+            "row": {
+              "update": {},
+            },
+          },
+        },
+        "schema": {
+          "relationships": {},
+          "tables": {
+            "user": {
+              "columns": {
+                "id": {
+                  "customType": null,
+                  "optional": false,
+                  "type": "string",
+                },
+                "name": {
+                  "customType": null,
+                  "optional": true,
+                  "type": "string",
+                },
+              },
+              "name": "user",
+              "primaryKey": [
+                "id",
+              ],
+            },
+          },
+          "version": 1,
+        },
+      }
     `);
   });
 
@@ -106,11 +264,60 @@ describe.concurrent("compile", () => {
 
   test("compile - one-to-one-self", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("one-to-one-self");
-    expect(result.schema.tables.user).toBeTruthy();
-    expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
-      [
-        "user",
-      ]
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "permissions": {
+          "user": {
+            "row": {
+              "update": {},
+            },
+          },
+        },
+        "schema": {
+          "relationships": {
+            "user": {
+              "invitee": [
+                {
+                  "cardinality": "one",
+                  "destField": [
+                    "id",
+                  ],
+                  "destSchema": "user",
+                  "sourceField": [
+                    "invited_by",
+                  ],
+                },
+              ],
+            },
+          },
+          "tables": {
+            "user": {
+              "columns": {
+                "id": {
+                  "customType": null,
+                  "optional": false,
+                  "type": "string",
+                },
+                "invited_by": {
+                  "customType": null,
+                  "optional": true,
+                  "type": "string",
+                },
+                "name": {
+                  "customType": null,
+                  "optional": true,
+                  "type": "string",
+                },
+              },
+              "name": "user",
+              "primaryKey": [
+                "id",
+              ],
+            },
+          },
+          "version": 1,
+        },
+      }
     `);
   });
 
@@ -139,13 +346,164 @@ describe.concurrent("compile", () => {
 
   test("compile - many-to-many", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("many-to-many");
-    expect(result.schema.tables.user).toBeTruthy();
-    expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
-      [
-        "group",
-        "user",
-        "users_to_group",
-      ]
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "permissions": {
+          "group": {
+            "row": {
+              "update": {},
+            },
+          },
+          "user": {
+            "row": {
+              "update": {},
+            },
+          },
+          "users_to_group": {
+            "row": {
+              "update": {},
+            },
+          },
+        },
+        "schema": {
+          "relationships": {
+            "group": {
+              "usersToGroups": [
+                {
+                  "cardinality": "many",
+                  "destField": [
+                    "group_id",
+                  ],
+                  "destSchema": "users_to_group",
+                  "sourceField": [
+                    "id",
+                  ],
+                },
+              ],
+            },
+            "user": {
+              "groups": [
+                {
+                  "cardinality": "many",
+                  "destField": [
+                    "user_id",
+                  ],
+                  "destSchema": "users_to_group",
+                  "sourceField": [
+                    "id",
+                  ],
+                },
+                {
+                  "cardinality": "many",
+                  "destField": [
+                    "id",
+                  ],
+                  "destSchema": "group",
+                  "sourceField": [
+                    "group_id",
+                  ],
+                },
+              ],
+              "usersToGroups": [
+                {
+                  "cardinality": "many",
+                  "destField": [
+                    "user_id",
+                  ],
+                  "destSchema": "users_to_group",
+                  "sourceField": [
+                    "id",
+                  ],
+                },
+              ],
+            },
+            "users_to_group": {
+              "group": [
+                {
+                  "cardinality": "one",
+                  "destField": [
+                    "id",
+                  ],
+                  "destSchema": "group",
+                  "sourceField": [
+                    "group_id",
+                  ],
+                },
+              ],
+              "user": [
+                {
+                  "cardinality": "one",
+                  "destField": [
+                    "id",
+                  ],
+                  "destSchema": "user",
+                  "sourceField": [
+                    "user_id",
+                  ],
+                },
+              ],
+            },
+          },
+          "tables": {
+            "group": {
+              "columns": {
+                "id": {
+                  "customType": null,
+                  "optional": false,
+                  "type": "string",
+                },
+                "name": {
+                  "customType": null,
+                  "optional": true,
+                  "type": "string",
+                },
+              },
+              "name": "group",
+              "primaryKey": [
+                "id",
+              ],
+            },
+            "user": {
+              "columns": {
+                "id": {
+                  "customType": null,
+                  "optional": false,
+                  "type": "string",
+                },
+                "name": {
+                  "customType": null,
+                  "optional": true,
+                  "type": "string",
+                },
+              },
+              "name": "user",
+              "primaryKey": [
+                "id",
+              ],
+            },
+            "users_to_group": {
+              "columns": {
+                "group_id": {
+                  "customType": null,
+                  "optional": false,
+                  "type": "string",
+                },
+                "user_id": {
+                  "customType": null,
+                  "optional": false,
+                  "type": "string",
+                },
+              },
+              "name": "users_to_group",
+              "primaryKey": [
+                "user_id",
+                "group_id",
+              ],
+            },
+          },
+          "version": 1,
+        },
+      }
     `);
   });
 
@@ -172,24 +530,96 @@ describe.concurrent("compile", () => {
 
   test("compile - many-to-many-self-referential", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("many-to-many-self-referential");
-    expect(result.schema.tables.user).toBeTruthy();
-    expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
-      [
-        "friendship",
-        "user",
-      ]
-    `);
-    expect(Object.keys(result.schema.relationships)).toMatchInlineSnapshot(`
-      [
-        "user",
-      ]
-    `);
-    expect(Object.keys(result.schema.relationships.user))
+    expect(result)
       .toMatchInlineSnapshot(`
-      [
-        "friends",
-      ]
-    `);
+        {
+          "permissions": {
+            "friendship": {
+              "row": {
+                "update": {},
+              },
+            },
+            "user": {
+              "row": {
+                "update": {},
+              },
+            },
+          },
+          "schema": {
+            "relationships": {
+              "user": {
+                "friends": [
+                  {
+                    "cardinality": "many",
+                    "destField": [
+                      "requesting_id",
+                    ],
+                    "destSchema": "friendship",
+                    "sourceField": [
+                      "id",
+                    ],
+                  },
+                  {
+                    "cardinality": "many",
+                    "destField": [
+                      "id",
+                    ],
+                    "destSchema": "user",
+                    "sourceField": [
+                      "accepting_id",
+                    ],
+                  },
+                ],
+              },
+            },
+            "tables": {
+              "friendship": {
+                "columns": {
+                  "accepted": {
+                    "customType": null,
+                    "optional": false,
+                    "type": "boolean",
+                  },
+                  "accepting_id": {
+                    "customType": null,
+                    "optional": false,
+                    "type": "string",
+                  },
+                  "requesting_id": {
+                    "customType": null,
+                    "optional": false,
+                    "type": "string",
+                  },
+                },
+                "name": "friendship",
+                "primaryKey": [
+                  "requesting_id",
+                  "accepting_id",
+                ],
+              },
+              "user": {
+                "columns": {
+                  "id": {
+                    "customType": null,
+                    "optional": false,
+                    "type": "string",
+                  },
+                  "name": {
+                    "customType": null,
+                    "optional": false,
+                    "type": "string",
+                  },
+                },
+                "name": "user",
+                "primaryKey": [
+                  "id",
+                ],
+              },
+            },
+            "version": 1,
+          },
+        }
+      `);
   });
 
   test("compile - custom-schema", async ({ expect }: TestAPI) => {

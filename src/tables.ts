@@ -1,11 +1,11 @@
 import {
-  type ColumnBuilder,
-  type TableBuilderWithColumns,
+  type SchemaValue,
+  type TableSchema,
   boolean as zeroBoolean,
+  enumeration as zeroEnumeration,
   json as zeroJson,
   number as zeroNumber,
   string as zeroString,
-  enumeration as zeroEnumeration,
   table as zeroTable,
 } from "@rocicorp/zero";
 import { getTableColumns, getTableName, Table } from "drizzle-orm";
@@ -25,6 +25,23 @@ import type {
   TableName,
 } from "./types";
 import { typedEntries } from "./util";
+
+declare class ColumnBuilder<TShape extends SchemaValue<any>> {
+  get schema(): TShape;
+}
+
+declare class TableBuilderWithColumns<TShape extends TableSchema> {
+  constructor(schema: TShape);
+  primaryKey<TPKColNames extends (keyof TShape["columns"])[]>(
+    ...pkColumnNames: TPKColNames
+  ): TableBuilderWithColumns<
+    TShape & {
+      primaryKey: TPKColNames;
+    }
+  >;
+  get schema(): TShape;
+  build(): TShape;
+}
 
 /**
  * Represents a column definition from a Drizzle table, filtered by column name.
