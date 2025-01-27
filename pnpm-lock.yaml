@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@rocicorp/zero':
-        specifier: ^0.12.2025012501
-        version: 0.12.2025012501
+        specifier: ^0.12.2025012601
+        version: 0.12.2025012601
       '@types/node':
         specifier: ^22.10.10
         version: 22.10.10
@@ -1081,8 +1081,8 @@ packages:
     resolution: {integrity: sha512-bm+VUdF4CnKVjUj/dSCmVu0hjcyXaF/nKkw2rNhZUjGeBOMRy/hh8z/32h311es4dxCVvcZ3+QHQHMxF2YG5Kw==}
     hasBin: true
 
-  '@rocicorp/zero@0.12.2025012501':
-    resolution: {integrity: sha512-lL+1dspZAo6xEsLZi/BlelN2sk+BL4zKLTITSaMLCKSgMgaf2zDPQ0zaSKSVLNedAgYKexFMMZmsoqSSFxM/3A==}
+  '@rocicorp/zero@0.12.2025012601':
+    resolution: {integrity: sha512-Ow4pjrF0lBIoOyDO2qKVq6XQ6yxldLoTN8Ml2j0yhlC5tvMm66hRtbMEXJB0SCH7lN1aOcDzXraTlfFt+z5bBg==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -3934,7 +3934,7 @@ snapshots:
       bindings: 1.5.0
       prebuild-install: 7.1.3
 
-  '@rocicorp/zero@0.12.2025012501':
+  '@rocicorp/zero@0.12.2025012601':
     dependencies:
       '@badrap/valita': 0.3.11
       '@databases/escape-identifier': 1.0.3
