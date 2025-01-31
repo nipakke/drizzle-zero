@@ -568,6 +568,77 @@ describe.concurrent("relationships", () => {
     assertEqual(manyToManyZeroSchema, expected);
   });
 
+  test("relationships - many-to-many-self-referential-fk", async () => {
+    const { schema: manyToManySelfReferentialFkZeroSchema } = await import(
+      "./schemas/many-to-many-self-referential-fk.zero"
+    );
+
+    const expectedDoc = table("doc")
+      .columns({
+        id: string(),
+        title: string(),
+      })
+      .primaryKey("id");
+
+    const expectedRelated = table("related")
+      .columns({
+        fk_from_doc: string(),
+        fk_to_doc: string(),
+      })
+      .primaryKey("fk_from_doc", "fk_to_doc");
+
+    const expectedDocRelationships = relationships(expectedDoc, ({ many }) => ({
+      related_docs: many(
+        {
+          sourceField: ["id"],
+          destField: ["fk_from_doc"],
+          destSchema: expectedRelated,
+        },
+        {
+          sourceField: ["fk_to_doc"],
+          destField: ["id"],
+          destSchema: expectedDoc,
+        },
+      ),
+      relateds_fk_from_doc: many({
+        sourceField: ["id"],
+        destField: ["fk_from_doc"],
+        destSchema: expectedRelated,
+      }),
+      relateds_fk_to_doc: many({
+        sourceField: ["id"],
+        destField: ["fk_to_doc"],
+        destSchema: expectedRelated,
+      }),
+    }));
+
+    const expectedRelatedRelationships = relationships(
+      expectedRelated,
+      ({ one }) => ({
+        doc_fk_from_doc: one({
+          sourceField: ["fk_from_doc"],
+          destField: ["id"],
+          destSchema: expectedDoc,
+        }),
+        doc_fk_to_doc: one({
+          sourceField: ["fk_to_doc"],
+          destField: ["id"],
+          destSchema: expectedDoc,
+        }),
+      }),
+    );
+
+    const expected = createSchema(1, {
+      tables: [expectedDoc, expectedRelated],
+      relationships: [expectedDocRelationships, expectedRelatedRelationships],
+    });
+
+    expectSchemaDeepEqual(manyToManySelfReferentialFkZeroSchema).toEqual(
+      expected,
+    );
+    assertEqual(manyToManySelfReferentialFkZeroSchema, expected);
+  });
+
   test("relationships - many-to-many-subset", async () => {
     const { schema: manyToManySubsetZeroSchema } = await import(
       "./schemas/many-to-many-subset.zero"
