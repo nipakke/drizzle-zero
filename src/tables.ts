@@ -22,6 +22,7 @@ import type {
   ColumnNames,
   Columns,
   FindPrimaryKeyFromTable,
+  Flatten,
   TableName,
 } from "./types";
 import { typedEntries } from "./util";
@@ -156,7 +157,7 @@ export type ZeroColumns<
     ? TColumnConfig[KColumn] extends ColumnBuilder<any>
       ? TColumnConfig[KColumn]["schema"]
       : TColumnConfig[KColumn] extends true
-        ? ZeroColumnDefinition<TTable, KColumn>
+        ? Flatten<ZeroColumnDefinition<TTable, KColumn>>
         : never
     : never;
 };
@@ -172,7 +173,7 @@ export type ZeroTableBuilderSchema<
 > = {
   name: TableName<TTable>;
   primaryKey: any; // FindPrimaryKeyFromTable<TTable>;
-  columns: ZeroColumns<TTable, TColumnConfig>;
+  columns: Flatten<ZeroColumns<TTable, TColumnConfig>>;
 };
 
 /**

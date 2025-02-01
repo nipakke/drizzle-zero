@@ -20,6 +20,7 @@ import type {
   FindPrimaryKeyFromTable,
   FindRelationsForTable,
   FindTableByName,
+  Flatten,
   RelationsConfig,
   TableColumnsConfig,
   TableName,
@@ -249,9 +250,11 @@ type CreateZeroSchema<
         ? TableName<TDrizzleSchema[K]>
         : never
       : never]: TDrizzleSchema[K] extends Table<any>
-      ? ZeroTableBuilderSchema<
-          TDrizzleSchema[K],
-          TColumnConfig[TableName<TDrizzleSchema[K]>]
+      ? Flatten<
+          ZeroTableBuilderSchema<
+            TDrizzleSchema[K],
+            TColumnConfig[TableName<TDrizzleSchema[K]>]
+          >
         >
       : never;
   };
@@ -407,7 +410,7 @@ const createZeroSchema = <
      */
     readonly manyToMany?: TManyConfig;
   },
-): CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig> => {
+): Flatten<CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig>> => {
   let tables: Record<
     string,
     {
