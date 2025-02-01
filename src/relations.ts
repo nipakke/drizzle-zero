@@ -20,6 +20,7 @@ import type {
   FindPrimaryKeyFromTable,
   FindRelationsForTable,
   FindTableByName,
+  Flatten,
   RelationsConfig,
   TableColumnsConfig,
   TableName,
@@ -249,9 +250,11 @@ type CreateZeroSchema<
         ? TableName<TDrizzleSchema[K]>
         : never
       : never]: TDrizzleSchema[K] extends Table<any>
-      ? ZeroTableBuilderSchema<
-          TDrizzleSchema[K],
-          TColumnConfig[TableName<TDrizzleSchema[K]>]
+      ? Flatten<
+          ZeroTableBuilderSchema<
+            TDrizzleSchema[K],
+            TColumnConfig[TableName<TDrizzleSchema[K]>]
+          >
         >
       : never;
   };
@@ -288,11 +291,67 @@ type CreateZeroSchema<
 };
 
 /**
- * Create a Zero schema from a Drizzle schema.
+ * Create a Zero schema from a Drizzle schema. This function transforms your Drizzle ORM schema
+ * into a Zero schema format, handling both direct relationships and many-to-many relationships.
+ * 
+ * The function allows you to:
+ * - Select which tables to include in the Zero schema
+ * - Configure column types and transformations
+ * - Define many-to-many relationships through junction tables
+ * - Automatically map foreign key relationships
  *
- * @param schema - The Drizzle schema to create a Zero schema from.
- * @param schemaConfig - The configuration for the Zero schema.
- * @returns The generated Zero schema.
+ * @param schema - The Drizzle schema to create a Zero schema from. This should be your complete Drizzle schema object
+ *                containing all your table definitions and relationships.
+ * @param schemaConfig - Configuration object for the Zero schema generation
+ * @param schemaConfig.version - Schema version number for tracking changes
+ * @param schemaConfig.tables - Specify which tables and columns to include in sync
+ * @param schemaConfig.manyToMany - Optional configuration for many-to-many relationships through junction tables
+ * @returns A Zero schema containing tables and their relationships
+ * 
+ * @example
+ * ```typescript
+ * import { integer, pgTable, serial, text, varchar } from 'drizzle-orm/pg-core';
+ * import { relations } from 'drizzle-orm';
+ * import { createZeroSchema } from 'drizzle-zero';
+ * 
+ * // Define Drizzle schema
+ * const users = pgTable('users', {
+ *   id: serial('id').primaryKey(),
+ *   name: text('name'),
+ * });
+ * 
+ * const posts = pgTable('posts', {
+ *   id: serial('id').primaryKey(),
+ *   title: varchar('title'),
+ *   authorId: integer('author_id').references(() => users.id),
+ * });
+ * 
+ * const usersRelations = relations(users, ({ one }) => ({
+ *   posts: one(posts, {
+ *     fields: [users.id],
+ *     references: [posts.authorId],
+ *   }),
+ * }));
+ * 
+ * // Create Zero schema
+ * const zeroSchema = createZeroSchema(
+ *   { users, posts, usersRelations },
+ *   {
+ *     version: 1,
+ *     tables: {
+ *       users: {
+ *         id: true,
+ *         name: true,
+ *       },
+ *       posts: {
+ *         id: true,
+ *         title: true,
+ *         authorId: true,
+ *       },
+ *     },
+ *   }
+ * );
+ * ```
  */
 const createZeroSchema = <
   const TDrizzleSchema extends Record<string, unknown>,
@@ -351,7 +410,7 @@ const createZeroSchema = <
      */
     readonly manyToMany?: TManyConfig;
   },
-): CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig> => {
+): Flatten<CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig>> => {
   let tables: Record<
     string,
     {

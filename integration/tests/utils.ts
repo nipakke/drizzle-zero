@@ -133,7 +133,7 @@ export const startPostgresAndZero = async () => {
   const postgresContainer = await new PostgreSqlContainer(
     `postgres:${process.env.PG_VERSION ?? "16"}`,
   )
-    .withDatabase("postgres")
+    .withDatabase("drizzle_zero")
     .withUsername("user")
     .withPassword("password")
     .withNetwork(network)
@@ -177,8 +177,8 @@ export const startPostgresAndZero = async () => {
     .withNetwork(network)
     .withEnvironment({
       ZERO_UPSTREAM_DB: `${basePgUrl}/drizzle_zero`,
-      ZERO_CVR_DB: `${basePgUrl}/drizzle_zero_cvr`,
-      ZERO_CHANGE_DB: `${basePgUrl}/drizzle_zero_cdb`,
+      ZERO_CVR_DB: `${basePgUrl}/drizzle_zero`,
+      ZERO_CHANGE_DB: `${basePgUrl}/drizzle_zero`,
       ZERO_AUTH_SECRET: "secretkey",
       ZERO_REPLICA_FILE: "/zero.db",
       ZERO_NUM_SYNC_WORKERS: "1",

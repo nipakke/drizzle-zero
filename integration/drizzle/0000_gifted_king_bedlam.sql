@@ -1,5 +1,3 @@
-\c drizzle_zero;
-
 CREATE SCHEMA "zero";
 --> statement-breakpoint
 CREATE TYPE "public"."status_type" AS ENUM('active', 'inactive', 'pending');--> statement-breakpoint
