@@ -133,7 +133,7 @@ export const startPostgresAndZero = async () => {
   const postgresContainer = await new PostgreSqlContainer(
     `postgres:${process.env.PG_VERSION ?? "16"}`,
   )
-    .withDatabase("postgres")
+    .withDatabase("drizzle_zero")
     .withUsername("user")
     .withPassword("password")
     .withNetwork(network)
