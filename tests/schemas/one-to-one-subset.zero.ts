@@ -13,6 +13,7 @@ export const schema = createZeroSchema(oneToOne, {
       id: true,
       name: true,
     },
+    profile_info: false,
   },
 });
 

@@ -10,6 +10,7 @@ import * as drizzleSchema from "./drizzle/schema";
 const zeroSchema = createZeroSchema(drizzleSchema, {
   version: 1,
   tables: {
+    schemaVersions: false,
     user: {
       createdAt: true,
       updatedAt: true,
@@ -34,6 +35,8 @@ const zeroSchema = createZeroSchema(drizzleSchema, {
     },
     all_types: {
       id: true,
+      createdAt: true,
+      updatedAt: true,
       smallint: true,
       integer: true,
       bigint: true,

@@ -12,7 +12,7 @@ export type TableColumnsConfig<TDrizzleSchema extends Record<string, unknown>> =
      */
     readonly [K in keyof TDrizzleSchema as TDrizzleSchema[K] extends Table<any>
       ? TableName<TDrizzleSchema[K]>
-      : never]?: TDrizzleSchema[K] extends Table<any>
+      : never]: TDrizzleSchema[K] extends Table<any>
       ? ColumnsConfig<TDrizzleSchema[K]>
       : never;
   };
