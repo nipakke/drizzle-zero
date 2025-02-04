@@ -293,7 +293,7 @@ type CreateZeroSchema<
 /**
  * Create a Zero schema from a Drizzle schema. This function transforms your Drizzle ORM schema
  * into a Zero schema format, handling both direct relationships and many-to-many relationships.
- * 
+ *
  * The function allows you to:
  * - Select which tables to include in the Zero schema
  * - Configure column types and transformations
@@ -307,32 +307,32 @@ type CreateZeroSchema<
  * @param schemaConfig.tables - Specify which tables and columns to include in sync
  * @param schemaConfig.manyToMany - Optional configuration for many-to-many relationships through junction tables
  * @returns A Zero schema containing tables and their relationships
- * 
+ *
  * @example
  * ```typescript
  * import { integer, pgTable, serial, text, varchar } from 'drizzle-orm/pg-core';
  * import { relations } from 'drizzle-orm';
  * import { createZeroSchema } from 'drizzle-zero';
- * 
+ *
  * // Define Drizzle schema
  * const users = pgTable('users', {
  *   id: serial('id').primaryKey(),
  *   name: text('name'),
  * });
- * 
+ *
  * const posts = pgTable('posts', {
  *   id: serial('id').primaryKey(),
  *   title: varchar('title'),
  *   authorId: integer('author_id').references(() => users.id),
  * });
- * 
+ *
  * const usersRelations = relations(users, ({ one }) => ({
  *   posts: one(posts, {
  *     fields: [users.id],
  *     references: [posts.authorId],
  *   }),
  * }));
- * 
+ *
  * // Create Zero schema
  * const zeroSchema = createZeroSchema(
  *   { users, posts, usersRelations },
@@ -355,12 +355,8 @@ type CreateZeroSchema<
  */
 const createZeroSchema = <
   const TDrizzleSchema extends Record<string, unknown>,
-  const TColumnConfig extends
-    TableColumnsConfig<TDrizzleSchema> = TableColumnsConfig<TDrizzleSchema>,
-  const TManyConfig extends ManyConfig<
-    TDrizzleSchema,
-    TColumnConfig
-  > = ManyConfig<TDrizzleSchema, TColumnConfig>,
+  const TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
+  const TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
 >(
   /**
    * The Drizzle schema to create a Zero schema from.

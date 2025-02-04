@@ -13,6 +13,7 @@ export const schema = createZeroSchema(manyToMany, {
       user_id: true,
       group_id: true,
     },
+    group: false,
   },
 });
 

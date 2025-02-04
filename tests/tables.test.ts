@@ -210,6 +210,8 @@ describe.concurrent("tables", () => {
     const result = createZeroTableBuilder(testTable, {
       id: true,
       name: true,
+      metadata: false,
+      age: false,
     });
 
     const expected = table("test")
@@ -769,7 +771,7 @@ describe.concurrent("tables", () => {
         invalid: "someinvalidtype",
       } as unknown as ColumnsConfig<typeof testTable>),
     ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: drizzle-zero: Invalid column config for column invalid - expected boolean or object but was string]`,
+      `[Error: drizzle-zero: Invalid column config for column invalid - expected boolean or ColumnBuilder but was string]`,
     );
   });
 
@@ -785,7 +787,7 @@ describe.concurrent("tables", () => {
         invalid: "someinvalidtype",
       } as unknown as ColumnsConfig<typeof testTable>),
     ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: drizzle-zero: Invalid column config for column invalid - expected boolean or object but was string]`,
+      `[Error: drizzle-zero: Invalid column config for column invalid - expected boolean or ColumnBuilder but was string]`,
     );
   });
 

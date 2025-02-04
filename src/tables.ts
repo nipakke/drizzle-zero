@@ -54,12 +54,12 @@ type TypeOverride<TCustomType> = {
  * Configuration for specifying which columns to include in the Zero schema and how to map them.
  * @template TTable The Drizzle table type
  */
-export type ColumnsConfig<TTable extends Table> = {
+export type ColumnsConfig<TTable extends Table> = false | {
   /**
    * The columns to include in the Zero schema.
    * Set to true to use default mapping, or provide a TypeOverride for custom mapping.
    */
-  readonly [KColumn in ColumnNames<TTable>]?:
+  readonly [KColumn in ColumnNames<TTable>]:
     | boolean
     | ColumnBuilder<
         TypeOverride<
@@ -168,8 +168,8 @@ export type ZeroColumns<
  * @template TColumnConfig The columns configuration
  */
 export type ZeroTableBuilderSchema<
-  TTable extends Table = Table,
-  TColumnConfig extends ColumnsConfig<TTable> = ColumnsConfig<TTable>,
+  TTable extends Table,
+  TColumnConfig extends ColumnsConfig<TTable>,
 > = {
   name: TableName<TTable>;
   primaryKey: any; // FindPrimaryKeyFromTable<TTable>;
@@ -182,8 +182,8 @@ export type ZeroTableBuilderSchema<
  * @template TColumnConfig The columns configuration
  */
 type ZeroTableBuilder<
-  TTable extends Table = Table,
-  TColumnConfig extends ColumnsConfig<TTable> = ColumnsConfig<TTable>,
+  TTable extends Table,
+  TColumnConfig extends ColumnsConfig<TTable>,
 > = TableBuilderWithColumns<
   Readonly<ZeroTableBuilderSchema<TTable, TColumnConfig>>
 >;
@@ -215,13 +215,17 @@ const createZeroTableBuilder = <
 
       const columnConfig = columns[name as keyof TColumnConfig];
 
+      if (columnConfig === false) {
+        return acc;
+      }
+
       if (
         typeof columnConfig !== "boolean" &&
         typeof columnConfig !== "object" &&
         typeof columnConfig !== "undefined"
       ) {
         throw new Error(
-          `drizzle-zero: Invalid column config for column ${name} - expected boolean or object but was ${typeof columnConfig}`,
+          `drizzle-zero: Invalid column config for column ${name} - expected boolean or ColumnBuilder but was ${typeof columnConfig}`,
         );
       }
 
@@ -229,9 +233,13 @@ const createZeroTableBuilder = <
         return acc;
       }
 
-      if (typeof columnConfig !== "boolean") {
-        columnConfig.schema.customType;
-      }
+      const isColumnBuilder = (
+        value: unknown,
+      ): value is ColumnBuilder<any> =>
+        typeof value === "object" &&
+        value !== null &&
+        "schema" in value;
+ 
 
       const type =
         drizzleColumnTypeToZeroType[
@@ -253,7 +261,9 @@ const createZeroTableBuilder = <
           ? column.hasDefault && column.defaultFn === undefined
             ? true
             : !column.notNull
-          : columnConfig.schema.optional;
+          : isColumnBuilder(columnConfig)
+            ? columnConfig.schema.optional
+            : false;
 
       if (column.primary) {
         if (isColumnOptional) {

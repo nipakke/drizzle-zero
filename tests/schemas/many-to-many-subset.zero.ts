@@ -7,7 +7,10 @@ export const schema = createZeroSchema(manyToMany, {
   tables: {
     user: {
       id: true,
+      name: false,
     },
+    users_to_group: false,
+    group: false,
   },
 });
 
