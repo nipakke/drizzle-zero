@@ -47,8 +47,6 @@ export const postsRelations = relations(posts, ({ one }) => ({
 
 Convert this Drizzle schema to a Zero schema:
 
-> **Note:** Starting from version 0.3.0, the API no longer uses `createSchema` from Zero. The examples below show the current API usage.
-
 ```ts
 import { createZeroSchema } from "drizzle-zero";
 import * as drizzleSchema from "./drizzle-schema";
@@ -60,12 +58,18 @@ export const schema = createZeroSchema(drizzleSchema, {
   // This allows for the "expand/migrate/contract" pattern recommended in the Zero docs.
   // When a column is first added, it should be set to false, and then changed to true
   // once the migration has been run.
+
+  // All tables/columns must be defined, but can be set to false to exclude them from the Zero schema.
   tables: {
+    // this can be set to false
+    // e.g. user: false,
     user: {
       id: true,
       name: true,
     },
     post: {
+      // or this can be set to false
+      // e.g. id: false,
       id: true,
       content: true,
       author_id: true,
