@@ -16,7 +16,7 @@ describe.concurrent("relationships", () => {
     await expect(
       import("./schemas/many-to-many-incorrect-many.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: drizzle-zero: Invalid many-to-many configuration for user.groups: Not all required fields were provided.]`,
+      `[Error: drizzle-zero: Invalid many-to-many configuration for users.usersToGroups: Not all required fields were provided.]`,
     );
   });
 
@@ -34,7 +34,7 @@ describe.concurrent("relationships", () => {
     await expect(
       import("./schemas/many-to-many-missing-foreign-key.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: drizzle-zero: Invalid many-to-many configuration for user.groups: Could not find foreign key relationships in junction table users_to_group]`,
+      `[Error: drizzle-zero: Invalid many-to-many configuration for users.usersToGroups: Could not find foreign key relationships in junction table usersToGroups]`,
     );
   });
 
@@ -44,7 +44,7 @@ describe.concurrent("relationships", () => {
     await expect(
       import("./schemas/many-to-many-duplicate-relationship.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: drizzle-zero: Duplicate relationship found for: usersToGroups (from user to users_to_group).]`,
+      `[Error: drizzle-zero: Duplicate relationship found for: usersToGroups (from users to users_to_group).]`,
     );
   });
 
@@ -73,17 +73,19 @@ describe.concurrent("relationships", () => {
       "./schemas/no-relations.zero"
     );
 
-    const expectedUsers = table("user")
+    const expectedUsers = table("users")
+      .from("user")
       .columns({
         id: string(),
         name: string().optional(),
       })
       .primaryKey("id");
 
-    const expectedProfileInfo = table("profile_info")
+    const expectedProfileInfo = table("profileInfo")
+      .from("profile_info")
       .columns({
         id: string(),
-        user_id: string().optional(),
+        userId: string().from("user_id").optional(),
         metadata: json().optional(),
       })
       .primaryKey("id");
@@ -101,17 +103,18 @@ describe.concurrent("relationships", () => {
       "./schemas/one-to-one-self.zero"
     );
 
-    const expectedUsers = table("user")
+    const expectedUsers = table("users")
+      .from("user")
       .columns({
         id: string(),
         name: string().optional(),
-        invited_by: string().optional(),
+        invitedBy: string().from("invited_by").optional(),
       })
       .primaryKey("id");
 
     const expectedRelations = relationships(expectedUsers, ({ one }) => ({
       invitee: one({
-        sourceField: ["invited_by"],
+        sourceField: ["invitedBy"],
         destField: ["id"],
         destSchema: expectedUsers,
       }),
@@ -131,17 +134,19 @@ describe.concurrent("relationships", () => {
       "./schemas/one-to-one.zero"
     );
 
-    const expectedUsers = table("user")
+    const expectedUsers = table("users")
+      .from("user")
       .columns({
         id: string(),
         name: string().optional(),
       })
       .primaryKey("id");
 
-    const expectedProfileInfo = table("profile_info")
+    const expectedProfileInfo = table("profileInfo")
+      .from("profile_info")
       .columns({
         id: string(),
-        user_id: string().optional(),
+        userId: string().from("user_id").optional(),
         metadata: json().optional(),
       })
       .primaryKey("id");
@@ -149,7 +154,7 @@ describe.concurrent("relationships", () => {
     const expectedUsersRelations = relationships(expectedUsers, ({ one }) => ({
       profileInfo: one({
         sourceField: ["id"],
-        destField: ["user_id"],
+        destField: ["userId"],
         destSchema: expectedProfileInfo,
       }),
     }));
@@ -158,7 +163,7 @@ describe.concurrent("relationships", () => {
       expectedProfileInfo,
       ({ one }) => ({
         user: one({
-          sourceField: ["user_id"],
+          sourceField: ["userId"],
           destField: ["id"],
           destSchema: expectedUsers,
         }),
@@ -179,7 +184,8 @@ describe.concurrent("relationships", () => {
       "./schemas/one-to-one-subset.zero"
     );
 
-    const expectedUsers = table("user")
+    const expectedUsers = table("users")
+      .from("user")
       .columns({
         id: string(),
         name: string().optional(),
@@ -250,7 +256,8 @@ describe.concurrent("relationships", () => {
       "./schemas/one-to-one-2.zero"
     );
 
-    const expectedUsers = table("user")
+    const expectedUsers = table("userTable")
+      .from("user")
       .columns({
         id: string(),
         name: string(),
@@ -258,14 +265,16 @@ describe.concurrent("relationships", () => {
       })
       .primaryKey("id");
 
-    const expectedMedium = table("medium")
+    const expectedMedium = table("mediumTable")
+      .from("medium")
       .columns({
         id: string(),
         name: string(),
       })
       .primaryKey("id");
 
-    const expectedMessage = table("message")
+    const expectedMessage = table("messageTable")
+      .from("message")
       .columns({
         id: string(),
         senderId: string().optional(),
@@ -342,27 +351,30 @@ describe.concurrent("relationships", () => {
       "./schemas/one-to-many.zero"
     );
 
-    const expectedUsers = table("user")
+    const expectedUsers = table("users")
+      .from("user")
       .columns({
         id: string(),
         name: string().optional(),
       })
       .primaryKey("id");
 
-    const expectedPosts = table("post")
+    const expectedPosts = table("posts")
+      .from("post")
       .columns({
         id: string(),
         content: string().optional(),
-        author_id: string().optional(),
+        authorId: string().from("author_id").optional(),
       })
       .primaryKey("id");
 
-    const expectedComments = table("comment")
+    const expectedComments = table("comments")
+      .from("comment")
       .columns({
         id: string(),
         text: string().optional(),
-        author_id: string().optional(),
-        post_id: string().optional(),
+        authorId: string().from("author_id").optional(),
+        postId: string().from("post_id").optional(),
       })
       .primaryKey("id");
 
@@ -371,7 +383,7 @@ describe.concurrent("relationships", () => {
       ({ many }) => ({
         posts: many({
           sourceField: ["id"],
-          destField: ["author_id"],
+          destField: ["authorId"],
           destSchema: expectedPosts,
         }),
       }),
@@ -381,7 +393,7 @@ describe.concurrent("relationships", () => {
       expectedPosts,
       ({ one }) => ({
         author: one({
-          sourceField: ["author_id"],
+          sourceField: ["authorId"],
           destField: ["id"],
           destSchema: expectedUsers,
         }),
@@ -392,12 +404,12 @@ describe.concurrent("relationships", () => {
       expectedComments,
       ({ one }) => ({
         post: one({
-          sourceField: ["post_id"],
+          sourceField: ["postId"],
           destField: ["id"],
           destSchema: expectedPosts,
         }),
         author: one({
-          sourceField: ["author_id"],
+          sourceField: ["authorId"],
           destField: ["id"],
           destSchema: expectedUsers,
         }),
@@ -433,8 +445,8 @@ describe.concurrent("relationships", () => {
       .columns({
         id: string(),
         content: string().optional(),
-        author_id: string().optional(),
-        reviewer_id: string().optional(),
+        authorId: string().from("author_id").optional(),
+        reviewerId: string().from("reviewer_id").optional(),
       })
       .primaryKey("id");
 
@@ -443,12 +455,12 @@ describe.concurrent("relationships", () => {
       ({ many }) => ({
         author: many({
           sourceField: ["id"],
-          destField: ["author_id"],
+          destField: ["authorId"],
           destSchema: expectedPosts,
         }),
         reviewer: many({
           sourceField: ["id"],
-          destField: ["reviewer_id"],
+          destField: ["reviewerId"],
           destSchema: expectedPosts,
         }),
       }),
@@ -458,12 +470,12 @@ describe.concurrent("relationships", () => {
       expectedPosts,
       ({ one }) => ({
         author: one({
-          sourceField: ["author_id"],
+          sourceField: ["authorId"],
           destField: ["id"],
           destSchema: expectedUsers,
         }),
         reviewer: one({
-          sourceField: ["reviewer_id"],
+          sourceField: ["reviewerId"],
           destField: ["id"],
           destSchema: expectedUsers,
         }),
@@ -484,21 +496,24 @@ describe.concurrent("relationships", () => {
       "./schemas/many-to-many.zero"
     );
 
-    const expectedUsers = table("user")
+    const expectedUsers = table("users")
+      .from("user")
       .columns({
         id: string(),
         name: string().optional(),
       })
       .primaryKey("id");
 
-    const expectedUsersToGroups = table("users_to_group")
+    const expectedUsersToGroups = table("usersToGroups")
+      .from("users_to_group")
       .columns({
-        user_id: string(),
-        group_id: string(),
+        userId: string().from("user_id"),
+        groupId: string().from("group_id"),
       })
-      .primaryKey("user_id", "group_id");
+      .primaryKey("userId", "groupId");
 
-    const expectedGroups = table("group")
+    const expectedGroups = table("groups")
+      .from("group")
       .columns({
         id: string(),
         name: string().optional(),
@@ -511,18 +526,18 @@ describe.concurrent("relationships", () => {
         groups: many(
           {
             sourceField: ["id"],
-            destField: ["user_id"],
+            destField: ["userId"],
             destSchema: expectedUsersToGroups,
           },
           {
-            sourceField: ["group_id"],
+            sourceField: ["groupId"],
             destField: ["id"],
             destSchema: expectedGroups,
           },
         ),
         usersToGroups: many({
           sourceField: ["id"],
-          destField: ["user_id"],
+          destField: ["userId"],
           destSchema: expectedUsersToGroups,
         }),
       }),
@@ -532,12 +547,12 @@ describe.concurrent("relationships", () => {
       expectedUsersToGroups,
       ({ one }) => ({
         user: one({
-          sourceField: ["user_id"],
+          sourceField: ["userId"],
           destField: ["id"],
           destSchema: expectedUsers,
         }),
         group: one({
-          sourceField: ["group_id"],
+          sourceField: ["groupId"],
           destField: ["id"],
           destSchema: expectedGroups,
         }),
@@ -549,7 +564,7 @@ describe.concurrent("relationships", () => {
       ({ many }) => ({
         usersToGroups: many({
           sourceField: ["id"],
-          destField: ["group_id"],
+          destField: ["groupId"],
           destSchema: expectedUsersToGroups,
         }),
       }),
@@ -644,7 +659,8 @@ describe.concurrent("relationships", () => {
       "./schemas/many-to-many-subset.zero"
     );
 
-    const expectedUsers = table("user")
+    const expectedUsers = table("users")
+      .from("user")
       .columns({
         id: string(),
       })
@@ -663,25 +679,27 @@ describe.concurrent("relationships", () => {
       "./schemas/many-to-many-subset-2.zero"
     );
 
-    const expectedUsers = table("user")
+    const expectedUsers = table("users")
+      .from("user")
       .columns({
         id: string(),
         name: string().optional(),
       })
       .primaryKey("id");
 
-    const expectedUsersToGroups = table("users_to_group")
+    const expectedUsersToGroups = table("usersToGroups")
+      .from("users_to_group")
       .columns({
-        user_id: string(),
-        group_id: string(),
+        userId: string().from("user_id"),
+        groupId: string().from("group_id"),
       })
-      .primaryKey("user_id", "group_id");
+      .primaryKey("userId", "groupId");
 
     const expectedUsersToGroupsRelationships = relationships(
       expectedUsersToGroups,
       ({ one }) => ({
         user: one({
-          sourceField: ["user_id"],
+          sourceField: ["userId"],
           destField: ["id"],
           destSchema: expectedUsers,
         }),
@@ -691,7 +709,7 @@ describe.concurrent("relationships", () => {
     const usersRelationships = relationships(expectedUsers, ({ many }) => ({
       usersToGroups: many({
         sourceField: ["id"],
-        destField: ["user_id"],
+        destField: ["userId"],
         destSchema: expectedUsersToGroups,
       }),
     }));
@@ -719,11 +737,11 @@ describe.concurrent("relationships", () => {
 
     const expectedFriendship = table("friendship")
       .columns({
-        requesting_id: string(),
-        accepting_id: string(),
+        requestingId: string().from("requesting_id"),
+        acceptingId: string().from("accepting_id"),
         accepted: boolean(),
       })
-      .primaryKey("requesting_id", "accepting_id");
+      .primaryKey("requestingId", "acceptingId");
 
     const expectedUsersRelationships = relationships(
       expectedUsers,
@@ -731,11 +749,11 @@ describe.concurrent("relationships", () => {
         friends: many(
           {
             sourceField: ["id"],
-            destField: ["requesting_id"],
+            destField: ["requestingId"],
             destSchema: expectedFriendship,
           },
           {
-            sourceField: ["accepting_id"],
+            sourceField: ["acceptingId"],
             destField: ["id"],
             destSchema: expectedUsers,
           },
@@ -759,21 +777,24 @@ describe.concurrent("relationships", () => {
       "./schemas/many-to-many-extended-config.zero"
     );
 
-    const expectedUsers = table("user")
+    const expectedUsers = table("users")
+      .from("user")
       .columns({
         id: string(),
         name: string().optional(),
       })
       .primaryKey("id");
 
-    const expectedUsersToGroups = table("users_to_group")
+    const expectedUsersToGroups = table("usersToGroups")
+      .from("users_to_group")
       .columns({
-        user_id: string(),
-        group_id: string(),
+        userId: string().from("user_id"),
+        groupId: string().from("group_id"),
       })
-      .primaryKey("user_id", "group_id");
+      .primaryKey("userId", "groupId");
 
-    const expectedGroups = table("group")
+    const expectedGroups = table("groups")
+      .from("group")
       .columns({
         id: string(),
         name: string().optional(),
@@ -785,7 +806,7 @@ describe.concurrent("relationships", () => {
       ({ many }) => ({
         usersToGroups: many({
           sourceField: ["id"],
-          destField: ["group_id"],
+          destField: ["groupId"],
           destSchema: expectedUsersToGroups,
         }),
       }),
@@ -795,12 +816,12 @@ describe.concurrent("relationships", () => {
       expectedUsersToGroups,
       ({ one }) => ({
         group: one({
-          sourceField: ["group_id"],
+          sourceField: ["groupId"],
           destField: ["id"],
           destSchema: expectedGroups,
         }),
         user: one({
-          sourceField: ["user_id"],
+          sourceField: ["userId"],
           destField: ["id"],
           destSchema: expectedUsers,
         }),
@@ -813,18 +834,18 @@ describe.concurrent("relationships", () => {
         groups: many(
           {
             sourceField: ["id"],
-            destField: ["user_id"],
+            destField: ["userId"],
             destSchema: expectedUsersToGroups,
           },
           {
-            sourceField: ["group_id"],
+            sourceField: ["groupId"],
             destField: ["id"],
             destSchema: expectedGroups,
           },
         ),
         usersToGroups: many({
           sourceField: ["id"],
-          destField: ["user_id"],
+          destField: ["userId"],
           destSchema: expectedUsersToGroups,
         }),
       }),
@@ -848,11 +869,12 @@ describe.concurrent("relationships", () => {
       "./schemas/custom-schema.zero"
     );
 
-    const expectedUsers = table("user")
+    const expectedUsers = table("users")
+      .from("custom.user")
       .columns({
         id: string(),
         name: string().optional(),
-        invited_by: string().optional(),
+        invitedBy: string().from("invited_by").optional(),
       })
       .primaryKey("id");
 
@@ -860,7 +882,7 @@ describe.concurrent("relationships", () => {
       expectedUsers,
       ({ one }) => ({
         invitee: one({
-          sourceField: ["invited_by"],
+          sourceField: ["invitedBy"],
           destField: ["id"],
           destSchema: expectedUsers,
         }),

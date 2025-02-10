@@ -5,41 +5,41 @@ import * as oneToMany from "./one-to-many.schema";
 export const schema = createZeroSchema(oneToMany, {
   version: 1,
   tables: {
-    user: {
+    users: {
       id: true,
       name: true,
     },
-    post: {
+    posts: {
       id: true,
       content: true,
-      author_id: true,
+      authorId: true,
     },
-    comment: {
+    comments: {
       id: true,
       text: true,
-      post_id: true,
-      author_id: true,
+      postId: true,
+      authorId: true,
     },
   },
 });
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {
-    post: {
+    posts: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
         delete: ANYONE_CAN,
       },
     },
-    comment: {
+    comments: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
         delete: ANYONE_CAN,
       },
     },
-    user: {
+    users: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,

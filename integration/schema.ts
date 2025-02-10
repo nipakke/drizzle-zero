@@ -10,13 +10,17 @@ import * as drizzleSchema from "./drizzle/schema";
 const zeroSchema = createZeroSchema(drizzleSchema, {
   version: 1,
   tables: {
-    schemaVersions: false,
+    schemaVersions: {
+      maxSupportedVersion: true,
+      minSupportedVersion: true,
+      lock: true,
+    },
     user: {
       createdAt: true,
       updatedAt: true,
       id: true,
       name: true,
-      partner: false,
+      partner: true,
     },
     medium: {
       createdAt: true,

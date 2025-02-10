@@ -39,7 +39,7 @@ const runZeroBuildSchema = async (testName: string) => {
 describe.concurrent("compile", () => {
   test("compile - no-relations", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("no-relations");
-    expect(result).toMatchInlineSnapshot( `
+    expect(result).toMatchInlineSnapshot(`
       {
         "permissions": {
           "profile_info": {
@@ -56,7 +56,7 @@ describe.concurrent("compile", () => {
         "schema": {
           "relationships": {},
           "tables": {
-            "profile_info": {
+            "profileInfo": {
               "columns": {
                 "id": {
                   "customType": null,
@@ -68,18 +68,20 @@ describe.concurrent("compile", () => {
                   "optional": true,
                   "type": "json",
                 },
-                "user_id": {
+                "userId": {
                   "customType": null,
                   "optional": true,
+                  "serverName": "user_id",
                   "type": "string",
                 },
               },
-              "name": "profile_info",
+              "name": "profileInfo",
               "primaryKey": [
                 "id",
               ],
+              "serverName": "profile_info",
             },
-            "user": {
+            "users": {
               "columns": {
                 "id": {
                   "customType": null,
@@ -92,10 +94,11 @@ describe.concurrent("compile", () => {
                   "type": "string",
                 },
               },
-              "name": "user",
+              "name": "users",
               "primaryKey": [
                 "id",
               ],
+              "serverName": "user",
             },
           },
           "version": 1,
@@ -106,19 +109,18 @@ describe.concurrent("compile", () => {
 
   test("compile - one-to-one-2", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("one-to-one-2");
-    expect(result.schema.tables.user).toBeTruthy();
-    expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot( `
+    expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
       [
-        "medium",
-        "message",
-        "user",
+        "mediumTable",
+        "messageTable",
+        "userTable",
       ]
     `);
   });
 
   test("compile - one-to-one", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("one-to-one");
-    expect(result).toMatchInlineSnapshot( `
+    expect(result).toMatchInlineSnapshot(`
       {
         "permissions": {
           "profile_info": {
@@ -134,28 +136,28 @@ describe.concurrent("compile", () => {
         },
         "schema": {
           "relationships": {
-            "profile_info": {
+            "profileInfo": {
               "user": [
                 {
                   "cardinality": "one",
                   "destField": [
                     "id",
                   ],
-                  "destSchema": "user",
+                  "destSchema": "users",
                   "sourceField": [
-                    "user_id",
+                    "userId",
                   ],
                 },
               ],
             },
-            "user": {
+            "users": {
               "profileInfo": [
                 {
                   "cardinality": "one",
                   "destField": [
-                    "user_id",
+                    "userId",
                   ],
-                  "destSchema": "profile_info",
+                  "destSchema": "profileInfo",
                   "sourceField": [
                     "id",
                   ],
@@ -164,7 +166,7 @@ describe.concurrent("compile", () => {
             },
           },
           "tables": {
-            "profile_info": {
+            "profileInfo": {
               "columns": {
                 "id": {
                   "customType": null,
@@ -176,18 +178,20 @@ describe.concurrent("compile", () => {
                   "optional": true,
                   "type": "json",
                 },
-                "user_id": {
+                "userId": {
                   "customType": null,
                   "optional": true,
+                  "serverName": "user_id",
                   "type": "string",
                 },
               },
-              "name": "profile_info",
+              "name": "profileInfo",
               "primaryKey": [
                 "id",
               ],
+              "serverName": "profile_info",
             },
-            "user": {
+            "users": {
               "columns": {
                 "id": {
                   "customType": null,
@@ -200,10 +204,11 @@ describe.concurrent("compile", () => {
                   "type": "string",
                 },
               },
-              "name": "user",
+              "name": "users",
               "primaryKey": [
                 "id",
               ],
+              "serverName": "user",
             },
           },
           "version": 1,
@@ -226,7 +231,7 @@ describe.concurrent("compile", () => {
         "schema": {
           "relationships": {},
           "tables": {
-            "user": {
+            "users": {
               "columns": {
                 "id": {
                   "customType": null,
@@ -239,10 +244,11 @@ describe.concurrent("compile", () => {
                   "type": "string",
                 },
               },
-              "name": "user",
+              "name": "users",
               "primaryKey": [
                 "id",
               ],
+              "serverName": "user",
             },
           },
           "version": 1,
@@ -275,32 +281,33 @@ describe.concurrent("compile", () => {
         },
         "schema": {
           "relationships": {
-            "user": {
+            "users": {
               "invitee": [
                 {
                   "cardinality": "one",
                   "destField": [
                     "id",
                   ],
-                  "destSchema": "user",
+                  "destSchema": "users",
                   "sourceField": [
-                    "invited_by",
+                    "invitedBy",
                   ],
                 },
               ],
             },
           },
           "tables": {
-            "user": {
+            "users": {
               "columns": {
                 "id": {
                   "customType": null,
                   "optional": false,
                   "type": "string",
                 },
-                "invited_by": {
+                "invitedBy": {
                   "customType": null,
                   "optional": true,
+                  "serverName": "invited_by",
                   "type": "string",
                 },
                 "name": {
@@ -309,10 +316,11 @@ describe.concurrent("compile", () => {
                   "type": "string",
                 },
               },
-              "name": "user",
+              "name": "users",
               "primaryKey": [
                 "id",
               ],
+              "serverName": "user",
             },
           },
           "version": 1,
@@ -323,12 +331,12 @@ describe.concurrent("compile", () => {
 
   test("compile - one-to-many", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("one-to-many");
-    expect(result.schema.tables.user).toBeTruthy();
+    expect(result.schema.tables.users).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
       [
-        "comment",
-        "post",
-        "user",
+        "comments",
+        "posts",
+        "users",
       ]
     `);
   });
@@ -367,28 +375,28 @@ describe.concurrent("compile", () => {
         },
         "schema": {
           "relationships": {
-            "group": {
+            "groups": {
               "usersToGroups": [
                 {
                   "cardinality": "many",
                   "destField": [
-                    "group_id",
+                    "groupId",
                   ],
-                  "destSchema": "users_to_group",
+                  "destSchema": "usersToGroups",
                   "sourceField": [
                     "id",
                   ],
                 },
               ],
             },
-            "user": {
+            "users": {
               "groups": [
                 {
                   "cardinality": "many",
                   "destField": [
-                    "user_id",
+                    "userId",
                   ],
-                  "destSchema": "users_to_group",
+                  "destSchema": "usersToGroups",
                   "sourceField": [
                     "id",
                   ],
@@ -398,9 +406,9 @@ describe.concurrent("compile", () => {
                   "destField": [
                     "id",
                   ],
-                  "destSchema": "group",
+                  "destSchema": "groups",
                   "sourceField": [
-                    "group_id",
+                    "groupId",
                   ],
                 },
               ],
@@ -408,25 +416,25 @@ describe.concurrent("compile", () => {
                 {
                   "cardinality": "many",
                   "destField": [
-                    "user_id",
+                    "userId",
                   ],
-                  "destSchema": "users_to_group",
+                  "destSchema": "usersToGroups",
                   "sourceField": [
                     "id",
                   ],
                 },
               ],
             },
-            "users_to_group": {
+            "usersToGroups": {
               "group": [
                 {
                   "cardinality": "one",
                   "destField": [
                     "id",
                   ],
-                  "destSchema": "group",
+                  "destSchema": "groups",
                   "sourceField": [
-                    "group_id",
+                    "groupId",
                   ],
                 },
               ],
@@ -436,16 +444,16 @@ describe.concurrent("compile", () => {
                   "destField": [
                     "id",
                   ],
-                  "destSchema": "user",
+                  "destSchema": "users",
                   "sourceField": [
-                    "user_id",
+                    "userId",
                   ],
                 },
               ],
             },
           },
           "tables": {
-            "group": {
+            "groups": {
               "columns": {
                 "id": {
                   "customType": null,
@@ -458,12 +466,13 @@ describe.concurrent("compile", () => {
                   "type": "string",
                 },
               },
-              "name": "group",
+              "name": "groups",
               "primaryKey": [
                 "id",
               ],
+              "serverName": "group",
             },
-            "user": {
+            "users": {
               "columns": {
                 "id": {
                   "customType": null,
@@ -476,29 +485,33 @@ describe.concurrent("compile", () => {
                   "type": "string",
                 },
               },
-              "name": "user",
+              "name": "users",
               "primaryKey": [
                 "id",
               ],
+              "serverName": "user",
             },
-            "users_to_group": {
+            "usersToGroups": {
               "columns": {
-                "group_id": {
+                "groupId": {
                   "customType": null,
                   "optional": false,
+                  "serverName": "group_id",
                   "type": "string",
                 },
-                "user_id": {
+                "userId": {
                   "customType": null,
                   "optional": false,
+                  "serverName": "user_id",
                   "type": "string",
                 },
               },
-              "name": "users_to_group",
+              "name": "usersToGroups",
               "primaryKey": [
-                "user_id",
-                "group_id",
+                "userId",
+                "groupId",
               ],
+              "serverName": "users_to_group",
             },
           },
           "version": 1,
@@ -509,29 +522,28 @@ describe.concurrent("compile", () => {
 
   test("compile - many-to-many-subset", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("many-to-many-subset");
-    expect(result.schema.tables.user).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
       [
-        "user",
+        "users",
       ]
     `);
   });
 
   test("compile - many-to-many-subset-2", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("many-to-many-subset-2");
-    expect(result.schema.tables.user).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
       [
-        "user",
-        "users_to_group",
+        "users",
+        "usersToGroups",
       ]
     `);
   });
 
-  test("compile - many-to-many-self-referential", async ({ expect }: TestAPI) => {
+  test("compile - many-to-many-self-referential", async ({
+    expect,
+  }: TestAPI) => {
     const result = await runZeroBuildSchema("many-to-many-self-referential");
-    expect(result)
-      .toMatchInlineSnapshot(`
+    expect(result).toMatchInlineSnapshot(`
         {
           "permissions": {
             "friendship": {
@@ -552,7 +564,7 @@ describe.concurrent("compile", () => {
                   {
                     "cardinality": "many",
                     "destField": [
-                      "requesting_id",
+                      "requestingId",
                     ],
                     "destSchema": "friendship",
                     "sourceField": [
@@ -566,7 +578,7 @@ describe.concurrent("compile", () => {
                     ],
                     "destSchema": "user",
                     "sourceField": [
-                      "accepting_id",
+                      "acceptingId",
                     ],
                   },
                 ],
@@ -580,21 +592,23 @@ describe.concurrent("compile", () => {
                     "optional": false,
                     "type": "boolean",
                   },
-                  "accepting_id": {
+                  "acceptingId": {
                     "customType": null,
                     "optional": false,
+                    "serverName": "accepting_id",
                     "type": "string",
                   },
-                  "requesting_id": {
+                  "requestingId": {
                     "customType": null,
                     "optional": false,
+                    "serverName": "requesting_id",
                     "type": "string",
                   },
                 },
                 "name": "friendship",
                 "primaryKey": [
-                  "requesting_id",
-                  "accepting_id",
+                  "requestingId",
+                  "acceptingId",
                 ],
               },
               "user": {
@@ -624,10 +638,10 @@ describe.concurrent("compile", () => {
 
   test("compile - custom-schema", async ({ expect }: TestAPI) => {
     const result = await runZeroBuildSchema("custom-schema");
-    expect(result.schema.tables.user).toBeTruthy();
+    expect(result.schema.tables.users).toBeTruthy();
     expect(Object.keys(result.schema.tables)).toMatchInlineSnapshot(`
       [
-        "user",
+        "users",
       ]
     `);
   });

@@ -10,8 +10,8 @@ export const schema = createZeroSchema(manyToManySelfReferential, {
       name: true,
     },
     friendship: {
-      requesting_id: true,
-      accepting_id: true,
+      requestingId: true,
+      acceptingId: true,
       accepted: true,
     },
   },
@@ -21,10 +21,10 @@ export const schema = createZeroSchema(manyToManySelfReferential, {
         {
           sourceField: ["id"],
           destTable: "friendship",
-          destField: ["requesting_id"],
+          destField: ["requestingId"],
         },
         {
-          sourceField: ["accepting_id"],
+          sourceField: ["acceptingId"],
           destTable: "user",
           destField: ["id"],
         },

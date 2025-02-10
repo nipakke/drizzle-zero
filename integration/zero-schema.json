@@ -280,9 +280,7 @@
             "customType": null
           }
         },
-        "primaryKey": [
-          "id"
-        ]
+        "primaryKey": ["id"]
       },
       "friendship": {
         "name": "friendship",
@@ -303,10 +301,7 @@
             "customType": null
           }
         },
-        "primaryKey": [
-          "requesting_id",
-          "accepting_id"
-        ]
+        "primaryKey": ["requesting_id", "accepting_id"]
       },
       "medium": {
         "name": "medium",
@@ -332,9 +327,7 @@
             "customType": null
           }
         },
-        "primaryKey": [
-          "id"
-        ]
+        "primaryKey": ["id"]
       },
       "message": {
         "name": "message",
@@ -375,9 +368,7 @@
             "customType": null
           }
         },
-        "primaryKey": [
-          "id"
-        ]
+        "primaryKey": ["id"]
       },
       "user": {
         "name": "user",
@@ -403,65 +394,43 @@
             "customType": null
           }
         },
-        "primaryKey": [
-          "id"
-        ]
+        "primaryKey": ["id"]
       }
     },
     "relationships": {
       "user": {
         "mediums": [
           {
-            "sourceField": [
-              "id"
-            ],
-            "destField": [
-              "senderId"
-            ],
+            "sourceField": ["id"],
+            "destField": ["senderId"],
             "destSchema": "message",
             "cardinality": "many"
           },
           {
-            "sourceField": [
-              "mediumId"
-            ],
-            "destField": [
-              "id"
-            ],
+            "sourceField": ["mediumId"],
+            "destField": ["id"],
             "destSchema": "medium",
             "cardinality": "many"
           }
         ],
         "friends": [
           {
-            "sourceField": [
-              "id"
-            ],
-            "destField": [
-              "requesting_id"
-            ],
+            "sourceField": ["id"],
+            "destField": ["requesting_id"],
             "destSchema": "friendship",
             "cardinality": "many"
           },
           {
-            "sourceField": [
-              "accepting_id"
-            ],
-            "destField": [
-              "id"
-            ],
+            "sourceField": ["accepting_id"],
+            "destField": ["id"],
             "destSchema": "user",
             "cardinality": "many"
           }
         ],
         "messages": [
           {
-            "sourceField": [
-              "id"
-            ],
-            "destField": [
-              "senderId"
-            ],
+            "sourceField": ["id"],
+            "destField": ["senderId"],
             "destSchema": "message",
             "cardinality": "many"
           }
@@ -470,12 +439,8 @@
       "medium": {
         "messages": [
           {
-            "sourceField": [
-              "id"
-            ],
-            "destField": [
-              "mediumId"
-            ],
+            "sourceField": ["id"],
+            "destField": ["mediumId"],
             "destSchema": "message",
             "cardinality": "many"
           }
@@ -484,24 +449,16 @@
       "message": {
         "medium": [
           {
-            "sourceField": [
-              "mediumId"
-            ],
-            "destField": [
-              "id"
-            ],
+            "sourceField": ["mediumId"],
+            "destField": ["id"],
             "destSchema": "medium",
             "cardinality": "one"
           }
         ],
         "sender": [
           {
-            "sourceField": [
-              "senderId"
-            ],
-            "destField": [
-              "id"
-            ],
+            "sourceField": ["senderId"],
+            "destField": ["id"],
             "destSchema": "user",
             "cardinality": "one"
           }

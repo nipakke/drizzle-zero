@@ -5,43 +5,43 @@ import * as manyToMany from "./many-to-many.schema";
 export const schema = createZeroSchema(manyToMany, {
   version: 1,
   tables: {
-    user: {
+    users: {
       id: true,
       name: true,
     },
-    group: {
+    groups: {
       id: true,
       name: true,
     },
-    users_to_group: {
-      user_id: true,
-      group_id: true,
+    usersToGroups: {
+      userId: true,
+      groupId: true,
     },
   },
   manyToMany: {
-    user: {
-      groups: ["users_to_group", "group"],
+    users: {
+      groups: ["usersToGroups", "groups"],
     },
   },
 });
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {
-    group: {
+    groups: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
         delete: ANYONE_CAN,
       },
     },
-    user: {
+    users: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
         delete: ANYONE_CAN,
       },
     },
-    users_to_group: {
+    usersToGroups: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,

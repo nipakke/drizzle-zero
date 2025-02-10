@@ -38,6 +38,13 @@ export function expectTableSchemaDeepEqual<S extends TableSchema>(actual: S) {
         __testKey: "tableName",
         tableName: expected.name,
       });
+      expect({
+        __testKey: "serverName",
+        serverName: actual?.serverName,
+      }).toStrictEqual({
+        __testKey: "serverName",
+        serverName: expected?.serverName,
+      });
     },
   };
 }

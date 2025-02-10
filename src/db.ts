@@ -4,7 +4,7 @@ import { getTableConfig, PgTable } from "drizzle-orm/pg-core";
 
 /**
  * Get the table config for a given table.
- * 
+ *
  * @param table - The table to get the config for
  * @returns The table config
  */

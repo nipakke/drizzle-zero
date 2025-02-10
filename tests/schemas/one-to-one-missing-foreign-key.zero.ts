@@ -19,7 +19,7 @@ export const schema = createZeroSchema(oneToOneMissingForeignKey, {
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {
-    user: {
+    users: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,

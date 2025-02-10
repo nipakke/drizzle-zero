@@ -12,7 +12,6 @@ yarn add drizzle-zero
 pnpm add drizzle-zero
 ```
 
-
 ## Usage
 
 Here's an example of how to convert a Drizzle schema to a Zero schema with bidirectional relationships:
