@@ -272,8 +272,6 @@ const createZeroTableBuilder = <
             : false;
 
       if (column.primary) {
-
-
         primaryKeysFromColumns.push(String(key));
       }
 

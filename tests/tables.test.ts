@@ -41,6 +41,7 @@ import {
 import { createZeroTableBuilder, type ColumnsConfig } from "../src";
 import { assertEqual, expectTableSchemaDeepEqual } from "./utils";
 import { describe, test, TestAPI } from "vitest";
+import { sql } from "drizzle-orm";
 
 describe.concurrent("tables", () => {
   test("pg - basic", () => {
@@ -299,6 +300,14 @@ describe.concurrent("tables", () => {
       precision: timestamp({ precision: 2 }),
       timestampModeString: timestamp({ mode: "string" }),
       timestampModeDate: timestamp({ mode: "date" }),
+      timestampDefault: timestamp("timestamp_default", {
+        mode: "string",
+        precision: 3,
+        withTimezone: true,
+      })
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => sql`now()`),
     });
 
     const result = createZeroTableBuilder("events", testTable, {
@@ -310,6 +319,7 @@ describe.concurrent("tables", () => {
       precision: true,
       timestampModeString: true,
       timestampModeDate: true,
+      timestampDefault: true,
     });
 
     const expected = table("events")
@@ -322,6 +332,7 @@ describe.concurrent("tables", () => {
         precision: number().optional(),
         timestampModeString: number().optional(),
         timestampModeDate: number().optional(),
+        timestampDefault: number().from("timestamp_default").optional(),
       })
       .primaryKey("id");
 
@@ -751,6 +762,56 @@ describe.concurrent("tables", () => {
   });
 
   test("pg - custom schema", () => {
+    const customSchema = pgSchema("schema1");
+
+    const testTable = customSchema.table("customer", {
+      id: text().primaryKey(),
+      name: text().notNull(),
+    });
+
+    const result = createZeroTableBuilder("customKey", testTable, {
+      id: true,
+      name: true,
+    });
+
+    const expected = table("customKey")
+      .from("schema1.customer")
+      .columns({
+        id: string(),
+        name: string(),
+      })
+      .primaryKey("id");
+
+    expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
+    assertEqual(result.schema, expected.schema);
+  });
+
+  test("pg - custom schema with override", () => {
+    const customSchema = pgSchema("custom_schema");
+
+    const testTable = customSchema.table("products", {
+      id: text("custom_id").primaryKey(),
+      name: text("custom_name").notNull(),
+    });
+
+    const result = createZeroTableBuilder("testTable", testTable, {
+      id: true,
+      name: string<"new-name">(),
+    });
+
+    const expected = table("testTable")
+      .from("custom_schema.products")
+      .columns({
+        id: string().from("custom_id"),
+        name: string<"new-name">(),
+      })
+      .primaryKey("id");
+
+    expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
+    assertEqual(result.schema, expected.schema);
+  });
+
+  test("pg - custom schema with from", () => {
     const customSchema = pgSchema("custom_schema");
 
     const testTable = customSchema.table("products", {
