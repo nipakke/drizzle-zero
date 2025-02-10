@@ -43,44 +43,44 @@ const sharedColumns = {
     .$onUpdate(() => sql`now()`),
 } as const;
 
-export const userTable = pgTable("user", {
+export const user = pgTable("user", {
   ...sharedColumns,
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   partner: boolean("partner").notNull(),
 });
 
-export const userRelations = relations(userTable, ({ many }) => ({
-  messages: many(messageTable),
+export const userRelations = relations(user, ({ many }) => ({
+  messages: many(message),
 }));
 
-export const mediumTable = pgTable("medium", {
+export const medium = pgTable("medium", {
   ...sharedColumns,
   id: text("id").primaryKey(),
   name: text("name").notNull(),
 });
 
-export const mediumRelations = relations(mediumTable, ({ many }) => ({
-  messages: many(messageTable),
+export const mediumRelations = relations(medium, ({ many }) => ({
+  messages: many(message),
 }));
 
-export const messageTable = pgTable("message", {
+export const message = pgTable("message", {
   ...sharedColumns,
   id: text("id").primaryKey(),
-  senderId: text("senderId").references(() => userTable.id),
-  mediumId: text("mediumId").references(() => mediumTable.id),
+  senderId: text("senderId").references(() => user.id),
+  mediumId: text("mediumId").references(() => medium.id),
   body: text("body").notNull(),
   metadata: jsonb("metadata").$type<{ key: string }>().notNull(),
 });
 
-export const messageRelations = relations(messageTable, ({ one }) => ({
-  medium: one(mediumTable, {
-    fields: [messageTable.mediumId],
-    references: [mediumTable.id],
+export const messageRelations = relations(message, ({ one }) => ({
+  medium: one(medium, {
+    fields: [message.mediumId],
+    references: [medium.id],
   }),
-  sender: one(userTable, {
-    fields: [messageTable.senderId],
-    references: [userTable.id],
+  sender: one(user, {
+    fields: [message.senderId],
+    references: [user.id],
   }),
 }));
 
@@ -90,7 +90,7 @@ export const statusEnum = pgEnum("status_type", [
   "pending",
 ]);
 
-export const allTypesTable = pgTable("all_types", {
+export const allTypes = pgTable("all_types", {
   ...sharedColumns,
   id: text("id").primaryKey(),
   smallintField: smallint("smallint").notNull(),
@@ -139,15 +139,15 @@ export const allTypesTable = pgTable("all_types", {
   optionalUuid: uuid("optional_uuid"),
 });
 
-export const friendshipTable = pgTable(
+export const friendship = pgTable(
   "friendship",
   {
     requestingId: text("requesting_id")
       .notNull()
-      .references(() => userTable.id),
+      .references(() => user.id),
     acceptingId: text("accepting_id")
       .notNull()
-      .references(() => userTable.id),
+      .references(() => user.id),
     accepted: boolean("accepted").notNull(),
   },
   (t) => [primaryKey({ columns: [t.requestingId, t.acceptingId] })],

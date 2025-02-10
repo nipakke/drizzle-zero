@@ -272,11 +272,7 @@ const createZeroTableBuilder = <
             : false;
 
       if (column.primary) {
-        if (isColumnOptional) {
-          throw new Error(
-            `drizzle-zero: Primary key column ${column.name} cannot have a default value defined on the database level and cannot be optional, since auto-incrementing primary keys can cause race conditions with concurrent inserts. See the Zero docs for more information.`,
-          );
-        }
+
 
         primaryKeysFromColumns.push(String(key));
       }

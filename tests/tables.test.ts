@@ -955,24 +955,6 @@ describe.concurrent("tables", () => {
     );
   });
 
-  test("pg - auto-increment primary key not supported", ({
-    expect,
-  }: TestAPI) => {
-    const testTable = pgTable("test", {
-      id: serial().primaryKey(),
-      name: text(),
-    });
-
-    expect(() =>
-      createZeroTableBuilder("test", testTable, {
-        id: true,
-        name: true,
-      }),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: drizzle-zero: Primary key column id cannot have a default value defined on the database level and cannot be optional, since auto-incrementing primary keys can cause race conditions with concurrent inserts. See the Zero docs for more information.]`,
-    );
-  });
-
   test("pg - fail if table is not pg", ({ expect }: TestAPI) => {
     const testTable = mysqlTable("test", {
       id: textMysql().primaryKey(),

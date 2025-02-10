@@ -1,5 +1,5 @@
 {
-  "id": "20ab265f-8e1c-470b-935e-b43ea5be9c4f",
+  "id": "c098a4a2-4a8d-4a92-abdb-562178857c5f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -296,8 +296,12 @@
           "name": "friendship_requesting_id_user_id_fk",
           "tableFrom": "friendship",
           "tableTo": "user",
-          "columnsFrom": ["requesting_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "requesting_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -305,8 +309,12 @@
           "name": "friendship_accepting_id_user_id_fk",
           "tableFrom": "friendship",
           "tableTo": "user",
-          "columnsFrom": ["accepting_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "accepting_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -314,7 +322,10 @@
       "compositePrimaryKeys": {
         "friendship_requesting_id_accepting_id_pk": {
           "name": "friendship_requesting_id_accepting_id_pk",
-          "columns": ["requesting_id", "accepting_id"]
+          "columns": [
+            "requesting_id",
+            "accepting_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -416,8 +427,12 @@
           "name": "message_senderId_user_id_fk",
           "tableFrom": "message",
           "tableTo": "user",
-          "columnsFrom": ["senderId"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "senderId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -425,8 +440,12 @@
           "name": "message_mediumId_medium_id_fk",
           "tableFrom": "message",
           "tableTo": "medium",
-          "columnsFrom": ["mediumId"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "mediumId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -524,7 +543,11 @@
     "public.status_type": {
       "name": "status_type",
       "schema": "public",
-      "values": ["active", "inactive", "pending"]
+      "values": [
+        "active",
+        "inactive",
+        "pending"
+      ]
     }
   },
   "schemas": {

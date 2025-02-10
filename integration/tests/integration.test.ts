@@ -162,7 +162,7 @@ describe("types", () => {
   test("can query all types", async () => {
     const zero = await getNewZero();
 
-    const q = zero.query.all_types.one();
+    const q = zero.query.allTypes.one();
 
     const preloadedAllTypes = await q.preload();
     await preloadedAllTypes.complete;
@@ -170,49 +170,52 @@ describe("types", () => {
     const result = await q.run();
 
     expect(result?.id).toStrictEqual("1");
-    expect(result?.smallint).toStrictEqual(1);
-    expect(result?.integer).toStrictEqual(2);
-    expect(result?.bigint).toStrictEqual(95807);
-    expect(result?.bigint_number).toStrictEqual(444);
-    expect(result?.numeric).toStrictEqual(8.8);
-    expect(result?.decimal).toStrictEqual(9.9);
-    expect(result?.real).toStrictEqual(9);
-    expect(result?.double_precision).toStrictEqual(10);
-    expect(result?.text).toStrictEqual("text");
-    expect(result?.char).toStrictEqual("c");
-    expect(typeof result?.uuid).toStrictEqual("string");
-    expect(result?.varchar).toStrictEqual("varchar");
-    expect(result?.boolean).toStrictEqual(true);
-    expect(typeof result?.timestamp).toStrictEqual("number");
-    expect(typeof result?.timestamp_tz).toStrictEqual("number");
-    expect(typeof result?.timestamp_mode_date).toStrictEqual("number");
-    expect(typeof result?.timestamp_mode_string).toStrictEqual("number");
-    expect(typeof result?.date).toStrictEqual("number");
-    expect(result?.json).toStrictEqual({ key: "value" });
-    expect(result?.jsonb).toStrictEqual({ key: "value" });
-    expect(result?.typed_json).toStrictEqual({ theme: "light", fontSize: 16 });
-    expect(result?.status).toStrictEqual("pending");
+    expect(result?.smallintField).toStrictEqual(1);
+    expect(result?.integerField).toStrictEqual(2);
+    expect(result?.bigintField).toStrictEqual(95807);
+    expect(result?.bigintNumberField).toStrictEqual(444);
+    expect(result?.numericField).toStrictEqual(8.8);
+    expect(result?.decimalField).toStrictEqual(9.9);
+    expect(result?.realField).toStrictEqual(9);
+    expect(result?.doublePrecisionField).toStrictEqual(10);
+    expect(result?.textField).toStrictEqual("text");
+    expect(result?.charField).toStrictEqual("c");
+    expect(typeof result?.uuidField).toStrictEqual("string");
+    expect(result?.varcharField).toStrictEqual("varchar");
+    expect(result?.booleanField).toStrictEqual(true);
+    expect(typeof result?.timestampField).toStrictEqual("number");
+    expect(typeof result?.timestampTzField).toStrictEqual("number");
+    expect(typeof result?.timestampModeDate).toStrictEqual("number");
+    expect(typeof result?.timestampModeString).toStrictEqual("number");
+    expect(typeof result?.dateField).toStrictEqual("number");
+    expect(result?.jsonField).toStrictEqual({ key: "value" });
+    expect(result?.jsonbField).toStrictEqual({ key: "value" });
+    expect(result?.typedJsonField).toStrictEqual({
+      theme: "light",
+      fontSize: 16,
+    });
+    expect(result?.statusField).toStrictEqual("pending");
 
-    expect(result?.smallserial).toStrictEqual(1);
-    expect(result?.serial).toStrictEqual(1);
-    expect(result?.bigserial).toStrictEqual(1);
+    expect(result?.smallSerialField).toStrictEqual(1);
+    expect(result?.serialField).toStrictEqual(1);
+    expect(result?.bigSerialField).toStrictEqual(1);
 
-    expect(result?.optional_smallint).toBeNull();
-    expect(result?.optional_integer).toBeNull();
-    expect(result?.optional_bigint).toBeNull();
-    expect(result?.optional_numeric).toBeNull();
-    expect(result?.optional_real).toBeNull();
-    expect(result?.optional_double_precision).toBeNull();
-    expect(result?.optional_text).toBeNull();
-    expect(result?.optional_boolean).toStrictEqual(false);
-    expect(result?.optional_timestamp).toBeNull();
-    expect(result?.optional_json).toBeNull();
-    expect(result?.optional_enum).toBeNull();
-    expect(result?.optional_varchar).toBeNull();
-    expect(result?.optional_uuid).toBeNull();
-    expect(result?.optional_enum).toBeNull();
-    expect(result?.optional_varchar).toBeNull();
-    expect(result?.optional_uuid).toBeNull();
+    expect(result?.optionalSmallint).toBeNull();
+    expect(result?.optionalInteger).toBeNull();
+    expect(result?.optionalBigint).toBeNull();
+    expect(result?.optionalNumeric).toBeNull();
+    expect(result?.optionalReal).toBeNull();
+    expect(result?.optionalDoublePrecision).toBeNull();
+    expect(result?.optionalText).toBeNull();
+    expect(result?.optionalBoolean).toStrictEqual(false);
+    expect(result?.optionalTimestamp).toBeNull();
+    expect(result?.optionalJson).toBeNull();
+    expect(result?.optionalEnum).toBeNull();
+    expect(result?.optionalVarchar).toBeNull();
+    expect(result?.optionalUuid).toBeNull();
+    expect(result?.optionalEnum).toBeNull();
+    expect(result?.optionalVarchar).toBeNull();
+    expect(result?.optionalUuid).toBeNull();
 
     preloadedAllTypes.cleanup();
   });
@@ -222,33 +225,33 @@ describe("types", () => {
 
     const currentDate = new Date();
 
-    await zero.mutate.all_types.insert({
+    await zero.mutate.allTypes.insert({
       id: "1011",
-      smallint: 22,
-      integer: 23,
-      bigint: 24,
-      bigint_number: 444,
-      numeric: 25.8,
-      decimal: 26.9,
-      real: 27,
-      double_precision: 28,
-      text: "text2",
-      char: "f",
-      uuid: randomUUID(),
-      varchar: "varchar2",
-      boolean: true,
-      timestamp: currentDate.getTime(),
-      timestamp_tz: currentDate.getTime(),
-      timestamp_mode_date: currentDate.getTime(),
-      timestamp_mode_string: currentDate.getTime(),
-      date: currentDate.getTime(),
-      json: { key: "value" },
-      jsonb: { key: "value" },
-      typed_json: { theme: "light", fontSize: 16 },
-      status: "active",
+      smallintField: 22,
+      integerField: 23,
+      bigintField: 24,
+      bigintNumberField: 444,
+      numericField: 25.8,
+      decimalField: 26.9,
+      realField: 27,
+      doublePrecisionField: 28,
+      textField: "text2",
+      charField: "f",
+      uuidField: randomUUID(),
+      varcharField: "varchar2",
+      booleanField: true,
+      timestampField: currentDate.getTime(),
+      timestampTzField: currentDate.getTime(),
+      timestampModeDate: currentDate.getTime(),
+      timestampModeString: currentDate.getTime(),
+      dateField: currentDate.getTime(),
+      jsonField: { key: "value" },
+      jsonbField: { key: "value" },
+      typedJsonField: { theme: "light", fontSize: 16 },
+      statusField: "active",
     });
 
-    const q = zero.query.all_types.where((query) =>
+    const q = zero.query.allTypes.where((query) =>
       query.cmp("id", "=", "1011"),
     );
 
@@ -258,32 +261,35 @@ describe("types", () => {
     const result = await q.one().run();
 
     expect(result?.id).toStrictEqual("1011");
-    expect(result?.smallint).toStrictEqual(22);
-    expect(result?.integer).toStrictEqual(23);
-    expect(result?.bigint).toStrictEqual(24);
-    expect(result?.bigint_number).toStrictEqual(444);
-    expect(result?.numeric).toStrictEqual(25.8);
-    expect(result?.decimal).toStrictEqual(26.9);
-    expect(result?.real).toStrictEqual(27);
-    expect(result?.double_precision).toStrictEqual(28);
-    expect(result?.text).toStrictEqual("text2");
-    expect(result?.char).toStrictEqual("f");
-    expect(typeof result?.uuid).toStrictEqual("string");
-    expect(result?.varchar).toStrictEqual("varchar2");
-    expect(result?.boolean).toStrictEqual(true);
-    expect(result?.timestamp).toStrictEqual(currentDate.getTime());
-    expect(result?.timestamp_tz).toStrictEqual(currentDate.getTime());
-    expect(result?.timestamp_mode_date).toStrictEqual(currentDate.getTime());
-    expect(result?.timestamp_mode_string).toStrictEqual(currentDate.getTime());
-    expect(result?.date).toBeDefined();
-    expect(result?.json).toStrictEqual({ key: "value" });
-    expect(result?.jsonb).toStrictEqual({ key: "value" });
-    expect(result?.typed_json).toStrictEqual({ theme: "light", fontSize: 16 });
-    expect(result?.status).toStrictEqual("active");
+    expect(result?.smallintField).toStrictEqual(22);
+    expect(result?.integerField).toStrictEqual(23);
+    expect(result?.bigintField).toStrictEqual(24);
+    expect(result?.bigintNumberField).toStrictEqual(444);
+    expect(result?.numericField).toStrictEqual(25.8);
+    expect(result?.decimalField).toStrictEqual(26.9);
+    expect(result?.realField).toStrictEqual(27);
+    expect(result?.doublePrecisionField).toStrictEqual(28);
+    expect(result?.textField).toStrictEqual("text2");
+    expect(result?.charField).toStrictEqual("f");
+    expect(typeof result?.uuidField).toStrictEqual("string");
+    expect(result?.varcharField).toStrictEqual("varchar2");
+    expect(result?.booleanField).toStrictEqual(true);
+    expect(result?.timestampField).toStrictEqual(currentDate.getTime());
+    expect(result?.timestampTzField).toStrictEqual(currentDate.getTime());
+    expect(result?.timestampModeDate).toStrictEqual(currentDate.getTime());
+    expect(result?.timestampModeString).toStrictEqual(currentDate.getTime());
+    expect(result?.dateField).toBeDefined();
+    expect(result?.jsonField).toStrictEqual({ key: "value" });
+    expect(result?.jsonbField).toStrictEqual({ key: "value" });
+    expect(result?.typedJsonField).toStrictEqual({
+      theme: "light",
+      fontSize: 16,
+    });
+    expect(result?.statusField).toStrictEqual("active");
 
     preloadedAllTypes.cleanup();
 
-    const dbResult = await db.query.allTypesTable.findFirst({
+    const dbResult = await db.query.allTypes.findFirst({
       where: (table, { eq }) => eq(table.id, "1011"),
     });
 

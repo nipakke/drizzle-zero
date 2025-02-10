@@ -59,33 +59,30 @@ export const schema = createZeroSchema(drizzleSchema, {
   // once the migration has been run.
 
   // All tables/columns must be defined, but can be set to false to exclude them from the Zero schema.
+  // Column names match your Drizzle schema definitions
   tables: {
     // this can be set to false
     // e.g. user: false,
-    user: {
+    users: {
       id: true,
       name: true,
     },
-    post: {
+    posts: {
       // or this can be set to false
       // e.g. id: false,
       id: true,
       content: true,
-      author_id: true,
+      // Use the JavaScript field name (authorId), not the DB column name (author_id)
+      authorId: true,
     },
   },
 });
 
 // Define permissions with the inferred types from Drizzle
 type Schema = typeof schema;
-type User = Row<typeof schema.tables.user>;
+type User = Row<typeof schema.tables.users>;
 
-export const permissions = definePermissions<AuthData, Schema>(schema, () => {
-  const allowIfUserIsSelf = (
-    authData: AuthData,
-    { cmp }: ExpressionBuilder<Schema, "user">,
-  ) => cmp("id", "=", authData.sub);
-
+export const permissions = definePermissions<{}, Schema>(schema, () => {
   // ...further permissions definitions
 });
 ```
@@ -131,9 +128,9 @@ export const schema = createZeroSchema(drizzleSchema, {
       id: true,
       name: true,
     },
-    users_to_group: {
-      user_id: true,
-      group_id: true,
+    usersToGroup: {
+      userId: true,
+      groupId: true,
     },
     group: {
       id: true,
@@ -143,7 +140,7 @@ export const schema = createZeroSchema(drizzleSchema, {
   manyToMany: {
     user: {
       // Simple format: [junction table, target table]
-      groups: ["users_to_group", "group"],
+      groups: ["usersToGroup", "group"],
     },
   },
 });
@@ -180,8 +177,8 @@ export const schema = createZeroSchema(drizzleSchema, {
       name: true,
     },
     friendship: {
-      requesting_id: true,
-      accepting_id: true,
+      requestingId: true,
+      acceptingId: true,
     },
   },
   manyToMany: {
@@ -191,10 +188,10 @@ export const schema = createZeroSchema(drizzleSchema, {
         {
           sourceField: ["id"],
           destTable: "friendship",
-          destField: ["requesting_id"],
+          destField: ["requestingId"],
         },
         {
-          sourceField: ["accepting_id"],
+          sourceField: ["acceptingId"],
           destTable: "user",
           destField: ["id"],
         },
@@ -215,6 +212,7 @@ export const schema = createZeroSchema(drizzleSchema, {
   - One-to-many relationships
   - Many-to-many relationships with simple or extended configuration
   - Self-referential relationships
+- Handles custom schemas and column mappings
 
 ## License
 
