@@ -5,16 +5,16 @@ import * as oneToOne2 from "./one-to-one-2.schema";
 export const schema = createZeroSchema(oneToOne2, {
   version: 2.1,
   tables: {
-    user: {
+    userTable: {
       id: true,
       name: true,
       partner: true,
     },
-    medium: {
+    mediumTable: {
       id: true,
       name: true,
     },
-    message: {
+    messageTable: {
       id: true,
       senderId: true,
       mediumId: true,
@@ -22,29 +22,29 @@ export const schema = createZeroSchema(oneToOne2, {
     },
   },
   manyToMany: {
-    user: {
-      mediums: ["message", "medium"],
+    userTable: {
+      mediums: ["messageTable", "mediumTable"],
     },
   },
 });
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {
-    medium: {
+    mediumTable: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
         delete: ANYONE_CAN,
       },
     },
-    message: {
+    messageTable: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
         delete: ANYONE_CAN,
       },
     },
-    user: {
+    userTable: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,

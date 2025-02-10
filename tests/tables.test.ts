@@ -50,13 +50,14 @@ describe.concurrent("tables", () => {
       json: jsonb().notNull(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("basic", testTable, {
       id: true,
       name: true,
       json: true,
     });
 
-    const expected = table("test")
+    const expected = table("basic")
+      .from("test")
       .columns({
         id: string(),
         name: string(),
@@ -74,17 +75,18 @@ describe.concurrent("tables", () => {
       name: text("custom_name").notNull(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
-      custom_id: true,
-      custom_name: true,
+    const result = createZeroTableBuilder("named", testTable, {
+      id: true,
+      name: true,
     });
 
-    const expected = table("test")
+    const expected = table("named")
+      .from("test")
       .columns({
-        custom_id: string(),
-        custom_name: string(),
+        id: string().from("custom_id"),
+        name: string().from("custom_name"),
       })
-      .primaryKey("custom_id");
+      .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
     assertEqual(result.schema, expected.schema);
@@ -96,12 +98,13 @@ describe.concurrent("tables", () => {
       json: jsonb().$type<{ foo: string }>().notNull(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("custom", testTable, {
       id: string(),
       json: true,
     });
 
-    const expected = table("test")
+    const expected = table("custom")
+      .from("test")
       .columns({
         id: string(),
         json: json<{ foo: string }>(),
@@ -120,14 +123,15 @@ describe.concurrent("tables", () => {
       metadata: jsonb(), // optional
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("optional", testTable, {
       id: true,
       name: true,
       description: true,
       metadata: true,
     });
 
-    const expected = table("test")
+    const expected = table("optional")
+      .from("test")
       .columns({
         id: string(),
         name: string().optional(),
@@ -155,13 +159,14 @@ describe.concurrent("tables", () => {
       settings: jsonb().$type<Record<string, boolean>>(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("complex", testTable, {
       id: true,
       metadata: true,
       settings: true,
     });
 
-    const expected = table("users")
+    const expected = table("complex")
+      .from("users")
       .columns({
         id: string(),
         metadata: json<UserMetadata>(),
@@ -181,14 +186,15 @@ describe.concurrent("tables", () => {
       metadata: jsonb().notNull(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("partial", testTable, {
       id: true,
       metadata: true,
       name: false,
       age: false,
     });
 
-    const expected = table("test")
+    const expected = table("partial")
+      .from("test")
       .columns({
         id: string(),
         metadata: json(),
@@ -207,14 +213,15 @@ describe.concurrent("tables", () => {
       metadata: jsonb().notNull(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("omit", testTable, {
       id: true,
       name: true,
       metadata: false,
       age: false,
     });
 
-    const expected = table("test")
+    const expected = table("omit")
+      .from("test")
       .columns({
         id: string(),
         name: string(),
@@ -233,14 +240,15 @@ describe.concurrent("tables", () => {
       metadata: jsonb().notNull(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("false", testTable, {
       id: true,
       metadata: true,
       age: false,
       name: false,
     });
 
-    const expected = table("test")
+    const expected = table("false")
+      .from("test")
       .columns({
         id: string(),
         metadata: json(),
@@ -262,13 +270,14 @@ describe.concurrent("tables", () => {
       (t) => [primaryKey({ columns: [t.userId, t.orgId] })],
     );
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("composite", testTable, {
       userId: true,
       orgId: true,
       role: true,
     });
 
-    const expected = table("composite_test")
+    const expected = table("composite")
+      .from("composite_test")
       .columns({
         userId: string(),
         orgId: string(),
@@ -292,7 +301,7 @@ describe.concurrent("tables", () => {
       timestampModeDate: timestamp({ mode: "date" }),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("events", testTable, {
       id: true,
       createdAt: true,
       updatedAt: true,
@@ -331,19 +340,21 @@ describe.concurrent("tables", () => {
       }>(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("users", testTable, {
       id: true,
-      first_name: true,
-      last_name: true,
-      profile_data: true,
+      firstName: true,
+      lastName: true,
+      profileData: true,
     });
 
     const expected = table("users")
       .columns({
         id: string(),
-        first_name: string(),
-        last_name: string(),
-        profile_data: json<{ bio: string; avatar: string }>().optional(),
+        firstName: string().from("first_name"),
+        lastName: string().from("last_name"),
+        profileData: json<{ bio: string; avatar: string }>()
+          .from("profile_data")
+          .optional(),
       })
       .primaryKey("id");
 
@@ -360,13 +371,14 @@ describe.concurrent("tables", () => {
       backupRole: roleEnum(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("enum", testTable, {
       id: true,
       role: true,
       backupRole: true,
     });
 
-    const expected = table("users")
+    const expected = table("enum")
+      .from("users")
       .columns({
         id: string(),
         role: enumeration<"admin" | "user" | "guest">(),
@@ -387,7 +399,7 @@ describe.concurrent("tables", () => {
       mood: moodEnum().notNull(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("users", testTable, {
       id: true,
       name: true,
       mood: true,
@@ -459,19 +471,19 @@ describe.concurrent("tables", () => {
       optionalEnum: statusEnum("optional_enum"),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("all_types", testTable, {
       id: true,
       smallint: true,
       integer: true,
       bigint: true,
       bigint_number: true,
-      smallserial: true,
-      regular_serial: true,
-      bigserial: true,
+      smallSerial: true,
+      regularSerial: true,
+      bigSerial: true,
       numeric: true,
       decimal: true,
       real: true,
-      double_precision: true,
+      doublePrecision: true,
       name: true,
       code: true,
       identifier: true,
@@ -484,19 +496,19 @@ describe.concurrent("tables", () => {
       metadata: true,
       settings: true,
       status: true,
-      optional_smallint: true,
-      optional_integer: true,
-      optional_bigint: true,
-      optional_numeric: true,
-      optional_decimal: true,
-      optional_real: true,
-      optional_double_precision: true,
-      optional_text: true,
-      optional_boolean: true,
-      optional_timestamp: true,
-      optional_date: true,
-      optional_json: true,
-      optional_enum: true,
+      optionalSmallint: true,
+      optionalInteger: true,
+      optionalBigint: true,
+      optionalNumeric: true,
+      optionalDecimal: true,
+      optionalReal: true,
+      optionalDoublePrecision: true,
+      optionalText: true,
+      optionalBoolean: true,
+      optionalTimestamp: true,
+      optionalDate: true,
+      optionalJson: true,
+      optionalEnum: true,
     });
 
     const expected = table("all_types")
@@ -506,13 +518,13 @@ describe.concurrent("tables", () => {
         integer: number(),
         bigint: number(),
         bigint_number: number(),
-        smallserial: number().optional(),
-        regular_serial: number().optional(),
-        bigserial: number().optional(),
+        smallSerial: number().from("smallserial").optional(),
+        regularSerial: number().from("regular_serial").optional(),
+        bigSerial: number().from("bigserial").optional(),
         numeric: number(),
         decimal: number(),
         real: number(),
-        double_precision: number(),
+        doublePrecision: number().from("double_precision"),
         name: string(),
         code: string(),
         identifier: string(),
@@ -525,21 +537,23 @@ describe.concurrent("tables", () => {
         metadata: json(),
         settings: json<{ theme: string; fontSize: number }>(),
         status: enumeration<"active" | "inactive" | "pending">(),
-        optional_smallint: number().optional(),
-        optional_integer: number().optional(),
-        optional_bigint: number().optional(),
-        optional_numeric: number().optional(),
-        optional_decimal: number().optional(),
-        optional_real: number().optional(),
-        optional_double_precision: number().optional(),
-        optional_text: string().optional(),
-        optional_boolean: boolean().optional(),
-        optional_timestamp: number().optional(),
-        optional_date: number().optional(),
-        optional_json: json().optional(),
-        optional_enum: enumeration<
-          "active" | "inactive" | "pending"
-        >().optional(),
+        optionalSmallint: number().optional().from("optional_smallint"),
+        optionalInteger: number().optional().from("optional_integer"),
+        optionalBigint: number().optional().from("optional_bigint"),
+        optionalNumeric: number().optional().from("optional_numeric"),
+        optionalDecimal: number().optional().from("optional_decimal"),
+        optionalReal: number().optional().from("optional_real"),
+        optionalDoublePrecision: number()
+          .optional()
+          .from("optional_double_precision"),
+        optionalText: string().optional().from("optional_text"),
+        optionalBoolean: boolean().optional().from("optional_boolean"),
+        optionalTimestamp: number().optional().from("optional_timestamp"),
+        optionalDate: number().optional().from("optional_date"),
+        optionalJson: json().optional().from("optional_json"),
+        optionalEnum: enumeration<"active" | "inactive" | "pending">()
+          .optional()
+          .from("optional_enum"),
       })
       .primaryKey("id");
 
@@ -553,12 +567,13 @@ describe.concurrent("tables", () => {
       metadata: jsonb().notNull(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("override", testTable, {
       id: true,
       metadata: json<{ amount: number; currency: string }>().optional(),
     });
 
-    const expected = table("metrics")
+    const expected = table("override")
+      .from("metrics")
       .columns({
         id: string(),
         metadata: json<{ amount: number; currency: string }>().optional(),
@@ -573,15 +588,15 @@ describe.concurrent("tables", () => {
     const testTable = pgTable(
       "order_items",
       {
-        orderId: text().notNull(),
-        productId: text().notNull(),
+        orderId: text("order_id").notNull(),
+        productId: text("product_id").notNull(),
         quantity: integer().notNull(),
         price: numeric().notNull(),
       },
       (t) => [primaryKey({ columns: [t.orderId, t.productId] })],
     );
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("order_items", testTable, {
       orderId: true,
       productId: true,
       quantity: true,
@@ -590,8 +605,8 @@ describe.concurrent("tables", () => {
 
     const expected = table("order_items")
       .columns({
-        orderId: string(),
-        productId: string(),
+        orderId: string().from("order_id"),
+        productId: string().from("product_id"),
         quantity: number(),
         price: number(),
       })
@@ -616,7 +631,7 @@ describe.concurrent("tables", () => {
       ),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("items", testTable, {
       id: true,
       name: true,
       isActive: true,
@@ -663,7 +678,7 @@ describe.concurrent("tables", () => {
         .notNull(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("configs", testTable, {
       id: true,
       requiredJson: true,
       optionalJson: true,
@@ -691,7 +706,7 @@ describe.concurrent("tables", () => {
       metadata: jsonb().$type<Record<string, unknown>>(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("products", testTable, {
       id: true,
       name: string<"typed-value">(),
       description: string<"typed-value-2">().optional(),
@@ -716,18 +731,18 @@ describe.concurrent("tables", () => {
 
     const testTable = pgTable("products", {
       id: text().primaryKey(),
-      status: enumType("enum_status"),
+      status: enumType("enum_status").notNull(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
+    const result = createZeroTableBuilder("products", testTable, {
       id: true,
-      enum_status: enumeration<"active" | "inactive">(),
+      status: enumeration<"active" | "inactive">().from("enum_status"),
     });
 
     const expected = table("products")
       .columns({
         id: string(),
-        enum_status: enumeration<"active" | "inactive">(),
+        status: enumeration<"active" | "inactive">().from("enum_status"),
       })
       .primaryKey("id");
 
@@ -743,17 +758,18 @@ describe.concurrent("tables", () => {
       name: text("custom_name").notNull(),
     });
 
-    const result = createZeroTableBuilder(testTable, {
-      custom_id: true,
-      custom_name: true,
+    const result = createZeroTableBuilder("testTable", testTable, {
+      id: true,
+      name: true,
     });
 
-    const expected = table("products")
+    const expected = table("testTable")
+      .from("custom_schema.products")
       .columns({
-        custom_id: string(),
-        custom_name: string(),
+        id: string().from("custom_id"),
+        name: string().from("custom_name"),
       })
-      .primaryKey("custom_id");
+      .primaryKey("id");
 
     expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
     assertEqual(result.schema, expected.schema);
@@ -766,7 +782,7 @@ describe.concurrent("tables", () => {
     });
 
     expect(() =>
-      createZeroTableBuilder(testTable, {
+      createZeroTableBuilder("test", testTable, {
         id: true,
         invalid: "someinvalidtype",
       } as unknown as ColumnsConfig<typeof testTable>),
@@ -782,7 +798,7 @@ describe.concurrent("tables", () => {
     });
 
     expect(() =>
-      createZeroTableBuilder(testTable, {
+      createZeroTableBuilder("test", testTable, {
         id: true,
         invalid: "someinvalidtype",
       } as unknown as ColumnsConfig<typeof testTable>),
@@ -799,7 +815,7 @@ describe.concurrent("tables", () => {
     });
 
     expect(() =>
-      createZeroTableBuilder(testTable, {
+      createZeroTableBuilder("test", testTable, {
         id: true,
         tags: true,
         scores: true,
@@ -816,7 +832,7 @@ describe.concurrent("tables", () => {
     });
 
     expect(() =>
-      createZeroTableBuilder(testTable, {
+      createZeroTableBuilder("test", testTable, {
         id: true,
         interval: true,
       }),
@@ -832,7 +848,7 @@ describe.concurrent("tables", () => {
     });
 
     expect(() =>
-      createZeroTableBuilder(testTable, {
+      createZeroTableBuilder("test", testTable, {
         id: true,
         cidr: true,
       }),
@@ -848,7 +864,7 @@ describe.concurrent("tables", () => {
     });
 
     expect(() =>
-      createZeroTableBuilder(testTable, {
+      createZeroTableBuilder("test", testTable, {
         id: true,
         macaddr: true,
       }),
@@ -864,7 +880,7 @@ describe.concurrent("tables", () => {
     });
 
     expect(() =>
-      createZeroTableBuilder(testTable, {
+      createZeroTableBuilder("test", testTable, {
         id: true,
         inet: true,
       }),
@@ -880,7 +896,7 @@ describe.concurrent("tables", () => {
     });
 
     expect(() =>
-      createZeroTableBuilder(testTable, {
+      createZeroTableBuilder("test", testTable, {
         id: true,
         point: true,
       }),
@@ -896,7 +912,7 @@ describe.concurrent("tables", () => {
     });
 
     expect(() =>
-      createZeroTableBuilder(testTable, {
+      createZeroTableBuilder("test", testTable, {
         id: true,
         line: true,
       }),
@@ -916,7 +932,7 @@ describe.concurrent("tables", () => {
     });
 
     expect(() =>
-      createZeroTableBuilder(testTable, {
+      createZeroTableBuilder("test", testTable, {
         id: true,
         location: true,
       }),
@@ -931,27 +947,11 @@ describe.concurrent("tables", () => {
     });
 
     expect(() =>
-      createZeroTableBuilder(testTable, {
+      createZeroTableBuilder("test", testTable, {
         id: true,
       }),
     ).toThrowErrorMatchingInlineSnapshot(
       `[Error: drizzle-zero: No primary keys found in table - test. Did you forget to define a primary key?]`,
-    );
-  });
-
-  test("pg - auto-increment primary key not supported", ({ expect }: TestAPI) => {
-    const testTable = pgTable("test", {
-      id: serial().primaryKey(),
-      name: text(),
-    });
-
-    expect(() =>
-      createZeroTableBuilder(testTable, {
-        id: true,
-        name: true,
-      }),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: drizzle-zero: Primary key column id cannot have a default value defined on the database level and cannot be optional, since auto-incrementing primary keys can cause race conditions with concurrent inserts. See the Zero docs for more information.]`,
     );
   });
 
@@ -962,7 +962,7 @@ describe.concurrent("tables", () => {
     });
 
     expect(() =>
-      createZeroTableBuilder(testTable, {
+      createZeroTableBuilder("test", testTable, {
         id: true,
         name: true,
       }),

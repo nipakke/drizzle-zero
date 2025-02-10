@@ -18,12 +18,10 @@ import {
   type ZeroTypeToTypescriptType,
 } from "./drizzle-to-zero";
 import type {
-  ColumnName,
   ColumnNames,
   Columns,
   FindPrimaryKeyFromTable,
   Flatten,
-  TableName,
 } from "./types";
 import { typedEntries } from "./util";
 
@@ -33,9 +31,7 @@ import { typedEntries } from "./util";
  * @template K The column name to filter by
  */
 type ColumnDefinition<TTable extends Table, K extends ColumnNames<TTable>> = {
-  [C in keyof Columns<TTable>]: ColumnName<Columns<TTable>[C]> extends K
-    ? Columns<TTable>[C]
-    : never;
+  [C in keyof Columns<TTable>]: C extends K ? Columns<TTable>[C] : never;
 }[keyof Columns<TTable>];
 
 /**
@@ -54,19 +50,21 @@ type TypeOverride<TCustomType> = {
  * Configuration for specifying which columns to include in the Zero schema and how to map them.
  * @template TTable The Drizzle table type
  */
-export type ColumnsConfig<TTable extends Table> = false | {
-  /**
-   * The columns to include in the Zero schema.
-   * Set to true to use default mapping, or provide a TypeOverride for custom mapping.
-   */
-  readonly [KColumn in ColumnNames<TTable>]:
-    | boolean
-    | ColumnBuilder<
-        TypeOverride<
-          ZeroTypeToTypescriptType[DrizzleDataTypeToZeroType[Columns<TTable>[KColumn]["dataType"]]]
-        >
-      >;
-};
+export type ColumnsConfig<TTable extends Table> =
+  | false
+  | Flatten<{
+      /**
+       * The columns to include in the Zero schema.
+       * Set to true to use default mapping, or provide a TypeOverride for custom mapping.
+       */
+      readonly [KColumn in ColumnNames<TTable>]:
+        | boolean
+        | ColumnBuilder<
+            TypeOverride<
+              ZeroTypeToTypescriptType[DrizzleDataTypeToZeroType[Columns<TTable>[KColumn]["dataType"]]]
+            >
+          >;
+    }>;
 
 /**
  * Maps a Drizzle column type to its corresponding Zero type.
@@ -131,14 +129,18 @@ type ZeroColumnDefinition<
     type: ZeroMappedColumnType<TTable, KColumn>;
     customType: ZeroMappedCustomType<TTable, KColumn>;
   },
-> = CD extends {
+  BaseOptional extends Omit<BaseDefinition, "optional"> & {
+    optional: true;
+  } = Omit<BaseDefinition, "optional"> & { optional: true },
+> = (CD extends {
   hasDefault: true;
   hasRuntimeDefault: false;
 }
-  ? Omit<BaseDefinition, "optional"> & { optional: true }
+  ? BaseOptional
   : CD extends { notNull: true }
     ? BaseDefinition
-    : Omit<BaseDefinition, "optional"> & { optional: true };
+    : Omit<BaseDefinition, "optional"> & { optional: true }) &
+  (CD extends { name: KColumn } ? {} : { serverName: string });
 
 /**
  * Maps the columns configuration to their Zero schema definitions.
@@ -164,14 +166,16 @@ export type ZeroColumns<
 
 /**
  * Represents the underlying schema for a Zero table.
+ * @template TTableName The name of the table
  * @template TTable The Drizzle table type
  * @template TColumnConfig The columns configuration
  */
 export type ZeroTableBuilderSchema<
+  TTableName extends string,
   TTable extends Table,
   TColumnConfig extends ColumnsConfig<TTable>,
 > = {
-  name: TableName<TTable>;
+  name: TTableName;
   primaryKey: any; // FindPrimaryKeyFromTable<TTable>;
   columns: Flatten<ZeroColumns<TTable, TColumnConfig>>;
 };
@@ -182,10 +186,11 @@ export type ZeroTableBuilderSchema<
  * @template TColumnConfig The columns configuration
  */
 type ZeroTableBuilder<
+  TTableName extends string,
   TTable extends Table,
   TColumnConfig extends ColumnsConfig<TTable>,
 > = TableBuilderWithColumns<
-  Readonly<ZeroTableBuilderSchema<TTable, TColumnConfig>>
+  Readonly<ZeroTableBuilderSchema<TTableName, TTable, TColumnConfig>>
 >;
 
 /**
@@ -198,22 +203,32 @@ type ZeroTableBuilder<
  * @throws {Error} If primary key configuration is invalid or column types are unsupported
  */
 const createZeroTableBuilder = <
+  TTableName extends string,
   TTable extends Table,
   TColumnConfig extends ColumnsConfig<TTable>,
 >(
+  /**
+   * The mapped name of the table
+   */
+  tableName: TTableName,
+  /**
+   * The Drizzle table instance
+   */
   table: TTable,
+  /**
+   * Configuration specifying which columns to include and how to map them
+   */
   columns: TColumnConfig,
-): ZeroTableBuilder<TTable, TColumnConfig> => {
+): ZeroTableBuilder<TTableName, TTable, TColumnConfig> => {
+  const actualTableName = getTableName(table);
   const tableColumns = getTableColumns(table);
   const tableConfig = getTableConfigForDatabase(table);
 
   const primaryKeysFromColumns: string[] = [];
 
   const columnsMapped = typedEntries(tableColumns).reduce(
-    (acc, [_key, column]) => {
-      const name = column.name;
-
-      const columnConfig = columns[name as keyof TColumnConfig];
+    (acc, [key, column]) => {
+      const columnConfig = columns[key as keyof TColumnConfig];
 
       if (columnConfig === false) {
         return acc;
@@ -225,21 +240,12 @@ const createZeroTableBuilder = <
         typeof columnConfig !== "undefined"
       ) {
         throw new Error(
-          `drizzle-zero: Invalid column config for column ${name} - expected boolean or ColumnBuilder but was ${typeof columnConfig}`,
+          `drizzle-zero: Invalid column config for column ${column.name} - expected boolean or ColumnBuilder but was ${typeof columnConfig}`,
         );
       }
 
-      if (!columnConfig) {
-        return acc;
-      }
-
-      const isColumnBuilder = (
-        value: unknown,
-      ): value is ColumnBuilder<any> =>
-        typeof value === "object" &&
-        value !== null &&
-        "schema" in value;
- 
+      const isColumnBuilder = (value: unknown): value is ColumnBuilder<any> =>
+        typeof value === "object" && value !== null && "schema" in value;
 
       const type =
         drizzleColumnTypeToZeroType[
@@ -266,19 +272,15 @@ const createZeroTableBuilder = <
             : false;
 
       if (column.primary) {
-        if (isColumnOptional) {
-          throw new Error(
-            `drizzle-zero: Primary key column ${name} cannot have a default value defined on the database level and cannot be optional, since auto-incrementing primary keys can cause race conditions with concurrent inserts. See the Zero docs for more information.`,
-          );
-        }
 
-        primaryKeysFromColumns.push(name);
+
+        primaryKeysFromColumns.push(String(key));
       }
 
       if (columnConfig && typeof columnConfig !== "boolean") {
         return {
           ...acc,
-          [name]: columnConfig,
+          [key]: columnConfig,
         };
       }
 
@@ -292,34 +294,77 @@ const createZeroTableBuilder = <
               ? zeroJson()
               : zeroBoolean();
 
+      const schemaValueWithFrom =
+        column.name !== key ? schemaValue.from(column.name) : schemaValue;
+
       return {
         ...acc,
-        [name]: isColumnOptional ? schemaValue.optional() : schemaValue,
+        [key]: isColumnOptional
+          ? schemaValueWithFrom.optional()
+          : schemaValueWithFrom,
       };
     },
     {} as Record<string, any>,
   );
 
-  const tableName = getTableName(table);
-
   const primaryKeys = [
     ...primaryKeysFromColumns,
-    ...tableConfig.primaryKeys
-      .flatMap((k) => k.columns.map((c) => c.name))
-      .filter(Boolean),
+    ...tableConfig.primaryKeys.flatMap((k) =>
+      k.columns.map((c) =>
+        getDrizzleColumnKeyFromColumnName({
+          columnName: c.name,
+          table: c.table,
+        }),
+      ),
+    ),
   ];
 
   if (!primaryKeys.length) {
     throw new Error(
-      `drizzle-zero: No primary keys found in table - ${tableName}. Did you forget to define a primary key?`,
+      `drizzle-zero: No primary keys found in table - ${actualTableName}. Did you forget to define a primary key?`,
     );
   }
 
-  const zeroTableSchemaBuilder = zeroTable(tableName)
-    .columns(columnsMapped)
-    .primaryKey(...(primaryKeys as unknown as FindPrimaryKeyFromTable<TTable>));
+  const resolvedTableName = tableConfig.schema
+    ? `${tableConfig.schema}.${actualTableName}`
+    : actualTableName;
 
-  return zeroTableSchemaBuilder as ZeroTableBuilder<TTable, TColumnConfig>;
+  const zeroBuilder = zeroTable(tableName);
+
+  const zeroBuilderWithFrom =
+    resolvedTableName !== tableName
+      ? zeroBuilder.from(resolvedTableName)
+      : zeroBuilder;
+
+  return zeroBuilderWithFrom
+    .columns(columnsMapped)
+    .primaryKey(
+      ...(primaryKeys as unknown as FindPrimaryKeyFromTable<TTable>),
+    ) as ZeroTableBuilder<TTableName, TTable, TColumnConfig>;
 };
 
-export { createZeroTableBuilder, type ZeroTableBuilder };
+/**
+ * Get the key of a column in the schema from the column name.
+ * @param columnName - The name of the column to get the key for
+ * @param table - The table to get the column key from
+ * @returns The key of the column in the schema
+ */
+const getDrizzleColumnKeyFromColumnName = ({
+  columnName,
+  table,
+}: {
+  columnName: string;
+  table: Table;
+}) => {
+  const tableColumns = getTableColumns(table);
+
+  return typedEntries(tableColumns).find(
+    ([_name, column]) => column.name === columnName,
+  )?.[0]!;
+};
+
+export {
+  createZeroTableBuilder,
+  getDrizzleColumnKeyFromColumnName,
+  type ZeroTableBuilder,
+};

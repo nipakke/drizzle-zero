@@ -12,29 +12,22 @@ export const schema = createZeroSchema(oneToManyMissingNamed, {
     posts: {
       id: true,
       content: true,
-      author_id: true,
-      reviewer_id: true,
+      authorId: true,
+      reviewerId: true,
     },
   },
 });
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {
-    post: {
+    posts: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
         delete: ANYONE_CAN,
       },
     },
-    comment: {
-      row: {
-        insert: ANYONE_CAN,
-        update: ANYONE_CAN,
-        delete: ANYONE_CAN,
-      },
-    },
-    user: {
+    users: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,

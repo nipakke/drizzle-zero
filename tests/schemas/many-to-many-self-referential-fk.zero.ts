@@ -34,14 +34,14 @@ export const schema = createZeroSchema(manyToManySelfReferentialFk, {
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {
-    user: {
+    doc: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
         delete: ANYONE_CAN,
       },
     },
-    friendship: {
+    related: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,

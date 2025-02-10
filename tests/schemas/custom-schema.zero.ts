@@ -5,17 +5,17 @@ import * as customSchema from "./custom-schema.schema";
 export const schema = createZeroSchema(customSchema, {
   version: 1,
   tables: {
-    user: {
+    users: {
       id: true,
       name: true,
-      invited_by: true,
+      invitedBy: true,
     },
   },
 });
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {
-    user: {
+    users: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,

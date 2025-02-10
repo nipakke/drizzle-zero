@@ -1,4 +1,4 @@
-import type { Column, Relations, Table } from "drizzle-orm";
+import type { Relations, Table } from "drizzle-orm";
 import type { ColumnsConfig } from "./tables";
 
 /**
@@ -6,16 +6,16 @@ import type { ColumnsConfig } from "./tables";
  * @template TDrizzleSchema - The complete Drizzle schema
  */
 export type TableColumnsConfig<TDrizzleSchema extends Record<string, unknown>> =
-  {
+  Flatten<{
     /**
      * The columns to include in the Zero schema.
      */
     readonly [K in keyof TDrizzleSchema as TDrizzleSchema[K] extends Table<any>
-      ? TableName<TDrizzleSchema[K]>
+      ? K
       : never]: TDrizzleSchema[K] extends Table<any>
       ? ColumnsConfig<TDrizzleSchema[K]>
       : never;
-  };
+  }>;
 
 /**
  * Extracts the table name from a Drizzle table type.
@@ -23,11 +23,12 @@ export type TableColumnsConfig<TDrizzleSchema extends Record<string, unknown>> =
  */
 export type TableName<TTable extends Table> = TTable["_"]["name"];
 
-/**
- * Extracts the column name from a Drizzle column type.
- * @template TColumn The Drizzle column type
- */
-export type ColumnName<TColumn extends Column> = TColumn["_"]["name"];
+// /**
+//  * Extracts the column name from a Drizzle column type.
+//  * @template TColumn The Drizzle column type
+//  */
+// export type ColumnName<TColumn extends ColumnBuilderBase> =
+//   TColumn["_"]["name"];
 
 /**
  * Gets all columns from a Drizzle table type.
@@ -39,9 +40,7 @@ export type Columns<TTable extends Table> = TTable["_"]["columns"];
  * Gets all column names from a Drizzle table type.
  * @template TTable The Drizzle table type
  */
-export type ColumnNames<TTable extends Table> = ColumnName<
-  Columns<TTable>[keyof Columns<TTable>]
->;
+export type ColumnNames<TTable extends Table> = keyof Columns<TTable>;
 
 /**
  * Helper type that extracts primary key columns from a table.
@@ -49,7 +48,9 @@ export type ColumnNames<TTable extends Table> = ColumnName<
  */
 type PrimaryKeyColumns<T extends Table> = {
   [K in keyof Columns<T>]: Columns<T>[K]["_"]["isPrimaryKey"] extends true
-    ? ColumnName<Columns<T>[K]>
+    ? K extends string
+      ? K
+      : never
     : never;
 }[keyof Columns<T>];
 
@@ -71,7 +72,7 @@ export type FindPrimaryKeyFromTable<T extends Table> = [
  * @template TTable The table to find relations for
  */
 export type FindRelationsForTable<
-  TDrizzleSchema extends Record<string, unknown>,
+  TDrizzleSchema extends { [K in string]: unknown },
   TTable extends Table,
 > = Extract<
   TDrizzleSchema[{
@@ -114,6 +115,32 @@ export type FindTableByName<
   }[keyof TDrizzleSchema],
   Table<any>
 >;
+
+/**
+ * Finds a table in the schema by its key.
+ * @template TDrizzleSchema The complete Drizzle schema
+ * @template Key The key of the table to find in the schema
+ */
+export type FindTableByKey<
+  TDrizzleSchema extends Record<string, unknown>,
+  Key extends keyof TDrizzleSchema,
+> = TDrizzleSchema[Key] extends Table<any> ? TDrizzleSchema[Key] : never;
+
+/**
+ * Finds the key of a table in the schema by its name.
+ * @template TDrizzleSchema The complete Drizzle schema
+ * @template Name The name of the table to find in the schema
+ */
+export type FindTableKeyByTableName<
+  TDrizzleSchema extends Record<string, unknown>,
+  Name extends string,
+> = keyof {
+  [K in keyof TDrizzleSchema as TDrizzleSchema[K] extends Table<any>
+    ? TDrizzleSchema[K]["_"]["name"] extends Name
+      ? K
+      : never
+    : never]: any;
+};
 
 /**
  * Extracts the configuration type from a Relations type.

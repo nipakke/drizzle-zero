@@ -1,63 +1,58 @@
-import {
-  ANYONE_CAN,
-  definePermissions,
-  type Schema
-} from "@rocicorp/zero";
+import { ANYONE_CAN, definePermissions, type Schema } from "@rocicorp/zero";
 import { createZeroSchema } from "../../src";
 import * as manyToMany from "./many-to-many.schema";
 
-export const schema =  
-  createZeroSchema(manyToMany, {
-    version: 1,
-    tables: {
-      user: {
-        id: true,
-        name: true,
-      },
-      group: {
-        id: true,
-        name: true,
-      },
-      users_to_group: {
-        user_id: true,
-        group_id: true,
-      },
+export const schema = createZeroSchema(manyToMany, {
+  version: 1,
+  tables: {
+    users: {
+      id: true,
+      name: true,
     },
-    manyToMany: {
-      user: {
-        groups: [
-          {
-            sourceField: ["id"],
-            destTable: "group",
-            destField: ["id"],
-          },
-          {
-            sourceField: ["id"],
-            destTable: "users_to_group",
-            // destField: "group_id", // missing field
-          } as any,
-        ],
-      },
+    groups: {
+      id: true,
+      name: true,
     },
-  }) 
+    usersToGroups: {
+      userId: true,
+      groupId: true,
+    },
+  },
+  manyToMany: {
+    users: {
+      usersToGroups: [
+        {
+          sourceField: ["id"],
+          destTable: "groups",
+          destField: ["id"],
+        },
+        {
+          sourceField: ["id"],
+          destTable: "usersToGroups",
+          // destField: "group_id", // missing field
+        } as any,
+      ],
+    },
+  },
+});
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {
-    group: {
+    groups: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
         delete: ANYONE_CAN,
       },
     },
-    user: {
+    users: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
         delete: ANYONE_CAN,
       },
     },
-    users_to_group: {
+    usersToGroups: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,

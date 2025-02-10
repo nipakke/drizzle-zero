@@ -6,13 +6,7 @@ import path from "path";
 import { Pool } from "pg";
 import { GenericContainer, Network, PullPolicy } from "testcontainers";
 import * as drizzleSchema from "../drizzle/schema";
-import {
-  allTypesTable,
-  friendshipTable,
-  mediumTable,
-  messageTable,
-  userTable,
-} from "../drizzle/schema";
+import { allTypes, friendship, medium, message, user } from "../drizzle/schema";
 import { schema } from "../schema";
 
 const PG_PORT = process.env.PG_VERSION === "17" ? 5732 : 5632;
@@ -40,16 +34,16 @@ export const db = drizzle(pool, {
 });
 
 export const seed = async () => {
-  await db.insert(mediumTable).values({ id: "1", name: "email" });
-  await db.insert(mediumTable).values({ id: "2", name: "teams" });
-  await db.insert(mediumTable).values({ id: "3", name: "sms" });
-  await db.insert(mediumTable).values({ id: "4", name: "whatsapp" });
+  await db.insert(medium).values({ id: "1", name: "email" });
+  await db.insert(medium).values({ id: "2", name: "teams" });
+  await db.insert(medium).values({ id: "3", name: "sms" });
+  await db.insert(medium).values({ id: "4", name: "whatsapp" });
 
-  await db.insert(userTable).values({ id: "1", name: "James", partner: true });
-  await db.insert(userTable).values({ id: "2", name: "John", partner: false });
-  await db.insert(userTable).values({ id: "3", name: "Jane", partner: false });
+  await db.insert(user).values({ id: "1", name: "James", partner: true });
+  await db.insert(user).values({ id: "2", name: "John", partner: false });
+  await db.insert(user).values({ id: "3", name: "Jane", partner: false });
 
-  await db.insert(messageTable).values({
+  await db.insert(message).values({
     id: "1",
     body: "Hey, James!",
     senderId: "1",
@@ -57,7 +51,7 @@ export const seed = async () => {
     metadata: { key: "value1" },
   });
 
-  await db.insert(messageTable).values({
+  await db.insert(message).values({
     id: "2",
     body: "Hello on Teams",
     senderId: "2",
@@ -65,7 +59,7 @@ export const seed = async () => {
     metadata: { key: "value2" },
   });
 
-  await db.insert(messageTable).values({
+  await db.insert(message).values({
     id: "3",
     body: "SMS message here",
     senderId: "3",
@@ -73,7 +67,7 @@ export const seed = async () => {
     metadata: { key: "value3" },
   });
 
-  await db.insert(messageTable).values({
+  await db.insert(message).values({
     id: "4",
     body: "WhatsApp message",
     senderId: "2",
@@ -81,7 +75,7 @@ export const seed = async () => {
     metadata: { key: "value4" },
   });
 
-  await db.insert(messageTable).values({
+  await db.insert(message).values({
     id: "5",
     body: "Thomas!",
     senderId: "1",
@@ -89,7 +83,7 @@ export const seed = async () => {
     metadata: { key: "value5" },
   });
 
-  await db.insert(allTypesTable).values({
+  await db.insert(allTypes).values({
     id: "1",
     smallintField: 1,
     integerField: 2,
@@ -115,7 +109,7 @@ export const seed = async () => {
     statusField: "pending",
   });
 
-  await db.insert(friendshipTable).values({
+  await db.insert(friendship).values({
     requestingId: "1",
     acceptingId: "2",
     accepted: true,

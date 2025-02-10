@@ -5,13 +5,13 @@ import * as noRelations from "./no-relations.schema";
 export const schema = createZeroSchema(noRelations, {
   version: 1,
   tables: {
-    user: {
+    users: {
       id: true,
       name: true,
     },
-    profile_info: {
+    profileInfo: {
       id: true,
-      user_id: true,
+      userId: true,
       metadata: true,
     },
   },
@@ -19,14 +19,14 @@ export const schema = createZeroSchema(noRelations, {
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {
-    user: {
+    users: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,
         delete: ANYONE_CAN,
       },
     },
-    profile_info: {
+    profileInfo: {
       row: {
         insert: ANYONE_CAN,
         update: ANYONE_CAN,

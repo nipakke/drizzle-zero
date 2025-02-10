@@ -81,221 +81,272 @@
   "schema": {
     "version": 1,
     "tables": {
-      "all_types": {
-        "name": "all_types",
+      "allTypes": {
+        "name": "allTypes",
         "columns": {
+          "createdAt": {
+            "type": "number",
+            "optional": true,
+            "customType": null
+          },
+          "updatedAt": {
+            "type": "number",
+            "optional": true,
+            "customType": null
+          },
           "id": {
             "type": "string",
             "optional": false,
             "customType": null
           },
-          "smallint": {
+          "smallintField": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "smallint"
           },
-          "integer": {
+          "integerField": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "integer"
           },
-          "bigint": {
+          "bigintField": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "bigint"
           },
-          "bigint_number": {
+          "bigintNumberField": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "bigint_number"
           },
-          "smallserial": {
-            "type": "number",
-            "optional": true,
-            "customType": null
-          },
-          "serial": {
-            "type": "number",
-            "optional": true,
-            "customType": null
-          },
-          "bigserial": {
+          "smallSerialField": {
             "type": "number",
             "optional": true,
-            "customType": null
+            "customType": null,
+            "serverName": "smallserial"
           },
-          "numeric": {
+          "serialField": {
+            "type": "number",
+            "optional": true,
+            "customType": null,
+            "serverName": "serial"
+          },
+          "bigSerialField": {
+            "type": "number",
+            "optional": true,
+            "customType": null,
+            "serverName": "bigserial"
+          },
+          "numericField": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "numeric"
           },
-          "decimal": {
+          "decimalField": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "decimal"
           },
-          "real": {
+          "realField": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "real"
           },
-          "double_precision": {
+          "doublePrecisionField": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "double_precision"
           },
-          "text": {
+          "textField": {
             "type": "string",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "text"
           },
-          "char": {
+          "charField": {
             "type": "string",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "char"
           },
-          "uuid": {
+          "uuidField": {
             "type": "string",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "uuid"
           },
-          "varchar": {
+          "varcharField": {
             "type": "string",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "varchar"
           },
-          "boolean": {
+          "booleanField": {
             "type": "boolean",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "boolean"
           },
-          "timestamp": {
+          "timestampField": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "timestamp"
           },
-          "timestamp_tz": {
+          "timestampTzField": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "timestamp_tz"
           },
-          "timestamp_mode_string": {
+          "timestampModeString": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "timestamp_mode_string"
           },
-          "timestamp_mode_date": {
+          "timestampModeDate": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "timestamp_mode_date"
           },
-          "date": {
+          "dateField": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "date"
           },
-          "json": {
+          "jsonField": {
             "type": "json",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "json"
           },
-          "jsonb": {
+          "jsonbField": {
             "type": "json",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "jsonb"
           },
-          "typed_json": {
+          "typedJsonField": {
             "type": "json",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "typed_json"
           },
-          "status": {
+          "statusField": {
             "type": "string",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "status"
           },
-          "optional_smallint": {
+          "optionalSmallint": {
             "type": "number",
             "optional": true,
-            "customType": null
+            "customType": null,
+            "serverName": "optional_smallint"
           },
-          "optional_integer": {
+          "optionalInteger": {
             "type": "number",
             "optional": true,
-            "customType": null
+            "customType": null,
+            "serverName": "optional_integer"
           },
-          "optional_bigint": {
+          "optionalBigint": {
             "type": "number",
             "optional": true,
-            "customType": null
+            "customType": null,
+            "serverName": "optional_bigint"
           },
-          "optional_numeric": {
+          "optionalNumeric": {
             "type": "number",
             "optional": true,
-            "customType": null
+            "customType": null,
+            "serverName": "optional_numeric"
           },
-          "optional_real": {
+          "optionalReal": {
             "type": "number",
             "optional": true,
-            "customType": null
+            "customType": null,
+            "serverName": "optional_real"
           },
-          "optional_double_precision": {
+          "optionalDoublePrecision": {
             "type": "number",
             "optional": true,
-            "customType": null
+            "customType": null,
+            "serverName": "optional_double_precision"
           },
-          "optional_text": {
+          "optionalText": {
             "type": "string",
             "optional": true,
-            "customType": null
+            "customType": null,
+            "serverName": "optional_text"
           },
-          "optional_boolean": {
+          "optionalBoolean": {
             "type": "boolean",
             "optional": true,
-            "customType": null
+            "customType": null,
+            "serverName": "optional_boolean"
           },
-          "optional_timestamp": {
+          "optionalTimestamp": {
             "type": "number",
             "optional": true,
-            "customType": null
+            "customType": null,
+            "serverName": "optional_timestamp"
           },
-          "optional_json": {
+          "optionalJson": {
             "type": "json",
             "optional": true,
-            "customType": null
+            "customType": null,
+            "serverName": "optional_json"
           },
-          "optional_enum": {
+          "optionalEnum": {
             "type": "string",
             "optional": true,
-            "customType": null
+            "customType": null,
+            "serverName": "optional_enum"
           },
-          "optional_varchar": {
+          "optionalVarchar": {
             "type": "string",
             "optional": true,
-            "customType": null
+            "customType": null,
+            "serverName": "optional_varchar"
           },
-          "optional_uuid": {
+          "optionalUuid": {
             "type": "string",
             "optional": true,
-            "customType": null
+            "customType": null,
+            "serverName": "optional_uuid"
           }
         },
         "primaryKey": [
           "id"
-        ]
+        ],
+        "serverName": "all_types"
       },
       "friendship": {
         "name": "friendship",
         "columns": {
-          "requesting_id": {
+          "requestingId": {
             "type": "string",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "requesting_id"
           },
-          "accepting_id": {
+          "acceptingId": {
             "type": "string",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "accepting_id"
           },
           "accepted": {
             "type": "boolean",
@@ -304,8 +355,8 @@
           }
         },
         "primaryKey": [
-          "requesting_id",
-          "accepting_id"
+          "requestingId",
+          "acceptingId"
         ]
       },
       "medium": {
@@ -401,11 +452,40 @@
             "type": "string",
             "optional": false,
             "customType": null
+          },
+          "partner": {
+            "type": "boolean",
+            "optional": false,
+            "customType": null
           }
         },
         "primaryKey": [
           "id"
         ]
+      },
+      "zeroSchemaVersions": {
+        "name": "zeroSchemaVersions",
+        "columns": {
+          "minSupportedVersion": {
+            "type": "number",
+            "optional": true,
+            "customType": null
+          },
+          "maxSupportedVersion": {
+            "type": "number",
+            "optional": true,
+            "customType": null
+          },
+          "lock": {
+            "type": "boolean",
+            "optional": true,
+            "customType": null
+          }
+        },
+        "primaryKey": [
+          "lock"
+        ],
+        "serverName": "zero.schemaVersions"
       }
     },
     "relationships": {
@@ -438,14 +518,14 @@
               "id"
             ],
             "destField": [
-              "requesting_id"
+              "requestingId"
             ],
             "destSchema": "friendship",
             "cardinality": "many"
           },
           {
             "sourceField": [
-              "accepting_id"
+              "acceptingId"
             ],
             "destField": [
               "id"
