@@ -35,9 +35,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Install zero canary (cron only)
+      - name: Install zero latest (cron only)
         if: github.event_name == 'schedule'
-        run: pnpm install @rocicorp/zero@canary -w
+        run: pnpm install @rocicorp/zero@latest -w
 
       - name: Build
         run: pnpm run build
