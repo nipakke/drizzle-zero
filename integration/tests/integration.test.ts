@@ -1,7 +1,7 @@
-import { afterAll, beforeAll, expect, test, describe } from "vitest";
+import { randomUUID } from "crypto";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { WebSocket } from "ws";
 import { db, getNewZero, shutdown, startPostgresAndZero } from "./utils";
-import { randomUUID } from "crypto";
 
 // Provide WebSocket on the global scope
 globalThis.WebSocket = WebSocket as any;
@@ -176,8 +176,8 @@ describe("types", () => {
     expect(result?.bigintNumberField).toStrictEqual(444);
     expect(result?.numericField).toStrictEqual(8.8);
     expect(result?.decimalField).toStrictEqual(9.9);
-    expect(result?.realField).toStrictEqual(9);
-    expect(result?.doublePrecisionField).toStrictEqual(10);
+    expect(result?.realField).toStrictEqual(10.8);
+    expect(result?.doublePrecisionField).toStrictEqual(11.9);
     expect(result?.textField).toStrictEqual("text");
     expect(result?.charField).toStrictEqual("c");
     expect(typeof result?.uuidField).toStrictEqual("string");
@@ -231,10 +231,10 @@ describe("types", () => {
       integerField: 23,
       bigintField: 24,
       bigintNumberField: 444,
-      numericField: 25.8,
-      decimalField: 26.9,
-      realField: 27,
-      doublePrecisionField: 28,
+      numericField: "25.8",
+      decimalField: "26",
+      realField: 27.1,
+      doublePrecisionField: 28.2,
       textField: "text2",
       charField: "f",
       uuidField: randomUUID(),
@@ -265,10 +265,10 @@ describe("types", () => {
     expect(result?.integerField).toStrictEqual(23);
     expect(result?.bigintField).toStrictEqual(24);
     expect(result?.bigintNumberField).toStrictEqual(444);
-    expect(result?.numericField).toStrictEqual(25.8);
-    expect(result?.decimalField).toStrictEqual(26.9);
-    expect(result?.realField).toStrictEqual(27);
-    expect(result?.doublePrecisionField).toStrictEqual(28);
+    expect(result?.numericField).toStrictEqual("25.8");
+    expect(result?.decimalField).toStrictEqual("26");
+    expect(result?.realField).toStrictEqual(27.1);
+    expect(result?.doublePrecisionField).toStrictEqual(28.2);
     expect(result?.textField).toStrictEqual("text2");
     expect(result?.charField).toStrictEqual("f");
     expect(typeof result?.uuidField).toStrictEqual("string");
@@ -299,9 +299,9 @@ describe("types", () => {
     expect(dbResult?.bigintField).toStrictEqual(24n);
     expect(dbResult?.bigintNumberField).toStrictEqual(444);
     expect(dbResult?.numericField).toStrictEqual("25.80");
-    expect(dbResult?.decimalField).toStrictEqual("26.90");
-    expect(dbResult?.realField).toStrictEqual(27);
-    expect(dbResult?.doublePrecisionField).toStrictEqual(28);
+    expect(dbResult?.decimalField).toStrictEqual("26.00");
+    expect(dbResult?.realField).toStrictEqual(27.1);
+    expect(dbResult?.doublePrecisionField).toStrictEqual(28.2);
     expect(dbResult?.textField).toStrictEqual("text2");
     expect(dbResult?.charField).toStrictEqual("f");
     expect(dbResult?.uuidField).toBeDefined();
