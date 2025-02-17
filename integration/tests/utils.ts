@@ -110,8 +110,6 @@ export const seed = async () => {
     statusField: "pending",
   });
 
-  allTypes['realField']['columnType']
-
   await db.insert(friendship).values({
     requestingId: "1",
     acceptingId: "2",
@@ -168,7 +166,7 @@ export const startPostgresAndZero = async () => {
   const basePgUrlWithExternalPort = `${basePgUrl}@127.0.0.1:${PG_PORT}`;
 
   // Start Zero container
-  const zeroContainer = await new GenericContainer(`rocicorp/zero:0.16.2025021700`)
+  const zeroContainer = await new GenericContainer(`rocicorp/zero:latest`)
     .withExposedPorts({
       container: 4848,
       host: ZERO_PORT,
