@@ -128,7 +128,10 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
       row: {
         select: ANYONE_CAN,
         insert: ANYONE_CAN,
-        update: ANYONE_CAN,
+        update: {
+          preMutation: ANYONE_CAN,
+          postMutation: ANYONE_CAN,
+        },
         delete: ANYONE_CAN,
       },
     },
@@ -136,7 +139,10 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
       row: {
         select: ANYONE_CAN,
         insert: ANYONE_CAN,
-        update: ANYONE_CAN,
+        update: {
+          preMutation: ANYONE_CAN,
+          postMutation: ANYONE_CAN,
+        },
         delete: ANYONE_CAN,
       },
     },
@@ -146,6 +152,7 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
         insert: ANYONE_CAN,
         update: {
           preMutation: [allowIfSenderIs1],
+          postMutation: ANYONE_CAN,
         },
         delete: [allowIfSenderIs1],
       },
@@ -154,7 +161,10 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
       row: {
         select: ANYONE_CAN,
         insert: ANYONE_CAN,
-        update: ANYONE_CAN,
+        update: {
+          preMutation: ANYONE_CAN,
+          postMutation: ANYONE_CAN,
+        },
         delete: ANYONE_CAN,
       },
     },
@@ -162,7 +172,10 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
       row: {
         select: ANYONE_CAN,
         insert: ANYONE_CAN,
-        update: ANYONE_CAN,
+        update: {
+          preMutation: ANYONE_CAN,
+          postMutation: ANYONE_CAN,
+        },
         delete: ANYONE_CAN,
       },
     },
