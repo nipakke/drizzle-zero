@@ -1,5 +1,6 @@
 import { Zero } from "@rocicorp/zero";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
+import { exec } from "child_process";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/node-postgres";
 import path from "path";
@@ -91,8 +92,8 @@ export const seed = async () => {
     bigintNumberField: 444,
     numericField: "8.8",
     decimalField: "9.9",
-    realField: 9,
-    doublePrecisionField: 10,
+    realField: 10.8,
+    doublePrecisionField: 11.9,
     textField: "text",
     charField: "c",
     uuidField: randomUUID(),
@@ -160,7 +161,9 @@ export const startPostgresAndZero = async () => {
 
   await seed();
 
-  const basePgUrl = `postgresql://${postgresContainer.getUsername()}:${postgresContainer.getPassword()}@postgres-db:5432`;
+  const basePgUrl = `postgresql://${postgresContainer.getUsername()}:${postgresContainer.getPassword()}`;
+  const basePgUrlWithInternalPort = `${basePgUrl}@postgres-db:5432`;
+  const basePgUrlWithExternalPort = `${basePgUrl}@127.0.0.1:${PG_PORT}`;
 
   // Start Zero container
   const zeroContainer = await new GenericContainer(`rocicorp/zero:latest`)
@@ -170,22 +173,29 @@ export const startPostgresAndZero = async () => {
     })
     .withNetwork(network)
     .withEnvironment({
-      ZERO_UPSTREAM_DB: `${basePgUrl}/drizzle_zero`,
-      ZERO_CVR_DB: `${basePgUrl}/drizzle_zero`,
-      ZERO_CHANGE_DB: `${basePgUrl}/drizzle_zero`,
+      ZERO_UPSTREAM_DB: `${basePgUrlWithInternalPort}/drizzle_zero`,
+      ZERO_CVR_DB: `${basePgUrlWithInternalPort}/drizzle_zero`,
+      ZERO_CHANGE_DB: `${basePgUrlWithInternalPort}/drizzle_zero`,
       ZERO_AUTH_SECRET: "secretkey",
       ZERO_REPLICA_FILE: "/zero.db",
       ZERO_NUM_SYNC_WORKERS: "1",
     })
-    .withCopyFilesToContainer([
-      {
-        source: path.join(__dirname, "../zero-schema.json"),
-        target: "/opt/app/zero-schema.json",
-      },
-    ])
     .withStartupTimeout(60000)
     .withPullPolicy(PullPolicy.alwaysPull())
     .start();
+
+  await new Promise((resolve, reject) => {
+    exec(
+      `npx zero-deploy-permissions --schema-path ${path.join(__dirname, "../schema.ts")} --upstream-db ${basePgUrlWithExternalPort}/drizzle_zero`,
+      (error, stdout) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve(stdout);
+      },
+    );
+  });
 
   return {
     postgresContainer,

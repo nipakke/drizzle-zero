@@ -37,15 +37,23 @@ export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {
     user: {
       row: {
+        select: ANYONE_CAN,
         insert: ANYONE_CAN,
-        update: ANYONE_CAN,
+        update: {
+          preMutation: ANYONE_CAN,
+          postMutation: ANYONE_CAN,
+        },
         delete: ANYONE_CAN,
       },
     },
     friendship: {
       row: {
+        select: ANYONE_CAN,
         insert: ANYONE_CAN,
-        update: ANYONE_CAN,
+        update: {
+          preMutation: ANYONE_CAN,
+          postMutation: ANYONE_CAN,
+        },
         delete: ANYONE_CAN,
       },
     },

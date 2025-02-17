@@ -3,9 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build-schema": "zero-build-schema -p schema.ts",
     "db:generate": "drizzle-kit generate",
-    "pretest": "pnpm run build-schema",
     "test": "vitest run"
   },
   "dependencies": {
@@ -17,7 +15,7 @@
     "@types/ws": "^8.5.14",
     "@vitest/browser": "^3.0.5",
     "drizzle-kit": "^0.30.4",
-    "pg": "^8.13.2",
+    "pg": "^8.13.3",
     "testcontainers": "^10.18.0",
     "ws": "^8.18.0"
   }
