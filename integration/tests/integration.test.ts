@@ -231,8 +231,8 @@ describe("types", () => {
       integerField: 23,
       bigintField: 24,
       bigintNumberField: 444,
-      numericField: "25.8",
-      decimalField: "26",
+      numericField: 25.84,
+      decimalField: 26.33,
       realField: 27.1,
       doublePrecisionField: 28.2,
       textField: "text2",
@@ -265,8 +265,8 @@ describe("types", () => {
     expect(result?.integerField).toStrictEqual(23);
     expect(result?.bigintField).toStrictEqual(24);
     expect(result?.bigintNumberField).toStrictEqual(444);
-    expect(result?.numericField).toStrictEqual("25.8");
-    expect(result?.decimalField).toStrictEqual("26");
+    expect(result?.numericField).toStrictEqual(25.84);
+    expect(result?.decimalField).toStrictEqual(26.33);
     expect(result?.realField).toStrictEqual(27.1);
     expect(result?.doublePrecisionField).toStrictEqual(28.2);
     expect(result?.textField).toStrictEqual("text2");
@@ -298,8 +298,8 @@ describe("types", () => {
     expect(dbResult?.integerField).toStrictEqual(23);
     expect(dbResult?.bigintField).toStrictEqual(24n);
     expect(dbResult?.bigintNumberField).toStrictEqual(444);
-    expect(dbResult?.numericField).toStrictEqual("25.80");
-    expect(dbResult?.decimalField).toStrictEqual("26.00");
+    expect(dbResult?.numericField).toStrictEqual("25.84");
+    expect(dbResult?.decimalField).toStrictEqual("26.33");
     expect(dbResult?.realField).toStrictEqual(27.1);
     expect(dbResult?.doublePrecisionField).toStrictEqual(28.2);
     expect(dbResult?.textField).toStrictEqual("text2");
