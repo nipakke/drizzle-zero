@@ -52,7 +52,16 @@ import * as drizzleSchema from "./drizzle-schema";
 
 // Convert to Zero schema
 export const schema = createZeroSchema(drizzleSchema, {
+  // The version of the schema passed to Zero.
   version: 1,
+
+  // Specify the casing style to use for the schema.
+  // This is useful for when you want to use a different casing style than the default.
+  // This works in the same way as the `casing` option in the Drizzle ORM.
+  //
+  // @example
+  // casing: "snake_case",
+
   // Specify which tables and columns to include in the Zero schema.
   // This allows for the "expand/migrate/contract" pattern recommended in the Zero docs.
   // When a column is first added, it should be set to false, and then changed to true
