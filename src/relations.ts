@@ -5,8 +5,7 @@ import {
   Many,
   One,
   Relations,
-  Table,
-  type Casing,
+  Table
 } from "drizzle-orm";
 import { getTableConfigForDatabase } from "./db";
 import {
@@ -14,8 +13,8 @@ import {
   getDrizzleColumnKeyFromColumnName,
   type ColumnsConfig,
   type ZeroColumns,
-  type ZeroTableBuilderOptions,
   type ZeroTableBuilderSchema,
+  type ZeroTableCasing,
 } from "./tables";
 import type {
   Columns,
@@ -249,7 +248,7 @@ type CreateZeroSchema<
   TDrizzleSchema extends { [K in string]: unknown },
   TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
   TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
-  TTableBuilderOptions extends ZeroTableBuilderOptions,
+  TCasing extends ZeroTableCasing,
 > = {
   readonly version: number;
   readonly tables: {
@@ -264,7 +263,7 @@ type CreateZeroSchema<
             K & string,
             TDrizzleSchema[K],
             TColumnConfig[K],
-            TTableBuilderOptions
+            TCasing
           >
         >
       : never;
@@ -375,7 +374,7 @@ const createZeroSchema = <
   const TDrizzleSchema extends { [K in string]: unknown },
   const TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
   const TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
-  const TCasing extends Casing,
+  const TCasing extends ZeroTableCasing,
 >(
   /**
    * The Drizzle schema to create a Zero schema from.
@@ -433,21 +432,16 @@ const createZeroSchema = <
      * { casing: 'snake_case' }
      * ```
      */
-    readonly casing?: Casing;
+    readonly casing?: TCasing;
   },
 ): Flatten<
-  CreateZeroSchema<
-    TDrizzleSchema,
-    TColumnConfig,
-    TManyConfig,
-    { casing: TCasing }
-  >
+  CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig, TCasing>
 > => {
   let tables: Record<
     string,
     {
       tableName: string;
-      columns: ZeroColumns<Table, ColumnsConfig<Table>, { casing: TCasing }>;
+      columns: ZeroColumns<Table, ColumnsConfig<Table>, TCasing>;
       primaryKey: FindPrimaryKeyFromTable<Table>;
     }
   > = {};
@@ -467,6 +461,7 @@ const createZeroSchema = <
         String(tableName),
         table,
         tableConfig,
+        schemaConfig?.casing,
       );
 
       tables[tableName as keyof typeof tables] =
@@ -756,7 +751,7 @@ const createZeroSchema = <
     TDrizzleSchema,
     TColumnConfig,
     TManyConfig,
-    { casing: TCasing }
+    TCasing
   >;
 };
 

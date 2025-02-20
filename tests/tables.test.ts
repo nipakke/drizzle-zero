@@ -610,9 +610,7 @@ describe.concurrent("tables", () => {
         createdAt: true,
         updatedAt: true,
       },
-      {
-        casing: "snake_case",
-      },
+      "snake_case",
     );
 
     const expected = table("users")
