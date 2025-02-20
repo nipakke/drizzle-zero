@@ -9,6 +9,7 @@ import * as drizzleSchema from "./drizzle/schema";
 
 const zeroSchema = createZeroSchema(drizzleSchema, {
   version: 1,
+  casing: "snake_case",
   tables: {
     zeroSchemaVersions: {
       maxSupportedVersion: true,

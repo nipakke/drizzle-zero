@@ -139,16 +139,17 @@ export const allTypes = pgTable("all_types", {
   optionalUuid: uuid("optional_uuid"),
 });
 
+// also testing snake case
 export const friendship = pgTable(
   "friendship",
   {
-    requestingId: text("requesting_id")
+    requestingId: text()
       .notNull()
       .references(() => user.id),
-    acceptingId: text("accepting_id")
+    acceptingId: text()
       .notNull()
       .references(() => user.id),
-    accepted: boolean("accepted").notNull(),
+    accepted: boolean().notNull(),
   },
   (t) => [primaryKey({ columns: [t.requestingId, t.acceptingId] })],
 );

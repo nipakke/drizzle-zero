@@ -6,6 +6,7 @@ import {
   One,
   Relations,
   Table,
+  type Casing,
 } from "drizzle-orm";
 import { getTableConfigForDatabase } from "./db";
 import {
@@ -13,6 +14,7 @@ import {
   getDrizzleColumnKeyFromColumnName,
   type ColumnsConfig,
   type ZeroColumns,
+  type ZeroTableBuilderOptions,
   type ZeroTableBuilderSchema,
 } from "./tables";
 import type {
@@ -240,11 +242,14 @@ type ReferencedZeroSchemas<
  * The complete Zero schema type with version and tables.
  * @template TDrizzleSchema - The complete Drizzle schema
  * @template TColumnConfig - Configuration for the tables
+ * @template TManyConfig - Configuration for many-to-many relationships
+ * @template TTableBuilderOptions - Options for the table builder
  */
 type CreateZeroSchema<
   TDrizzleSchema extends { [K in string]: unknown },
   TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
   TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
+  TTableBuilderOptions extends ZeroTableBuilderOptions,
 > = {
   readonly version: number;
   readonly tables: {
@@ -258,7 +263,8 @@ type CreateZeroSchema<
           ZeroTableBuilderSchema<
             K & string,
             TDrizzleSchema[K],
-            TColumnConfig[K]
+            TColumnConfig[K],
+            TTableBuilderOptions
           >
         >
       : never;
@@ -308,6 +314,7 @@ type CreateZeroSchema<
  * - Configure column types and transformations
  * - Define many-to-many relationships through junction tables
  * - Automatically map foreign key relationships
+ * - Specify the casing style to use for the schema
  *
  * @param schema - The Drizzle schema to create a Zero schema from. This should be your complete Drizzle schema object
  *                containing all your table definitions and relationships.
@@ -315,6 +322,8 @@ type CreateZeroSchema<
  * @param schemaConfig.version - Schema version number for tracking changes
  * @param schemaConfig.tables - Specify which tables and columns to include in sync
  * @param schemaConfig.manyToMany - Optional configuration for many-to-many relationships through junction tables
+ * @param schemaConfig.casing - The casing style to use for the schema
+ *
  * @returns A Zero schema containing tables and their relationships
  *
  * @example
@@ -366,6 +375,7 @@ const createZeroSchema = <
   const TDrizzleSchema extends { [K in string]: unknown },
   const TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
   const TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
+  const TCasing extends Casing,
 >(
   /**
    * The Drizzle schema to create a Zero schema from.
@@ -414,13 +424,30 @@ const createZeroSchema = <
      * ```
      */
     readonly manyToMany?: TManyConfig;
+
+    /**
+     * The casing style to use for the schema.
+     *
+     * @example
+     * ```ts
+     * { casing: 'snake_case' }
+     * ```
+     */
+    readonly casing?: Casing;
   },
-): Flatten<CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig>> => {
+): Flatten<
+  CreateZeroSchema<
+    TDrizzleSchema,
+    TColumnConfig,
+    TManyConfig,
+    { casing: TCasing }
+  >
+> => {
   let tables: Record<
     string,
     {
       tableName: string;
-      columns: ZeroColumns<Table, ColumnsConfig<Table>>;
+      columns: ZeroColumns<Table, ColumnsConfig<Table>, { casing: TCasing }>;
       primaryKey: FindPrimaryKeyFromTable<Table>;
     }
   > = {};
@@ -725,7 +752,12 @@ const createZeroSchema = <
     version: schemaConfig.version,
     tables,
     relationships,
-  } as unknown as CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig>;
+  } as unknown as CreateZeroSchema<
+    TDrizzleSchema,
+    TColumnConfig,
+    TManyConfig,
+    { casing: TCasing }
+  >;
 };
 
 /**

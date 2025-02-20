@@ -22,8 +22,10 @@ import type {
   Columns,
   FindPrimaryKeyFromTable,
   Flatten,
+  HasCapital,
 } from "./types";
 import { typedEntries } from "./util";
+import { toCamelCase, toSnakeCase } from "drizzle-orm/casing";
 
 /**
  * Represents a column definition from a Drizzle table, filtered by column name.
@@ -116,6 +118,7 @@ type ZeroMappedCustomType<
 type ZeroColumnDefinition<
   TTable extends Table,
   KColumn extends ColumnNames<TTable>,
+  TOptions extends ZeroTableBuilderOptions,
   CD extends ColumnDefinition<TTable, KColumn>["_"] = ColumnDefinition<
     TTable,
     KColumn
@@ -140,16 +143,28 @@ type ZeroColumnDefinition<
   : CD extends { notNull: true }
     ? BaseDefinition
     : Omit<BaseDefinition, "optional"> & { optional: true }) &
-  (CD extends { name: KColumn } ? {} : { serverName: string });
+  (CD extends { name: KColumn }
+    ? TOptions["casing"] extends "snake_case"
+      ? HasCapital<CD["name"]> extends true
+        ? { serverName: string }
+        : {}
+      : TOptions["casing"] extends "camelCase"
+        ? HasCapital<CD["name"]> extends false
+          ? { serverName: string }
+          : {}
+        : {}
+    : { serverName: string });
 
 /**
  * Maps the columns configuration to their Zero schema definitions.
  * @template TTable The Drizzle table type
  * @template TColumnConfig The columns configuration
+ * @template TOptions The options type
  */
 export type ZeroColumns<
   TTable extends Table,
   TColumnConfig extends ColumnsConfig<TTable>,
+  TOptions extends ZeroTableBuilderOptions,
 > = {
   [KColumn in keyof TColumnConfig as TColumnConfig[KColumn] extends
     | true
@@ -159,7 +174,7 @@ export type ZeroColumns<
     ? TColumnConfig[KColumn] extends ColumnBuilder<any>
       ? TColumnConfig[KColumn]["schema"]
       : TColumnConfig[KColumn] extends true
-        ? Flatten<ZeroColumnDefinition<TTable, KColumn>>
+        ? Flatten<ZeroColumnDefinition<TTable, KColumn, TOptions>>
         : never
     : never;
 };
@@ -169,36 +184,59 @@ export type ZeroColumns<
  * @template TTableName The name of the table
  * @template TTable The Drizzle table type
  * @template TColumnConfig The columns configuration
+ * @template TOptions The options type
  */
 export type ZeroTableBuilderSchema<
   TTableName extends string,
   TTable extends Table,
   TColumnConfig extends ColumnsConfig<TTable>,
+  TOptions extends ZeroTableBuilderOptions,
 > = {
   name: TTableName;
   primaryKey: any; // FindPrimaryKeyFromTable<TTable>;
-  columns: Flatten<ZeroColumns<TTable, TColumnConfig>>;
+  columns: Flatten<ZeroColumns<TTable, TColumnConfig, TOptions>>;
 };
 
 /**
  * Represents the complete Zero schema for a Drizzle table.
+ * @template TTableName The name of the table
  * @template TTable The Drizzle table type
  * @template TColumnConfig The columns configuration
+ * @template TOptions The options type
  */
 type ZeroTableBuilder<
   TTableName extends string,
   TTable extends Table,
   TColumnConfig extends ColumnsConfig<TTable>,
+  TOptions extends ZeroTableBuilderOptions,
 > = TableBuilderWithColumns<
-  Readonly<ZeroTableBuilderSchema<TTableName, TTable, TColumnConfig>>
+  Readonly<ZeroTableBuilderSchema<TTableName, TTable, TColumnConfig, TOptions>>
 >;
 
 /**
+ * Options for the Zero table builder.
+ */
+export type ZeroTableBuilderOptions = {
+  casing?: Casing;
+};
+
+/**
+ * The casing style to use for the table.
+ */
+export type Casing = "snake_case" | "camelCase";
+
+/**
  * Creates a Zero schema from a Drizzle table definition.
+ *
+ * @template TTableName The mapped name of the table
  * @template TTable The Drizzle table type
  * @template TColumnConfig The columns configuration type
+ * @template TOptions The options type
+ *
  * @param table The Drizzle table instance
  * @param columns Configuration specifying which columns to include and how to map them
+ * @param options Configuration for casing, etc.
+ *
  * @returns A Zero schema definition for the table
  * @throws {Error} If primary key configuration is invalid or column types are unsupported
  */
@@ -206,6 +244,7 @@ const createZeroTableBuilder = <
   TTableName extends string,
   TTable extends Table,
   TColumnConfig extends ColumnsConfig<TTable>,
+  TOptions extends ZeroTableBuilderOptions = ZeroTableBuilderOptions,
 >(
   /**
    * The mapped name of the table
@@ -219,7 +258,11 @@ const createZeroTableBuilder = <
    * Configuration specifying which columns to include and how to map them
    */
   columns: TColumnConfig,
-): ZeroTableBuilder<TTableName, TTable, TColumnConfig> => {
+  /**
+   * Configuration for casing, etc.
+   */
+  options?: TOptions,
+): ZeroTableBuilder<TTableName, TTable, TColumnConfig, TOptions> => {
   const actualTableName = getTableName(table);
   const tableColumns = getTableColumns(table);
   const tableConfig = getTableConfigForDatabase(table);
@@ -234,13 +277,21 @@ const createZeroTableBuilder = <
         return acc;
       }
 
+      // From https://github.com/drizzle-team/drizzle-orm/blob/e5c63db0df0eaff5cae8321d97a77e5b47c5800d/drizzle-kit/src/serializer/utils.ts#L5
+      const resolvedColumnName =
+        !column.keyAsName || options?.casing === undefined
+          ? column.name
+          : options?.casing === "camelCase"
+            ? toCamelCase(column.name)
+            : toSnakeCase(column.name);
+
       if (
         typeof columnConfig !== "boolean" &&
         typeof columnConfig !== "object" &&
         typeof columnConfig !== "undefined"
       ) {
         throw new Error(
-          `drizzle-zero: Invalid column config for column ${column.name} - expected boolean or ColumnBuilder but was ${typeof columnConfig}`,
+          `drizzle-zero: Invalid column config for column ${resolvedColumnName} - expected boolean or ColumnBuilder but was ${typeof columnConfig}`,
         );
       }
 
@@ -293,7 +344,9 @@ const createZeroTableBuilder = <
               : zeroBoolean();
 
       const schemaValueWithFrom =
-        column.name !== key ? schemaValue.from(column.name) : schemaValue;
+        resolvedColumnName !== key
+          ? schemaValue.from(resolvedColumnName)
+          : schemaValue;
 
       return {
         ...acc,
@@ -338,7 +391,7 @@ const createZeroTableBuilder = <
     .columns(columnsMapped)
     .primaryKey(
       ...(primaryKeys as unknown as FindPrimaryKeyFromTable<TTable>),
-    ) as ZeroTableBuilder<TTableName, TTable, TColumnConfig>;
+    ) as ZeroTableBuilder<TTableName, TTable, TColumnConfig, TOptions>;
 };
 
 /**
