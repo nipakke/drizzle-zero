@@ -149,6 +149,7 @@ export const schema = createZeroSchema(drizzleSchema, {
   manyToMany: {
     user: {
       // Simple format: [junction table, target table]
+      // Do not use the same name as any existing relationships
       groups: ["usersToGroup", "group"],
     },
   },
