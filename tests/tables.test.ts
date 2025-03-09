@@ -379,12 +379,14 @@ describe.concurrent("tables", () => {
     const testTable = pgTable("users", {
       id: text().primaryKey(),
       role: roleEnum().notNull(),
+      roleWithDefault: roleEnum().default("user").notNull(),
       backupRole: roleEnum(),
     });
 
     const result = createZeroTableBuilder("enum", testTable, {
       id: true,
       role: true,
+      roleWithDefault: true,
       backupRole: true,
     });
 
@@ -393,6 +395,8 @@ describe.concurrent("tables", () => {
       .columns({
         id: string(),
         role: enumeration<"admin" | "user" | "guest">(),
+        roleWithDefault: enumeration<"admin" | "user" | "guest">()
+          .optional(),
         backupRole: enumeration<"admin" | "user" | "guest">().optional(),
       })
       .primaryKey("id");
