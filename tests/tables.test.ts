@@ -395,8 +395,7 @@ describe.concurrent("tables", () => {
       .columns({
         id: string(),
         role: enumeration<"admin" | "user" | "guest">(),
-        roleWithDefault: enumeration<"admin" | "user" | "guest">()
-          .optional(),
+        roleWithDefault: enumeration<"admin" | "user" | "guest">().optional(),
         backupRole: enumeration<"admin" | "user" | "guest">().optional(),
       })
       .primaryKey("id");
@@ -705,7 +704,6 @@ describe.concurrent("tables", () => {
   test("pg - mixed required and optional json fields", () => {
     type ComplexMetadata = {
       required: {
-        version: number;
         features: string[];
       };
       optional?: {

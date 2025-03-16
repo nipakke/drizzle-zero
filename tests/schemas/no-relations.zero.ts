@@ -3,7 +3,6 @@ import { createZeroSchema } from "../../src";
 import * as noRelations from "./no-relations.schema";
 
 export const schema = createZeroSchema(noRelations, {
-  version: 1,
   tables: {
     users: {
       id: true,

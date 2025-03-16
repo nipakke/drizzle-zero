@@ -3,7 +3,6 @@ import { createZeroSchema } from "../../src";
 import * as manyToManySelfReferential from "./many-to-many-self-referential.schema";
 
 export const schema = createZeroSchema(manyToManySelfReferential, {
-  version: 1,
   tables: {
     user: {
       id: true,

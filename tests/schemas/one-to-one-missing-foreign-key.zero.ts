@@ -3,7 +3,6 @@ import { createZeroSchema } from "../../src";
 import * as oneToOneMissingForeignKey from "./one-to-one-missing-foreign-key.schema";
 
 export const schema = createZeroSchema(oneToOneMissingForeignKey, {
-  version: 1,
   tables: {
     users: {
       id: true,

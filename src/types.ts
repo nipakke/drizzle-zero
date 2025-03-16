@@ -152,11 +152,14 @@ export type RelationsConfig<T extends Relations> = ReturnType<T["config"]>;
  * Type guard that checks if a string has a capital letter.
  * @template S The string to check
  */
-export type HasCapital<S extends string> = S extends `${infer First}${infer Rest}`
-  ? First extends Uppercase<First>
-    ? (First extends Lowercase<First> ? HasCapital<Rest> : true)
-    : HasCapital<Rest>
-  : false;
+export type HasCapital<S extends string> =
+  S extends `${infer First}${infer Rest}`
+    ? First extends Uppercase<First>
+      ? First extends Lowercase<First>
+        ? HasCapital<Rest>
+        : true
+      : HasCapital<Rest>
+    : false;
 
 /**
  * Utility type that flattens an object type by removing any intermediate interfaces.

@@ -52,9 +52,6 @@ import * as drizzleSchema from "./drizzle-schema";
 
 // Convert to Zero schema
 export const schema = createZeroSchema(drizzleSchema, {
-  // The version of the schema passed to Zero.
-  version: 1,
-
   // Specify the casing style to use for the schema.
   // This is useful for when you want to use a different casing style than the default.
   // This works in the same way as the `casing` option in the Drizzle ORM.
@@ -131,7 +128,6 @@ drizzle-zero supports many-to-many relationships with a junction table. You can 
 
 ```ts
 export const schema = createZeroSchema(drizzleSchema, {
-  version: 1,
   tables: {
     user: {
       id: true,
@@ -180,7 +176,6 @@ For more complex scenarios like self-referential relationships:
 
 ```ts
 export const schema = createZeroSchema(drizzleSchema, {
-  version: 1,
   tables: {
     user: {
       id: true,

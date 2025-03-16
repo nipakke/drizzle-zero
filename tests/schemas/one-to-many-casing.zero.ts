@@ -3,7 +3,6 @@ import { createZeroSchema } from "../../src";
 import * as oneToMany from "./one-to-many-casing.schema";
 
 export const schema = createZeroSchema(oneToMany, {
-  version: 1,
   casing: "snake_case",
   tables: {
     users: {
@@ -23,7 +22,6 @@ export const schema = createZeroSchema(oneToMany, {
     },
   },
 });
-
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   return {

@@ -3,7 +3,6 @@ import { createZeroSchema } from "../../src";
 import * as customSchema from "./custom-schema.schema";
 
 export const schema = createZeroSchema(customSchema, {
-  version: 1,
   tables: {
     users: {
       id: true,
