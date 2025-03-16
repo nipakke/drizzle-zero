@@ -207,7 +207,7 @@ describe("types", () => {
     expect(result?.optionalReal).toBeNull();
     expect(result?.optionalDoublePrecision).toBeNull();
     expect(result?.optionalText).toBeNull();
-    expect(result?.optionalBoolean).toStrictEqual(false);
+    expect(result?.optionalBoolean).toBeNull();
     expect(result?.optionalTimestamp).toBeNull();
     expect(result?.optionalJson).toBeNull();
     expect(result?.optionalEnum).toBeNull();
