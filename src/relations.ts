@@ -1,3 +1,4 @@
+import { createSchema } from "@rocicorp/zero";
 import {
   createTableRelationsHelpers,
   getTableName,
@@ -11,14 +12,11 @@ import { getTableConfigForDatabase } from "./db";
 import {
   createZeroTableBuilder,
   getDrizzleColumnKeyFromColumnName,
-  type ColumnsConfig,
-  type ZeroColumns,
   type ZeroTableBuilderSchema,
   type ZeroTableCasing,
 } from "./tables";
 import type {
   Columns,
-  FindPrimaryKeyFromTable,
   FindRelationsForTable,
   FindTableByKey,
   FindTableByName,
@@ -433,14 +431,7 @@ const createZeroSchema = <
 ): Flatten<
   CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig, TCasing>
 > => {
-  let tables: Record<
-    string,
-    {
-      tableName: string;
-      columns: ZeroColumns<Table, ColumnsConfig<Table>, TCasing>;
-      primaryKey: FindPrimaryKeyFromTable<Table>;
-    }
-  > = {};
+  let tables: any[] = [];
 
   for (const [tableName, tableOrRelations] of typedEntries(schema)) {
     if (is(tableOrRelations, Table)) {
@@ -460,8 +451,7 @@ const createZeroSchema = <
         schemaConfig?.casing,
       );
 
-      tables[tableName as keyof typeof tables] =
-        tableSchema.build() as unknown as (typeof tables)[keyof typeof tables];
+      tables.push(tableSchema);
     }
   }
 
@@ -739,10 +729,13 @@ const createZeroSchema = <
     }
   }
 
-  return {
+  return createSchema({
     tables,
-    relationships,
-  } as unknown as CreateZeroSchema<
+    relationships: Object.entries(relationships).map(([key, value]) => ({
+      name: key,
+      relationships: value,
+    })),
+  } as any) as unknown as CreateZeroSchema<
     TDrizzleSchema,
     TColumnConfig,
     TManyConfig,
