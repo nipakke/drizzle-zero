@@ -92,14 +92,6 @@ export function expectSchemaDeepEqual<S extends ZeroSchema>(actual: S) {
   return {
     toEqual(expected: S) {
       expect({
-        __testKey: "version",
-        version: actual.version,
-      }).toStrictEqual({
-        __testKey: "version",
-        version: expected.version,
-      });
-
-      expect({
         __testKey: "tables",
         keys: Object.keys(actual.tables),
       }).toStrictEqual({

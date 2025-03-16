@@ -3,7 +3,6 @@ import { createZeroSchema } from "../../src";
 import * as oneToManyNamed from "./one-to-many-named.schema";
 
 export const schema = createZeroSchema(oneToManyNamed, {
-  version: 1,
   tables: {
     users: {
       id: true,

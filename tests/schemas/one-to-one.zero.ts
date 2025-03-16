@@ -3,7 +3,6 @@ import { createZeroSchema } from "../../src";
 import * as oneToOne from "./one-to-one.schema";
 
 export const schema = createZeroSchema(oneToOne, {
-  version: 1,
   tables: {
     users: {
       id: true,

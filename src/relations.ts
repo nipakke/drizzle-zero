@@ -5,7 +5,7 @@ import {
   Many,
   One,
   Relations,
-  Table
+  Table,
 } from "drizzle-orm";
 import { getTableConfigForDatabase } from "./db";
 import {
@@ -250,7 +250,6 @@ type CreateZeroSchema<
   TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
   TCasing extends ZeroTableCasing,
 > = {
-  readonly version: number;
   readonly tables: {
     [K in keyof TDrizzleSchema &
       keyof TColumnConfig as TDrizzleSchema[K] extends Table<any>
@@ -318,7 +317,6 @@ type CreateZeroSchema<
  * @param schema - The Drizzle schema to create a Zero schema from. This should be your complete Drizzle schema object
  *                containing all your table definitions and relationships.
  * @param schemaConfig - Configuration object for the Zero schema generation
- * @param schemaConfig.version - Schema version number for tracking changes
  * @param schemaConfig.tables - Specify which tables and columns to include in sync
  * @param schemaConfig.manyToMany - Optional configuration for many-to-many relationships through junction tables
  * @param schemaConfig.casing - The casing style to use for the schema
@@ -354,7 +352,6 @@ type CreateZeroSchema<
  * const zeroSchema = createZeroSchema(
  *   { users, posts, usersRelations },
  *   {
- *     version: 1,
  *     tables: {
  *       users: {
  *         id: true,
@@ -383,12 +380,10 @@ const createZeroSchema = <
   /**
    * The configuration for the Zero schema.
    *
-   * @param schemaConfig.version - The version of the schema.
    * @param schemaConfig.tables - The tables to include in the Zero schema.
    * @param schemaConfig.many - Configuration for many-to-many relationships.
    */
   schemaConfig: {
-    readonly version: number;
     /**
      * Specify the tables to include in the Zero schema.
      * This can include type overrides for columns, using `column.json()` for example.
@@ -744,7 +739,6 @@ const createZeroSchema = <
   }
 
   return {
-    version: schemaConfig.version,
     tables,
     relationships,
   } as unknown as CreateZeroSchema<

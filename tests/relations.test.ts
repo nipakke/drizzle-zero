@@ -90,7 +90,7 @@ describe.concurrent("relationships", () => {
       })
       .primaryKey("id");
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedUsers, expectedProfileInfo],
     });
 
@@ -120,7 +120,7 @@ describe.concurrent("relationships", () => {
       }),
     }));
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedUsers],
       relationships: [expectedRelations],
     });
@@ -170,7 +170,7 @@ describe.concurrent("relationships", () => {
       }),
     );
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedUsers, expectedProfileInfo],
       relationships: [expectedUsersRelations, expectedProfileInfoRelations],
     });
@@ -192,7 +192,7 @@ describe.concurrent("relationships", () => {
       })
       .primaryKey("id");
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedUsers],
     });
 
@@ -242,7 +242,7 @@ describe.concurrent("relationships", () => {
       }),
     );
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedUsers, expectedPosts],
       relationships: [expectedUsersRelationships, expectedPostsRelationships],
     });
@@ -333,7 +333,7 @@ describe.concurrent("relationships", () => {
       }),
     );
 
-    const expected = createSchema(2.1, {
+    const expected = createSchema({
       tables: [expectedUsers, expectedMedium, expectedMessage],
       relationships: [
         expectedUsersRelationships,
@@ -416,7 +416,7 @@ describe.concurrent("relationships", () => {
       }),
     );
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedUsers, expectedPosts, expectedComments],
       relationships: [
         expectedUsersRelationships,
@@ -482,7 +482,7 @@ describe.concurrent("relationships", () => {
       }),
     );
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedUsers, expectedPosts],
       relationships: [expectedUsersRelationships, expectedPostsRelationships],
     });
@@ -562,7 +562,7 @@ describe.concurrent("relationships", () => {
       }),
     );
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedUsers, expectedPosts, expectedComments],
       relationships: [
         expectedUsersRelationships,
@@ -657,7 +657,7 @@ describe.concurrent("relationships", () => {
       }),
     );
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedUsers, expectedUsersToGroups, expectedGroups],
       relationships: [
         expectedUsersRelationships,
@@ -730,7 +730,7 @@ describe.concurrent("relationships", () => {
       }),
     );
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedDoc, expectedRelated],
       relationships: [expectedDocRelationships, expectedRelatedRelationships],
     });
@@ -753,7 +753,7 @@ describe.concurrent("relationships", () => {
       })
       .primaryKey("id");
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedUsers],
     });
 
@@ -801,7 +801,7 @@ describe.concurrent("relationships", () => {
       }),
     }));
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedUsers, expectedUsersToGroups],
       relationships: [usersRelationships, expectedUsersToGroupsRelationships],
     });
@@ -848,7 +848,7 @@ describe.concurrent("relationships", () => {
       }),
     );
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedUsers, expectedFriendship],
       relationships: [expectedUsersRelationships],
     });
@@ -938,7 +938,7 @@ describe.concurrent("relationships", () => {
       }),
     );
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedUsers, expectedUsersToGroups, expectedGroups],
       relationships: [
         expectedUsersRelationships,
@@ -976,7 +976,7 @@ describe.concurrent("relationships", () => {
       }),
     );
 
-    const expected = createSchema(1, {
+    const expected = createSchema({
       tables: [expectedUsers],
       relationships: [expectedUsersRelationships],
     });

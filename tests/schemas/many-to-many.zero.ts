@@ -3,7 +3,6 @@ import { createZeroSchema } from "../../src";
 import * as manyToMany from "./many-to-many.schema";
 
 export const schema = createZeroSchema(manyToMany, {
-  version: 1,
   tables: {
     users: {
       id: true,

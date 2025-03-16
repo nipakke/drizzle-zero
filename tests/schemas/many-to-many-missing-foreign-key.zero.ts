@@ -3,7 +3,6 @@ import { createZeroSchema } from "../../src";
 import * as manyToManyForeignKey from "./many-to-many-missing-foreign-key.schema";
 
 export const schema = createZeroSchema(manyToManyForeignKey, {
-  version: 1,
   tables: {
     users: {
       id: true,

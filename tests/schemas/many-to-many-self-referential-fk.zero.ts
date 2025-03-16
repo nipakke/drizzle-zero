@@ -3,7 +3,6 @@ import { createZeroSchema } from "../../src";
 import * as manyToManySelfReferentialFk from "./many-to-many-self-referential-fk.schema";
 
 export const schema = createZeroSchema(manyToManySelfReferentialFk, {
-  version: 1,
   tables: {
     doc: {
       id: true,
