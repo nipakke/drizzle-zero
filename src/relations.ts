@@ -248,7 +248,6 @@ type CreateZeroSchema<
   TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
   TCasing extends ZeroTableCasing,
 > = {
-  readonly version: number;
   readonly tables: {
     [K in keyof TDrizzleSchema &
       keyof TColumnConfig as TDrizzleSchema[K] extends Table<any>
