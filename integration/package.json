@@ -10,13 +10,13 @@
     "drizzle-zero": "workspace:*"
   },
   "devDependencies": {
-    "@testcontainers/postgresql": "^10.20.0",
+    "@testcontainers/postgresql": "^10.21.0",
     "@types/pg": "^8.11.11",
     "@types/ws": "^8.18.0",
-    "@vitest/browser": "^3.0.8",
+    "@vitest/browser": "^3.0.9",
     "drizzle-kit": "^0.30.5",
-    "pg": "^8.14.0",
-    "testcontainers": "^10.20.0",
+    "pg": "^8.14.1",
+    "testcontainers": "^10.21.0",
     "ws": "^8.18.1"
   }
 }
