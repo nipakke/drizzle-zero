@@ -10,6 +10,7 @@ export const schema = createZeroSchema(customSchema, {
       invitedBy: true,
     },
   },
+  debug: true,
 });
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {

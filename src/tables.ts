@@ -24,7 +24,7 @@ import type {
   Flatten,
   HasCapital,
 } from "./types";
-import { typedEntries } from "./util";
+import { debugLog, typedEntries } from "./util";
 import { toCamelCase, toSnakeCase } from "drizzle-orm/casing";
 
 /**
@@ -221,15 +221,6 @@ export type ZeroTableCasing = Casing | undefined;
 /**
  * Creates a Zero schema from a Drizzle table definition.
  *
- * @template TTableName The mapped name of the table
- * @template TTable The Drizzle table type
- * @template TColumnConfig The columns configuration type
- * @template TOptions The options type
- *
- * @param table The Drizzle table instance
- * @param columns Configuration specifying which columns to include and how to map them
- * @param options Configuration for casing, etc.
- *
  * @returns A Zero schema definition for the table
  * @throws {Error} If primary key configuration is invalid or column types are unsupported
  */
@@ -255,6 +246,10 @@ const createZeroTableBuilder = <
    * Configuration for casing, etc.
    */
   casing?: TCasing,
+  /**
+   * Whether to enable debug mode.
+   */
+  debug?: boolean,
 ): ZeroTableBuilder<TTableName, TTable, TColumnConfig, TCasing> => {
   const actualTableName = getTableName(table);
   const tableColumns = getTableColumns(table);
@@ -267,6 +262,11 @@ const createZeroTableBuilder = <
       const columnConfig = columns[key as keyof TColumnConfig];
 
       if (columnConfig === false) {
+        debugLog(
+          debug,
+          `Skipping column ${String(key)} because columnConfig is false`,
+        );
+
         return acc;
       }
 
