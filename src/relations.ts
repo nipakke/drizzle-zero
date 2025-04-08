@@ -557,18 +557,9 @@ const createZeroSchema = <
               schemaConfig.debug,
               `Skipping many-to-many relationship - tables not in schema config:`,
               {
-                junctionTable:
-                  !schemaConfig.tables[
-                    junctionTableName as keyof typeof schemaConfig.tables
-                  ],
-                sourceTable:
-                  !schemaConfig.tables[
-                    sourceTableName as keyof typeof schemaConfig.tables
-                  ],
-                destTable:
-                  !schemaConfig.tables[
-                    destTableName as keyof typeof schemaConfig.tables
-                  ],
+                junctionTable: junctionTableName,
+                sourceTable: sourceTableName,
+                destTable: destTableName,
               },
             );
             continue;
@@ -739,14 +730,8 @@ const createZeroSchema = <
             schemaConfig.debug,
             `Skipping relation - tables not in schema config:`,
             {
-              sourceTable:
-                !schemaConfig.tables[
-                  tableName as keyof typeof schemaConfig.tables
-                ],
-              referencedTable:
-                !schemaConfig.tables[
-                  referencedTableKey as keyof typeof schemaConfig.tables
-                ],
+              sourceTable: tableName,
+              referencedTable: referencedTableKey,
             },
           );
           continue;
