@@ -82,6 +82,8 @@ export const schema = createZeroSchema(drizzleSchema, {
       authorId: true,
     },
   },
+  // enable debug mode to log the schema
+  debug: true,
 });
 
 // Define permissions with the inferred types from Drizzle

@@ -25,7 +25,7 @@ import type {
   RelationsConfig,
   TableColumnsConfig,
 } from "./types";
-import { typedEntries } from "./util";
+import { debugLog, typedEntries } from "./util";
 
 /**
  * Gets the keys of columns that can be used as indexes.
@@ -52,7 +52,7 @@ type ExtractTableConfigName<TTableConfig> = TTableConfig extends {
  * @template TDrizzleSchema - The complete Drizzle schema
  * @template TColumnConfig - Configuration for the tables
  * @template TManyConfig - Configuration for many-to-many relationships
- * @template TCurrentTable - The current table being processed
+ * @template TTableName extends keyof TColumnConfig & keyof TManyConfig
  */
 type ManyToManyRelationship<
   TDrizzleSchema extends { [K in string]: unknown },
@@ -214,8 +214,8 @@ type ManyConfig<
  * @template TDrizzleSchema - The complete Drizzle schema
  * @template TColumnConfig - Configuration for the tables
  * @template TManyConfig - Configuration for many-to-many relationships
- * @template TCurrentTable - The current table being processed
- * @template TCurrentTableRelations - Relations defined for the current table
+ * @template TTableName extends keyof TColumnConfig & keyof TManyConfig
+ * @template TTable extends Table<any>
  */
 type ReferencedZeroSchemas<
   TDrizzleSchema extends Record<string, unknown>,
@@ -426,6 +426,16 @@ const createZeroSchema = <
      * ```
      */
     readonly casing?: TCasing;
+
+    /**
+     * Whether to enable debug mode.
+     *
+     * @example
+     * ```ts
+     * { debug: true }
+     * ```
+     */
+    readonly debug?: boolean;
   },
 ): Flatten<
   CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig, TCasing>
@@ -440,6 +450,10 @@ const createZeroSchema = <
 
       // skip tables that don't have a config
       if (!tableConfig) {
+        debugLog(
+          schemaConfig.debug,
+          `Skipping table ${String(tableName)} - no config provided`,
+        );
         continue;
       }
 
@@ -475,7 +489,6 @@ const createZeroSchema = <
           typeof destTableNameOrObject === "string"
         ) {
           const junctionTableName = junctionTableNameOrObject;
-
           const destTableName = destTableNameOrObject;
 
           const sourceTable = typedEntries(schema).find(
@@ -540,7 +553,24 @@ const createZeroSchema = <
               destTableName as keyof typeof schemaConfig.tables
             ]
           ) {
-            // skip if any of the tables are not defined in the schema config
+            debugLog(
+              schemaConfig.debug,
+              `Skipping many-to-many relationship - tables not in schema config:`,
+              {
+                junctionTable:
+                  !schemaConfig.tables[
+                    junctionTableName as keyof typeof schemaConfig.tables
+                  ],
+                sourceTable:
+                  !schemaConfig.tables[
+                    sourceTableName as keyof typeof schemaConfig.tables
+                  ],
+                destTable:
+                  !schemaConfig.tables[
+                    destTableName as keyof typeof schemaConfig.tables
+                  ],
+              },
+            );
             continue;
           }
 
@@ -563,6 +593,15 @@ const createZeroSchema = <
               },
             ],
           };
+
+          debugLog(schemaConfig.debug, `Added many-to-many relationship:`, {
+            sourceTable: sourceTableName,
+            relationName,
+            relationship:
+              relationships[sourceTableName as keyof typeof relationships][
+                relationName
+              ],
+          });
         } else {
           const junctionTableName =
             junctionTableNameOrObject?.destTable ?? null;
@@ -696,7 +735,20 @@ const createZeroSchema = <
             referencedTableKey as keyof typeof schemaConfig.tables
           ]
         ) {
-          // skip if any of the tables are not defined in the schema config
+          debugLog(
+            schemaConfig.debug,
+            `Skipping relation - tables not in schema config:`,
+            {
+              sourceTable:
+                !schemaConfig.tables[
+                  tableName as keyof typeof schemaConfig.tables
+                ],
+              referencedTable:
+                !schemaConfig.tables[
+                  referencedTableKey as keyof typeof schemaConfig.tables
+                ],
+            },
+          );
           continue;
         }
 
@@ -728,7 +780,7 @@ const createZeroSchema = <
     }
   }
 
-  return createSchema({
+  const finalSchema = createSchema({
     tables,
     relationships: Object.entries(relationships).map(([key, value]) => ({
       name: key,
@@ -740,6 +792,14 @@ const createZeroSchema = <
     TManyConfig,
     TCasing
   >;
+
+  debugLog(
+    schemaConfig.debug,
+    "Output Zero schema",
+    JSON.stringify(finalSchema, null, 2),
+  );
+
+  return finalSchema;
 };
 
 /**
