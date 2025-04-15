@@ -43,7 +43,7 @@ import { assertEqual, expectTableSchemaDeepEqual } from "./utils";
 import { describe, test, TestAPI } from "vitest";
 import { sql } from "drizzle-orm";
 
-describe.concurrent("tables", () => {
+describe("tables", () => {
   test("pg - basic", () => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),

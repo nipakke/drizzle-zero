@@ -9,7 +9,7 @@ import {
 import { describe, test, TestAPI } from "vitest";
 import { assertEqual, expectSchemaDeepEqual } from "./utils";
 
-describe.concurrent("relationships", () => {
+describe("relationships", () => {
   test("relationships - many-to-many-incorrect-many", async ({
     expect,
   }: TestAPI) => {
@@ -20,22 +20,86 @@ describe.concurrent("relationships", () => {
     );
   });
 
-  test("relationships - many-to-many-subset", async ({ expect }: TestAPI) => {
-    await expect(
-      import("./schemas/one-to-one-missing-foreign-key.zero"),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: drizzle-zero: No relationship found for: userPosts (One from users to posts). Did you forget to define foreign keys?]`,
+  test("relationships - many-to-many-missing-foreign-key", async () => {
+    const { schema: manyToManyMissingForeignKeyZeroSchema } = await import(
+      "./schemas/many-to-many-missing-foreign-key.zero"
     );
-  });
 
-  test("relationships - many-to-many-missing-foreign-key", async ({
-    expect,
-  }: TestAPI) => {
-    await expect(
-      import("./schemas/many-to-many-missing-foreign-key.zero"),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: drizzle-zero: Invalid many-to-many configuration for users.usersToGroups: Could not find foreign key relationships in junction table usersToGroups]`,
+    const expectedUsers = table("users")
+      .from("user")
+      .columns({
+        id: string(),
+        name: string().optional(),
+      })
+      .primaryKey("id");
+
+    const expectedUsersToGroups = table("usersToGroups")
+      .from("users_to_group")
+      .columns({
+        userId: string().from("user_id"),
+        groupId: string().from("group_id"),
+      })
+      .primaryKey("userId", "groupId");
+
+    const expectedGroups = table("groups")
+      .from("group")
+      .columns({
+        id: string(),
+        name: string().optional(),
+      })
+      .primaryKey("id");
+
+    const expectedUsersRelationships = relationships(
+      expectedUsers,
+      ({ many }) => ({
+        groups: many({
+          sourceField: ["id"],
+          destField: ["userId"],
+          destSchema: expectedUsersToGroups,
+        }),
+      }),
     );
+
+    const expectedUsersToGroupsRelationships = relationships(
+      expectedUsersToGroups,
+      ({ one }) => ({
+        user: one({
+          sourceField: ["userId"],
+          destField: ["id"],
+          destSchema: expectedUsers,
+        }),
+        group: one({
+          sourceField: ["groupId"],
+          destField: ["id"],
+          destSchema: expectedGroups,
+        }),
+      }),
+    );
+
+    const expectedGroupsRelationships = relationships(
+      expectedGroups,
+      ({ many }) => ({
+        users: many({
+          sourceField: ["id"],
+          destField: ["groupId"],
+          destSchema: expectedUsersToGroups,
+        }),
+      }),
+    );
+
+    const expected = createSchema({
+      tables: [expectedUsers, expectedUsersToGroups, expectedGroups],
+      relationships: [
+        expectedUsersRelationships,
+        expectedUsersToGroupsRelationships,
+        expectedGroupsRelationships,
+      ],
+    });
+
+    expectSchemaDeepEqual(manyToManyMissingForeignKeyZeroSchema).toEqual(
+      expected,
+    );
+    assertEqual(manyToManyMissingForeignKeyZeroSchema, expected);
   });
 
   test("relationships - many-to-many-duplicate-relationship", async ({
@@ -48,14 +112,57 @@ describe.concurrent("relationships", () => {
     );
   });
 
-  test("relationships - one-to-one-missing-foreign-key", async ({
-    expect,
-  }: TestAPI) => {
-    await expect(
-      import("./schemas/one-to-one-missing-foreign-key.zero"),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: drizzle-zero: No relationship found for: userPosts (One from users to posts). Did you forget to define foreign keys?]`,
+  test("relationships - one-to-one-missing-foreign-key", async () => {
+    const { schema: oneToOneMissingForeignKeyZeroSchema } = await import(
+      "./schemas/one-to-one-missing-foreign-key.zero"
     );
+
+    const expectedUsers = table("users")
+      .columns({
+        id: string(),
+        name: string().optional(),
+      })
+      .primaryKey("id");
+
+    const expectedPosts = table("posts")
+      .columns({
+        id: string(),
+        name: string().optional(),
+        author: string(),
+      })
+      .primaryKey("id");
+
+    const expectedUsersRelationships = relationships(
+      expectedUsers,
+      ({ one }) => ({
+        userPosts: one({
+          sourceField: ["id"],
+          destField: ["author"],
+          destSchema: expectedPosts,
+        }),
+      }),
+    );
+
+    const expectedPostsRelationships = relationships(
+      expectedPosts,
+      ({ one }) => ({
+        postAuthor: one({
+          sourceField: ["author"],
+          destField: ["id"],
+          destSchema: expectedUsers,
+        }),
+      }),
+    );
+
+    const expected = createSchema({
+      tables: [expectedUsers, expectedPosts],
+      relationships: [expectedUsersRelationships, expectedPostsRelationships],
+    });
+
+    expectSchemaDeepEqual(oneToOneMissingForeignKeyZeroSchema).toEqual(
+      expected,
+    );
+    assertEqual(oneToOneMissingForeignKeyZeroSchema, expected);
   });
 
   test("relationships - one-to-many-missing-named", async ({

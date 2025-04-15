@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest";
 import * as allPg from "../src/pg";
 import { getTableColumns } from "drizzle-orm";
 
-describe.concurrent("pg", () => {
+describe("pg", () => {
   test("pg - export names", () => {
     expect(Object.keys(allPg)).toEqual(["zeroSchema", "zeroSchemaVersions"]);
 
