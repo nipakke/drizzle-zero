@@ -21,10 +21,6 @@
     ".": {
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    },
-    "./pg": {
-      "import": "./dist/pg/index.js",
-      "require": "./dist/pg/index.cjs"
     }
   },
   "repository": {

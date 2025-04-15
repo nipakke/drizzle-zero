@@ -308,7 +308,6 @@ type CreateZeroSchema<
  * - Select which tables to include in the Zero schema
  * - Configure column types and transformations
  * - Define many-to-many relationships through junction tables
- * - Automatically map foreign key relationships
  * - Specify the casing style to use for the schema
  *
  * @param schema - The Drizzle schema to create a Zero schema from. This should be your complete Drizzle schema object
@@ -517,15 +516,12 @@ const createZeroSchema = <
           }
 
           // Find source->junction and junction->dest relationships
-          const sourceJunctionFields = findForeignKeySourceAndDestFields(
-            schema,
-            {
-              sourceTable: sourceTable,
-              referencedTableName: getTableName(junctionTable),
-            },
-          );
+          const sourceJunctionFields = findRelationSourceAndDestFields(schema, {
+            sourceTable: sourceTable,
+            referencedTableName: getTableName(junctionTable),
+          });
 
-          const junctionDestFields = findForeignKeySourceAndDestFields(schema, {
+          const junctionDestFields = findRelationSourceAndDestFields(schema, {
             sourceTable: destTable,
             referencedTableName: getTableName(junctionTable),
           });
@@ -537,7 +533,7 @@ const createZeroSchema = <
             !sourceJunctionFields.destFieldNames.length
           ) {
             throw new Error(
-              `drizzle-zero: Invalid many-to-many configuration for ${String(sourceTableName)}.${relationName}: Could not find foreign key relationships in junction table ${junctionTableName}`,
+              `drizzle-zero: Invalid many-to-many configuration for ${String(sourceTableName)}.${relationName}: Could not find relationships in junction table ${junctionTableName}`,
             );
           }
 
@@ -555,11 +551,7 @@ const createZeroSchema = <
             debugLog(
               schemaConfig.debug,
               `Skipping many-to-many relationship - tables not in schema config:`,
-              {
-                junctionTable: junctionTableName,
-                sourceTable: sourceTableName,
-                destTable: destTableName,
-              },
+              { junctionTable, sourceTableName, destTableName },
             );
             continue;
           }
@@ -698,7 +690,7 @@ const createZeroSchema = <
             sourceFieldNames = sourceAndDestFields.sourceFieldNames;
             destFieldNames = sourceAndDestFields.destFieldNames;
           } else {
-            const sourceAndDestFields = findForeignKeySourceAndDestFields(
+            const sourceAndDestFields = findRelationSourceAndDestFields(
               schema,
               relation,
             );
@@ -792,7 +784,7 @@ const createZeroSchema = <
  * @param relation - The One or Many relation to find fields for
  * @returns Object containing source and destination field names
  */
-const findForeignKeySourceAndDestFields = (
+const findRelationSourceAndDestFields = (
   schema: Record<string, unknown>,
   relation: {
     sourceTable: Table;

@@ -23,8 +23,6 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-export { zeroSchema, zeroSchemaVersions } from "drizzle-zero/pg";
-
 const sharedColumns = {
   createdAt: timestamp("createdAt", {
     mode: "string",
