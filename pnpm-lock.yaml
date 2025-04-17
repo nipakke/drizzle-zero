@@ -76,6 +76,22 @@ importers:
         specifier: ^8.18.1
         version: 8.18.1
 
+  test-drizzle-zero:
+    dependencies:
+      '@rocicorp/zero':
+        specifier: ^0.18.2025040300
+        version: 0.18.2025040300
+      drizzle-orm:
+        specifier: ^0.41.0
+        version: 0.41.0(@opentelemetry/api@1.9.0)(@types/pg@8.11.13)(gel@2.0.1)(pg@8.14.1)(postgres@3.4.5)
+      drizzle-zero:
+        specifier: workspace:*
+        version: link:..
+    devDependencies:
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
 packages:
 
   '@ampproject/remapping@2.3.0':

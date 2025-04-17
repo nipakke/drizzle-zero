@@ -17,6 +17,7 @@ export const schema = createZeroSchema(manyToManyForeignKey, {
       groupId: true,
     },
   },
+  debug: true,
 });
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
