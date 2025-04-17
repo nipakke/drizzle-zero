@@ -9,10 +9,5 @@ export const schema = createZeroSchema(drizzleSchema, {
       name: true,
       password: false,
     },
-    Account: {
-      id: true,
-      userId: true,
-      provider: true,
-    }
   }
 }); 
