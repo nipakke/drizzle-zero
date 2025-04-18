@@ -3,7 +3,6 @@ import { createZeroSchema } from "../../src";
 import * as oneToMany from "./one-to-many-casing.schema";
 
 export const schema = createZeroSchema(oneToMany, {
-  casing: "snake_case",
   tables: {
     users: {
       id: true,

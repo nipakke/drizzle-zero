@@ -598,36 +598,6 @@ describe("tables", () => {
     assertEqual(result.schema, expected.schema);
   });
 
-  test("pg - snake case", () => {
-    const testTable = pgTable("users", {
-      id: text().primaryKey(),
-      createdAt: timestamp().notNull(),
-      updatedAt: timestamp().notNull(),
-    });
-
-    const result = createZeroTableBuilder(
-      "users",
-      testTable,
-      {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      "snake_case",
-    );
-
-    const expected = table("users")
-      .columns({
-        id: string(),
-        createdAt: number().from("created_at"),
-        updatedAt: number().from("updated_at"),
-      })
-      .primaryKey("id");
-
-    expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
-    assertEqual(result.schema, expected.schema);
-  });
-
   test("pg - compound primary key", () => {
     const testTable = pgTable(
       "order_items",
