@@ -41,9 +41,30 @@ export const seed = async () => {
   await db.insert(medium).values({ id: "3", name: "sms" });
   await db.insert(medium).values({ id: "4", name: "whatsapp" });
 
-  await db.insert(user).values({ id: "1", name: "James", partner: true });
-  await db.insert(user).values({ id: "2", name: "John", partner: false });
-  await db.insert(user).values({ id: "3", name: "Jane", partner: false });
+  await db
+    .insert(user)
+    .values({
+      id: "1",
+      name: "James",
+      partner: true,
+      email: "james@example.com",
+    });
+  await db
+    .insert(user)
+    .values({
+      id: "2",
+      name: "John",
+      partner: false,
+      email: "john@example.com",
+    });
+  await db
+    .insert(user)
+    .values({
+      id: "3",
+      name: "Jane",
+      partner: false,
+      email: "jane@example.com",
+    });
 
   await db.insert(message).values({
     id: "1",
@@ -167,9 +188,7 @@ export const startPostgresAndZero = async () => {
   const basePgUrlWithExternalPort = `${basePgUrl}@127.0.0.1:${PG_PORT}`;
 
   // Start Zero container
-  const zeroContainer = await new GenericContainer(
-    `rocicorp/zero:latest`,
-  )
+  const zeroContainer = await new GenericContainer(`rocicorp/zero:latest`)
     .withExposedPorts({
       container: 4848,
       host: ZERO_PORT,

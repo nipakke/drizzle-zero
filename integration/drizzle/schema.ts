@@ -46,6 +46,7 @@ export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   partner: boolean("partner").notNull(),
+  email: text("email").$type<`${string}@${string}`>().notNull(),
 });
 
 export const userRelations = relations(user, ({ many }) => ({

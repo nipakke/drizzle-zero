@@ -1,5 +1,7 @@
 import type { ReadonlyJSONValue } from "@rocicorp/zero";
 
+export type { ReadonlyJSONValue };
+
 /**
  * Represents the basic data types supported by Drizzle ORM.
  * These are the fundamental types that can be used in table column definitions.

@@ -310,6 +310,8 @@ type CreateZeroSchema<
  * - Define many-to-many relationships through junction tables
  * - Specify the casing style to use for the schema
  *
+ * @deprecated Use `drizzleZeroConfig` instead.
+ *
  * @param schema - The Drizzle schema to create a Zero schema from. This should be your complete Drizzle schema object
  *                containing all your table definitions and relationships.
  * @param schemaConfig - Configuration object for the Zero schema generation
@@ -434,11 +436,22 @@ const createZeroSchema = <
      * ```
      */
     readonly debug?: boolean;
+
+    /**
+     * Hidden option for internal use by the CLI.
+     */
+    readonly "~__cli"?: boolean;
   },
 ): Flatten<
   CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig, TCasing>
 > => {
   let tables: any[] = [];
+
+  if (!schemaConfig["~__cli"]) {
+    console.warn(
+      "🚨 drizzle-zero: importing drizzle-zero directly from a project will be deprecated in a future 1.x.x version. Please migrate to use the CLI instead: https://github.com/BriefHQ/drizzle-zero.",
+    );
+  }
 
   for (const [tableName, tableOrRelations] of typedEntries(schema)) {
     if (is(tableOrRelations, Table)) {
@@ -951,4 +964,71 @@ const getDrizzleKeyFromTableName = ({
   )?.[0]!;
 };
 
-export { createZeroSchema, type CreateZeroSchema };
+
+/**
+ * Configuration for the Zero schema generator. This defines how your Drizzle ORM schema
+ * is transformed into a Zero schema format, handling both direct relationships and many-to-many relationships.
+ *
+ * This allows you to:
+ * - Select which tables to include in the Zero schema
+ * - Configure column types and transformations
+ * - Define many-to-many relationships through junction tables
+ * - Specify the casing style to use for the schema
+ *
+ * @param schema - The Drizzle schema to create a Zero schema from. This should be your complete Drizzle schema object
+ *                containing all your table definitions and relationships.
+ * @param schemaConfig - Configuration object for the Zero schema generation
+ * @param schemaConfig.tables - Specify which tables and columns to include in sync
+ * @param schemaConfig.manyToMany - Optional configuration for many-to-many relationships through junction tables
+ * @param schemaConfig.casing - The casing style to use for the schema
+ *
+ * @returns A configuration object for the Zero schema CLI.
+ *
+ * @example
+ * ```typescript
+ * import { integer, pgTable, serial, text, varchar } from 'drizzle-orm/pg-core';
+ * import { relations } from 'drizzle-orm';
+ * import { drizzleZeroConfig } from 'drizzle-zero';
+ *
+ * // Define Drizzle schema
+ * const users = pgTable('users', {
+ *   id: serial('id').primaryKey(),
+ *   name: text('name'),
+ * });
+ *
+ * const posts = pgTable('posts', {
+ *   id: serial('id').primaryKey(),
+ *   title: varchar('title'),
+ *   authorId: integer('author_id').references(() => users.id),
+ * });
+ *
+ * const usersRelations = relations(users, ({ one }) => ({
+ *   posts: one(posts, {
+ *     fields: [users.id],
+ *     references: [posts.authorId],
+ *   }),
+ * }));
+ *
+ * // Export the configuration for the Zero schema CLI
+ * export default drizzleZeroConfig(
+ *   { users, posts, usersRelations },
+ *   {
+ *     tables: {
+ *       users: {
+ *         id: true,
+ *         name: true,
+ *       },
+ *       posts: {
+ *         id: true,
+ *         title: true,
+ *         authorId: true,
+ *       },
+ *     },
+ *   }
+ * );
+ * ```
+ */
+const drizzleZeroConfig: typeof createZeroSchema = (schema, config) =>
+  createZeroSchema(schema, { ...config, "~__cli": true });
+
+export { createZeroSchema, drizzleZeroConfig, type CreateZeroSchema };

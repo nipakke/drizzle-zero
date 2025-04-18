@@ -1,0 +1,8 @@
+{
+  "search.exclude": {
+    "**/zero-schema.gen.ts": true
+  },
+  "files.readonlyInclude": {
+    "**/zero-schema.gen.ts": true
+  }
+}

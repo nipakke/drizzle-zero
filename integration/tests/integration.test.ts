@@ -28,6 +28,7 @@ describe("relationships", () => {
     expect(user).toHaveLength(3);
     expect(user[0]?.name).toBe("James");
     expect(user[0]?.id).toBe("1");
+    expect(user[0]?.email).toBe("james@example.com");
 
     preloadedUsers.cleanup();
   });
