@@ -4,9 +4,11 @@
   "type": "module",
   "scripts": {
     "db:generate": "drizzle-kit generate",
+    "drizzle-zero:generate": "drizzle-zero generate",
     "test": "vitest run"
   },
   "dependencies": {
+    "drizzle-orm": "^0.42.0",
     "drizzle-zero": "workspace:*"
   },
   "devDependencies": {

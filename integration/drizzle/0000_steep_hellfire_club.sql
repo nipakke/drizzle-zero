@@ -1,5 +1,3 @@
-CREATE SCHEMA "zero";
---> statement-breakpoint
 CREATE TYPE "public"."status_type" AS ENUM('active', 'inactive', 'pending');--> statement-breakpoint
 CREATE TABLE "all_types" (
 	"createdAt" timestamp(3) with time zone DEFAULT now() NOT NULL,
@@ -74,14 +72,8 @@ CREATE TABLE "user" (
 	"updatedAt" timestamp(3) with time zone DEFAULT now() NOT NULL,
 	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
-	"partner" boolean NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "zero"."schemaVersions" (
-	"minSupportedVersion" integer,
-	"maxSupportedVersion" integer,
-	"lock" boolean PRIMARY KEY DEFAULT true NOT NULL,
-	CONSTRAINT "zero_schema_versions_single_row_constraint" CHECK ("zero"."schemaVersions"."lock")
+	"partner" boolean NOT NULL,
+	"email" text NOT NULL
 );
 --> statement-breakpoint
 ALTER TABLE "friendship" ADD CONSTRAINT "friendship_requesting_id_user_id_fk" FOREIGN KEY ("requesting_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

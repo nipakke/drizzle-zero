@@ -1,27 +1,26 @@
 {
   "name": "drizzle-zero",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Generate Zero schemas from Drizzle ORM schemas",
   "type": "module",
   "scripts": {
     "clean": "rm -rf dist node_modules coverage && cd integration && rm -rf node_modules",
-    "build": "tsup src/index.ts src/pg/index.ts src/build.ts cli/index.ts --format cjs,esm --dts",
-    "cli": "node dist/build.js",
+    "build": "rm -rf dist && tsx build.ts && chmod +x dist/bin.cjs",
     "release": "pnpm run build && pnpm publish",
     "test": "vitest run --typecheck --coverage",
     "test:types": "cd tests && tsc --noEmit",
     "test:ui": "vitest --ui"
   },
   "bin": {
-    "drizzle-zero": "./dist/cli/index.js"
+    "drizzle-zero": "./dist/bin.cjs"
   },
-  "main": "dist/src/index.cjs",
-  "module": "dist/src/index.js",
-  "types": "dist/src/index.d.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/src/index.js",
-      "require": "./dist/src/index.cjs"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "repository": {
@@ -57,19 +56,26 @@
     "@types/node": "^22.14.1",
     "@vitest/coverage-v8": "3.1.1",
     "@vitest/ui": "^3.1.1",
-    "drizzle-orm": "^0.41.0",
+    "commander": "^13.1.0",
+    "drizzle-orm": "^0.42.0",
     "esbuild": "^0.25.2",
     "jsdom": "^26.1.0",
     "prettier": "^3.5.3",
+    "ts-morph": "^25.0.1",
     "tsup": "^8.4.0",
+    "tsx": "^4.19.3",
     "typescript": "^5.8.3",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.1.1"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@rocicorp/zero-sqlite3",
+      "cpu-features",
       "esbuild",
-      "msw"
+      "msw",
+      "protobufjs",
+      "ssh2"
     ]
   },
   "packageManager": "pnpm@10.8.1+sha256.d8b2ebbc65cf02c349eca6b45c9640b910f16b6adebdb7b926e9db440e47cac7"

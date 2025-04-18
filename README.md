@@ -12,9 +12,18 @@ yarn add drizzle-zero
 pnpm add drizzle-zero
 ```
 
+## CLI
+
+🚨 The 0.8.0 release of `drizzle-zero` ships with a CLI - this is the recommended way to use it going forward.
+A future release will deprecate the code-based version. See below for the documentation.
+
 ## Usage
 
 Here's an example of how to convert a Drizzle schema to a Zero schema with bidirectional relationships:
+
+### Define Drizzle schema
+
+You should have an existing Drizzle schema, e.g.:
 
 ```ts
 import { relations } from "drizzle-orm";
@@ -23,6 +32,8 @@ import { pgTable, text, jsonb } from "drizzle-orm/pg-core";
 export const users = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name"),
+  // custom types are supported for any column type!
+  email: text("email").$type<`${string}@${string}`>().notNull(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -44,14 +55,16 @@ export const postsRelations = relations(posts, ({ one }) => ({
 }));
 ```
 
-Convert this Drizzle schema to a Zero schema:
+### Add `drizzle-zero.config.ts`
+
+Create a new config file at `drizzle-zero.config.ts` with the columns you want to include in the CLI output:
 
 ```ts
-import { createZeroSchema } from "drizzle-zero";
+import { drizzleZeroConfig } from "drizzle-zero";
 import * as drizzleSchema from "./drizzle-schema";
 
-// Convert to Zero schema
-export const schema = createZeroSchema(drizzleSchema, {
+// Define your configuration file for the CLI
+export default drizzleZeroConfig(drizzleSchema, {
   // Specify the casing style to use for the schema.
   // This is useful for when you want to use a different casing style than the default.
   // This works in the same way as the `casing` option in the Drizzle ORM.
@@ -82,13 +95,48 @@ export const schema = createZeroSchema(drizzleSchema, {
       authorId: true,
     },
   },
-  // enable debug mode to log the schema
-  debug: true,
 });
+```
 
-// Define permissions with the inferred types from Drizzle
-type Schema = typeof schema;
-type User = Row<typeof schema.tables.users>;
+You can customize this config file path with `-c, --config <input-file>`.
+
+### Add schema generation script
+
+You can then add the schema generation script to your `package.json`:
+
+```json
+{
+  "scripts": {
+    "generate": "drizzle-zero generate --format",
+    "postinstall" "npm generate"
+  }
+}
+```
+
+This command will, by default, output your schema to `zero-schema.gen.ts`.
+You can customize this config file path with `-o, --output <output-file>`.
+
+If you want to format the output with Prettier, you can pass the `-f, --format` option.
+Be sure it is installed locally before using this option.
+
+### Define Zero schema file
+
+You can then import the `zero-schema.gen.ts` schema from your Zero `schema.ts`
+and define permissions on top of it.
+
+```ts
+import { type Row, definePermissions } from "@rocicorp/zero";
+import { schema } from "./zero-schema.gen";
+
+export { schema };
+
+export type Schema = typeof schema;
+export type User = Row<typeof schema.tables.user>;
+//            ^ {
+//                readonly id: string;
+//                readonly name: string;
+//                readonly email: `${string}@${string}`;
+//              }
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {
   // ...further permissions definitions
@@ -115,6 +163,7 @@ function PostList() {
           {/* Access the JSON content from Drizzle */}
           <p>{post.content.textValue}</p>
           <p>By: {post.author?.name}</p>
+          <p>Email: {post.author?.email}</p>
         </div>
       ))}
     </div>
@@ -129,7 +178,7 @@ drizzle-zero supports many-to-many relationships with a junction table. You can 
 ### Simple Configuration
 
 ```ts
-export const schema = createZeroSchema(drizzleSchema, {
+export default drizzleZeroConfig(drizzleSchema, {
   tables: {
     user: {
       id: true,
@@ -177,7 +226,7 @@ console.log(user);
 For more complex scenarios like self-referential relationships:
 
 ```ts
-export const schema = createZeroSchema(drizzleSchema, {
+export default drizzleZeroConfig(drizzleSchema, {
   tables: {
     user: {
       id: true,
@@ -210,6 +259,7 @@ export const schema = createZeroSchema(drizzleSchema, {
 
 ## Features
 
+- Output static schemas from the CLI
 - Convert Drizzle ORM schemas to Zero schemas
   - Sync a subset of tables and columns
 - Handles all Drizzle column types that are supported by Zero
