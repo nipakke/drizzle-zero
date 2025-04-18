@@ -14,7 +14,7 @@ pnpm add drizzle-zero
 
 ## CLI
 
-🚨 The 0.8.0 release of `drizzle-zero` ships with a CLI - this is the recommended way to use it going forward.
+🚨 The 0.8.0+ releases of `drizzle-zero` ship with a CLI - this is the recommended way to use it going forward.
 A future release will deprecate the code-based version. See below for the documentation.
 
 ## Usage
