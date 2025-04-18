@@ -1,7 +1,7 @@
 import * as drizzleSchema from "./drizzle-schema";
 import { createZeroSchema } from "drizzle-zero";
 
-export const schema = createZeroSchema(drizzleSchema, {
+export default createZeroSchema(drizzleSchema, {
   tables: {
     User: {
       id: true,
