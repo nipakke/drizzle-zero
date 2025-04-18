@@ -8,7 +8,7 @@ import {
   string as zeroString,
   table as zeroTable,
 } from "@rocicorp/zero";
-import { type Casing, getTableColumns, getTableName, Table } from "drizzle-orm";
+import { getTableColumns, getTableName, Table } from "drizzle-orm";
 import { getTableConfigForDatabase } from "./db";
 import {
   type DrizzleColumnTypeToZeroType,
@@ -22,13 +22,11 @@ import type {
   ColumnNames,
   Columns,
   FindPrimaryKeyFromTable,
-  Flatten
+  Flatten,
 } from "./types";
 import { debugLog, typedEntries } from "./util";
 
-export type {
-  Casing, ColumnBuilder, ReadonlyJSONValue, TableBuilderWithColumns
-};
+export type { ColumnBuilder, ReadonlyJSONValue, TableBuilderWithColumns };
 
 /**
  * Represents a column definition from a Drizzle table, filtered by column name.
@@ -183,7 +181,7 @@ export type ZeroTableBuilderSchema<
   name: TTableName;
   primaryKey: any; // FindPrimaryKeyFromTable<TTable>;
   columns: Flatten<ZeroColumns<TTable, TColumnConfig>>;
-} & (TTable['_']['name'] extends TTableName ? {} : { serverName: string });
+}; // Zero does not support this properly yet: & (TTable['_']['name'] extends TTableName ? {} : { serverName: string });
 
 /**
  * Represents the complete Zero schema for a Drizzle table.
@@ -198,11 +196,6 @@ type ZeroTableBuilder<
 > = TableBuilderWithColumns<
   Readonly<ZeroTableBuilderSchema<TTableName, TTable, TColumnConfig>>
 >;
-
-/**
- * Casing for the Zero table builder.
- */
-export type ZeroTableCasing = Casing | undefined;
 
 /**
  * Creates a Zero schema from a Drizzle table definition.
@@ -385,6 +378,5 @@ const getDrizzleColumnKeyFromColumnName = ({
 export {
   createZeroTableBuilder,
   getDrizzleColumnKeyFromColumnName,
-  type ZeroTableBuilder
+  type ZeroTableBuilder,
 };
-

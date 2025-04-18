@@ -11,7 +11,7 @@ import {
 import {
   createZeroTableBuilder,
   getDrizzleColumnKeyFromColumnName,
-  type ZeroTableBuilderSchema
+  type ZeroTableBuilderSchema,
 } from "./tables";
 import type {
   Columns,
