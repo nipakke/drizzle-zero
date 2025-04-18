@@ -203,7 +203,7 @@ async function cli() {
 
       const zeroSchema = await main({
         config: command.config,
-        tsConfigPath: command.tsConfigPath,
+        tsConfigPath: command.tsconfig,
       });
 
       if (command.output) {
