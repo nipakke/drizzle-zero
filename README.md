@@ -108,7 +108,7 @@ You can then add the schema generation script to your `package.json`:
 {
   "scripts": {
     "generate": "drizzle-zero generate --format",
-    "postinstall" "npm generate"
+    "postinstall": "npm generate"
   }
 }
 ```

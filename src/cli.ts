@@ -1,6 +1,5 @@
 import { Command } from "commander";
 import * as fs from "node:fs/promises";
-import * as os from "node:os";
 import * as path from "node:path";
 import { Project, type ts, type Type, VariableDeclarationKind } from "ts-morph";
 import { tsImport } from "tsx/esm/api";
@@ -13,42 +12,80 @@ async function findConfigFile() {
 
   const configFile = files.find((file) => file.endsWith(defaultConfigFile));
   if (!configFile) {
-    console.error("❌  Error: No configuration file found");
+    console.error("❌  drizzle-zero: No configuration file found");
     process.exit(1);
   }
 
   return configFile;
 }
 
+async function createTempDir() {
+  // Create a temp directory in the current directory
+  const cwdTempDir = path.join(process.cwd(), ".drizzle-zero-temp");
+  await fs.mkdir(cwdTempDir, { recursive: true });
+  return await fs.mkdtemp(path.join(cwdTempDir, "drizzle-zero-"));
+}
+
+async function removeTempDir(tempDir: string) {
+  try {
+    // Remove the temp directory and its contents
+    await fs.rm(tempDir, { recursive: true, force: true });
+
+    // Also try to remove the parent .drizzle-zero-temp directory if it exists and is empty
+    const parentDir = path.join(process.cwd(), ".drizzle-zero-temp");
+
+    try {
+      const contents = await fs.readdir(parentDir);
+      if (contents.length === 0) {
+        await fs.rmdir(parentDir);
+      }
+    } catch (parentDirError) {
+      // Ignore errors when trying to remove the parent directory
+    }
+  } catch (error) {
+    console.warn(
+      `⚠️  drizzle-zero: Failed to clean up temporary directory ${tempDir}`,
+      error,
+    );
+  }
+}
+
 async function getZeroSchemaDefsFromConfig(
   configPath: string,
 ): Promise<string> {
-  const tempOutDir = await fs.mkdtemp(os.tmpdir());
-  const drizzleZeroConfigProject = new Project({
-    compilerOptions: {
-      declaration: true,
-      emitDeclarationOnly: true,
-      outDir: tempOutDir,
-      rootDir: "./",
-    },
-  });
+  const tempOutDir = await createTempDir();
+  try {
+    const drizzleZeroConfigProject = new Project({
+      compilerOptions: {
+        declaration: true,
+        emitDeclarationOnly: true,
+        outDir: tempOutDir,
+        rootDir: "./",
+      },
+    });
 
-  const configFile = drizzleZeroConfigProject.addSourceFileAtPath(configPath);
-  await configFile.emit();
+    const configFile = drizzleZeroConfigProject.addSourceFileAtPath(configPath);
+    await configFile.emit();
 
-  const zeroSchemaTypeDefs = await fs.readFile(
-    path.resolve(
-      tempOutDir,
-      path.relative(process.cwd(), configPath).replace(".ts", ".d.ts"),
-    ),
-    "utf-8",
-  );
+    const zeroSchemaTypeDefs = await fs.readFile(
+      path.resolve(
+        tempOutDir,
+        path.relative(process.cwd(), configPath).replace(".ts", ".d.ts"),
+      ),
+      "utf-8",
+    );
 
-  if (!zeroSchemaTypeDefs) {
-    throw new Error(`Failed to generate type definitions from ${configPath}`);
+    if (!zeroSchemaTypeDefs) {
+      throw new Error(
+        `drizzle-zero: Failed to generate type definitions from ${configPath}`,
+      );
+    }
+
+    return zeroSchemaTypeDefs;
+  } finally {
+    // Clean up the temporary directory
+    await removeTempDir(tempOutDir);
   }
-
-  return zeroSchemaTypeDefs;
 }
 
 function getZeroSchemaTypeFromDefs(typeDefsFile: string) {
@@ -208,7 +245,9 @@ async function cli() {
           path.resolve(process.cwd(), command.output),
           zeroSchema,
         );
-        console.log(`✅ Zero schema written to ${command.output}`);
+        console.log(
+          `✅ drizzle-zero: Zero schema written to ${command.output}`,
+        );
       } else {
         console.log({
           schema: zeroSchema,
@@ -221,6 +260,6 @@ async function cli() {
 
 // Run the main function
 cli().catch((error) => {
-  console.error("❌ Error:", error);
+  console.error("❌ drizzle-zero error:", error);
   process.exit(1);
 });
