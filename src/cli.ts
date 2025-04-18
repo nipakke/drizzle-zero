@@ -1,6 +1,5 @@
 import { Command } from "commander";
 import * as fs from "node:fs/promises";
-import * as os from "node:os";
 import * as path from "node:path";
 import { Project, type ts, type Type, VariableDeclarationKind } from "ts-morph";
 import { tsImport } from "tsx/esm/api";
@@ -21,25 +20,20 @@ async function findConfigFile() {
 }
 
 async function createTempDir() {
-  // Try primary temp directory
-  // try {
-  //   return await fs.mkdtemp(path.join(os.tmpdir(), "drizzle-zero-"));
-  // } catch (error) {
-    // If primary temp directory fails, try current directory
-    const cwdTempDir = path.join(process.cwd(), ".drizzle-zero-temp");
-    await fs.mkdir(cwdTempDir, { recursive: true });
-    return await fs.mkdtemp(path.join(cwdTempDir, "drizzle-zero-"));
-  // }
+  // Create a temp directory in the current directory
+  const cwdTempDir = path.join(process.cwd(), ".drizzle-zero-temp");
+  await fs.mkdir(cwdTempDir, { recursive: true });
+  return await fs.mkdtemp(path.join(cwdTempDir, "drizzle-zero-"));
 }
 
 async function removeTempDir(tempDir: string) {
   try {
     // Remove the temp directory and its contents
     await fs.rm(tempDir, { recursive: true, force: true });
-    
+
     // Also try to remove the parent .drizzle-zero-temp directory if it exists and is empty
     const parentDir = path.join(process.cwd(), ".drizzle-zero-temp");
-    
+
     try {
       const contents = await fs.readdir(parentDir);
       if (contents.length === 0) {
@@ -251,7 +245,9 @@ async function cli() {
           path.resolve(process.cwd(), command.output),
           zeroSchema,
         );
-        console.log(`✅ drizzle-zero: Zero schema written to ${command.output}`);
+        console.log(
+          `✅ drizzle-zero: Zero schema written to ${command.output}`,
+        );
       } else {
         console.log({
           schema: zeroSchema,
