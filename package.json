@@ -8,7 +8,7 @@
     "clean": "rm -rf dist node_modules coverage && cd integration && rm -rf node_modules",
     "build": "rimraf dist && pnpm run build:lib && pnpm run build:cli",
     "build:lib": "tsup-node src/index.ts --format esm,cjs --dts --outDir dist",
-    "build:cli": "tsup-node cli/src/index.ts --tsconfig cli/tsconfig.json --outDir dist/cli --format esm --dts",
+    "build:cli": "tsup-node cli/src/index.ts --outDir dist/cli --format esm --dts",
     "cli": "node dist/build.js",
     "release": "pnpm run build && pnpm publish",
     "test": "vitest run --typecheck --coverage --typecheck.tsconfig tsconfig.test.json",
