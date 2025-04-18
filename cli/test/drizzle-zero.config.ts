@@ -1,5 +1,5 @@
 import * as drizzleSchema from "./drizzle-schema";
-import { createZeroSchema } from "../src/index";
+import { createZeroSchema } from "drizzle-zero";
 
 export const schema = createZeroSchema(drizzleSchema, {
   tables: {
@@ -9,5 +9,5 @@ export const schema = createZeroSchema(drizzleSchema, {
       name: true,
       password: false,
     },
-  }
-}); 
+  },
+});

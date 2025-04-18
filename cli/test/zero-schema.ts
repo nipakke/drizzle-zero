@@ -1,5 +1,5 @@
-import { Row } from "@rocicorp/zero";
-import { drizzleSchema, Schema } from "./drizzle-zero.gen";
+import type { Row } from "@rocicorp/zero";
+import { drizzleSchema, type Schema } from "./zero-schema.gen";
 
 export const schema = drizzleSchema;
 

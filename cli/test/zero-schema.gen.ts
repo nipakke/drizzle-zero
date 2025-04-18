@@ -11,29 +11,30 @@
 // !!! this is not actually getting generated, just an example of what it should look like
 
 // this is just output straight from tsc
-import { type Row } from '@rocicorp/zero';
+import type { Row } from "@rocicorp/zero";
 export declare const schema: {
-    readonly tables: {
-        User: {
-            name: "User";
-            primaryKey: any;
-            columns: {
-
-                readonly email: {
-                    optional: false;
-                    type: "string";
-                    customType: "email_value";
-                } | {
-                    optional: false;
-                    type: "string";
-                    customType: "email_value";
-                    serverName: string;
-                };
+  readonly tables: {
+    User: {
+      name: "User";
+      primaryKey: any;
+      columns: {
+        readonly email:
+          | {
+              optional: false;
+              type: "string";
+              customType: "email_value";
+            }
+          | {
+              optional: false;
+              type: "string";
+              customType: "email_value";
+              serverName: string;
             };
-        };
+      };
     };
-}
+  };
+};
 export type Schema = typeof schema;
 
 // we then just concatenate the JSON.stringify output from calling the createZeroSchema function, then add some typecasting
-export const drizzleSchema = { tables: {  } } as unknown as Schema;
+export const drizzleSchema = { tables: {} } as unknown as Schema;
