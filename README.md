@@ -65,13 +65,6 @@ import * as drizzleSchema from "./drizzle-schema";
 
 // Define your configuration file for the CLI
 export default drizzleZeroConfig(drizzleSchema, {
-  // Specify the casing style to use for the schema.
-  // This is useful for when you want to use a different casing style than the default.
-  // This works in the same way as the `casing` option in the Drizzle ORM.
-  //
-  // @example
-  // casing: "snake_case",
-
   // Specify which tables and columns to include in the Zero schema.
   // This allows for the "expand/migrate/contract" pattern recommended in the Zero docs.
   // When a column is first added, it should be set to false, and then changed to true
@@ -115,9 +108,6 @@ You can then add the schema generation script to your `package.json`:
 
 This command will, by default, output your schema to `zero-schema.gen.ts`.
 You can customize this config file path with `-o, --output <output-file>`.
-
-If you want to format the output with Prettier, you can pass the `-f, --format` option.
-Be sure it is installed locally before using this option.
 
 ### Define Zero schema file
 

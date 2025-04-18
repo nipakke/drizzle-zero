@@ -32,7 +32,6 @@ const pool = new Pool({
 
 export const db = drizzle(pool, {
   schema: drizzleSchema,
-  casing: "snake_case",
 });
 
 export const seed = async () => {

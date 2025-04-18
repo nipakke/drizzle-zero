@@ -11,8 +11,7 @@ import {
 import {
   createZeroTableBuilder,
   getDrizzleColumnKeyFromColumnName,
-  type ZeroTableBuilderSchema,
-  type ZeroTableCasing,
+  type ZeroTableBuilderSchema
 } from "./tables";
 import type {
   Columns,
@@ -245,7 +244,6 @@ type CreateZeroSchema<
   TDrizzleSchema extends { [K in string]: unknown },
   TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
   TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
-  TCasing extends ZeroTableCasing,
 > = {
   readonly tables: {
     [K in keyof TDrizzleSchema &
@@ -258,8 +256,7 @@ type CreateZeroSchema<
           ZeroTableBuilderSchema<
             K & string,
             TDrizzleSchema[K],
-            TColumnConfig[K],
-            TCasing
+            TColumnConfig[K]
           >
         >
       : never;
@@ -308,7 +305,6 @@ type CreateZeroSchema<
  * - Select which tables to include in the Zero schema
  * - Configure column types and transformations
  * - Define many-to-many relationships through junction tables
- * - Specify the casing style to use for the schema
  *
  * @deprecated Use `drizzleZeroConfig` instead.
  *
@@ -317,7 +313,6 @@ type CreateZeroSchema<
  * @param schemaConfig - Configuration object for the Zero schema generation
  * @param schemaConfig.tables - Specify which tables and columns to include in sync
  * @param schemaConfig.manyToMany - Optional configuration for many-to-many relationships through junction tables
- * @param schemaConfig.casing - The casing style to use for the schema
  *
  * @returns A Zero schema containing tables and their relationships
  *
@@ -369,7 +364,6 @@ const createZeroSchema = <
   const TDrizzleSchema extends { [K in string]: unknown },
   const TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
   const TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
-  const TCasing extends ZeroTableCasing,
 >(
   /**
    * The Drizzle schema to create a Zero schema from.
@@ -418,16 +412,6 @@ const createZeroSchema = <
     readonly manyToMany?: TManyConfig;
 
     /**
-     * The casing style to use for the schema.
-     *
-     * @example
-     * ```ts
-     * { casing: 'snake_case' }
-     * ```
-     */
-    readonly casing?: TCasing;
-
-    /**
      * Whether to enable debug mode.
      *
      * @example
@@ -442,9 +426,7 @@ const createZeroSchema = <
      */
     readonly "~__cli"?: boolean;
   },
-): Flatten<
-  CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig, TCasing>
-> => {
+): Flatten<CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig>> => {
   let tables: any[] = [];
 
   if (!schemaConfig["~__cli"]) {
@@ -472,7 +454,6 @@ const createZeroSchema = <
         String(tableName),
         table,
         tableConfig,
-        schemaConfig?.casing,
       );
 
       tables.push(tableSchema);
@@ -778,8 +759,7 @@ const createZeroSchema = <
   } as any) as unknown as CreateZeroSchema<
     TDrizzleSchema,
     TColumnConfig,
-    TManyConfig,
-    TCasing
+    TManyConfig
   >;
 
   debugLog(
@@ -964,7 +944,6 @@ const getDrizzleKeyFromTableName = ({
   )?.[0]!;
 };
 
-
 /**
  * Configuration for the Zero schema generator. This defines how your Drizzle ORM schema
  * is transformed into a Zero schema format, handling both direct relationships and many-to-many relationships.
@@ -973,14 +952,12 @@ const getDrizzleKeyFromTableName = ({
  * - Select which tables to include in the Zero schema
  * - Configure column types and transformations
  * - Define many-to-many relationships through junction tables
- * - Specify the casing style to use for the schema
  *
  * @param schema - The Drizzle schema to create a Zero schema from. This should be your complete Drizzle schema object
  *                containing all your table definitions and relationships.
  * @param schemaConfig - Configuration object for the Zero schema generation
  * @param schemaConfig.tables - Specify which tables and columns to include in sync
  * @param schemaConfig.manyToMany - Optional configuration for many-to-many relationships through junction tables
- * @param schemaConfig.casing - The casing style to use for the schema
  *
  * @returns A configuration object for the Zero schema CLI.
  *

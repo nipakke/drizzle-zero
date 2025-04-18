@@ -1,11 +1,19 @@
 import { Command } from "commander";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import { Project, type ts, type Type, VariableDeclarationKind } from "ts-morph";
+import {
+  IndentationText,
+  Project,
+  type ts,
+  type Type,
+  TypeFormatFlags,
+  VariableDeclarationKind,
+} from "ts-morph";
 import { tsImport } from "tsx/esm/api";
 
 const defaultConfigFile = "drizzle-zero.config.ts";
 const defaultOutputFile = "zero-schema.gen.ts";
+const defaultTsConfigFile = "tsconfig.json";
 
 async function findConfigFile() {
   const files = await fs.readdir(process.cwd());
@@ -19,83 +27,50 @@ async function findConfigFile() {
   return configFile;
 }
 
-async function createTempDir() {
-  // Create a temp directory in the current directory
-  const cwdTempDir = path.join(process.cwd(), ".drizzle-zero-temp");
-  await fs.mkdir(cwdTempDir, { recursive: true });
-  return await fs.mkdtemp(path.join(cwdTempDir, "drizzle-zero-"));
-}
+async function getZeroSchemaDefsFromConfig({
+  configPath,
+  tsConfigPath,
+}: {
+  configPath: string;
+  tsConfigPath: string;
+}) {
+  const drizzleZeroConfigProject = new Project({
+    tsConfigFilePath: tsConfigPath,
+    compilerOptions: {
+      emitDeclarationOnly: true,
+      declaration: true,
+      noEmit: false,
+      declarationMap: false,
+      sourceMap: false,
+    },
+  });
 
-async function removeTempDir(tempDir: string) {
-  try {
-    // Remove the temp directory and its contents
-    await fs.rm(tempDir, { recursive: true, force: true });
+  const fileName = configPath.slice(configPath.lastIndexOf("/") + 1);
+  const resolvedOutputFileName = fileName.replace(".ts", ".d.ts");
 
-    // Also try to remove the parent .drizzle-zero-temp directory if it exists and is empty
-    const parentDir = path.join(process.cwd(), ".drizzle-zero-temp");
+  const emittedFiles = await drizzleZeroConfigProject.emitToMemory();
 
-    try {
-      const contents = await fs.readdir(parentDir);
-      if (contents.length === 0) {
-        await fs.rmdir(parentDir);
-      }
-    } catch (parentDirError) {
-      // Ignore errors when trying to remove the parent directory
-    }
-  } catch (error) {
-    console.warn(
-      `⚠️  drizzle-zero: Failed to clean up temporary directory ${tempDir}`,
-      error,
-    );
-  }
-}
-
-async function getZeroSchemaDefsFromConfig(
-  configPath: string,
-): Promise<string> {
-  const tempOutDir = await createTempDir();
-  try {
-    const drizzleZeroConfigProject = new Project({
-      compilerOptions: {
-        declaration: true,
-        emitDeclarationOnly: true,
-        outDir: tempOutDir,
-        rootDir: "./",
-      },
+  // load into a new project to format
+  const formatProject = new Project({
+    useInMemoryFileSystem: true,
+  });
+  for (const file of emittedFiles.getFiles()) {
+    formatProject.createSourceFile(file.filePath, file.text, {
+      overwrite: true,
     });
-
-    const configFile = drizzleZeroConfigProject.addSourceFileAtPath(configPath);
-    await configFile.emit();
-
-    const zeroSchemaTypeDefs = await fs.readFile(
-      path.resolve(
-        tempOutDir,
-        path.relative(process.cwd(), configPath).replace(".ts", ".d.ts"),
-      ),
-      "utf-8",
-    );
-
-    if (!zeroSchemaTypeDefs) {
-      throw new Error(
-        `drizzle-zero: Failed to generate type definitions from ${configPath}`,
-      );
-    }
-
-    return zeroSchemaTypeDefs;
-  } finally {
-    // Clean up the temporary directory
-    await removeTempDir(tempOutDir);
   }
-}
 
-function getZeroSchemaTypeFromDefs(typeDefsFile: string) {
-  const zeroSchemaTypeGetter = new Project({ useInMemoryFileSystem: true });
-  const zeroSchemaTypeDeclaration = zeroSchemaTypeGetter.createSourceFile(
-    "zero-schema.d.ts",
-    typeDefsFile,
-  );
+  // format the config file
+  const sourceFile = formatProject.getSourceFile(resolvedOutputFileName);
+
+  if (!sourceFile) {
+    throw new Error(
+      `❌  drizzle-zero: Failed to find type definitions for ${resolvedOutputFileName}`,
+    );
+  }
+
   const zeroSchemaTypeDecl =
-    zeroSchemaTypeDeclaration.getVariableDeclarationOrThrow("_default");
+    sourceFile.getVariableDeclarationOrThrow("_default");
   const zeroSchemaType = zeroSchemaTypeDecl.getType();
 
   return zeroSchemaType;
@@ -107,20 +82,26 @@ async function getGeneratedSchema(
 ) {
   const typename = "Schema";
 
-  const drizzleZeroOutputProject = new Project({ useInMemoryFileSystem: true });
+  const drizzleZeroOutputProject = new Project({
+    useInMemoryFileSystem: true,
+    manipulationSettings: { indentationText: IndentationText.TwoSpaces },
+  });
   const zeroSchemaGenerated = drizzleZeroOutputProject.createSourceFile(
     defaultOutputFile,
     "",
-    {
-      overwrite: true,
-    },
+    { overwrite: true },
   );
 
   zeroSchemaGenerated.addTypeAlias({
     name: typename,
     isExported: true,
-    type: zeroSchemaType.getText(),
+    type: zeroSchemaType.getText(undefined, TypeFormatFlags.NoTruncation),
   });
+
+  const stringifiedSchema = JSON.stringify(zeroSchema, null, 2).replaceAll(
+    `"customType": null`,
+    `"customType": null as unknown`,
+  );
 
   zeroSchemaGenerated.addVariableStatement({
     declarationKind: VariableDeclarationKind.Const,
@@ -128,18 +109,16 @@ async function getGeneratedSchema(
     declarations: [
       {
         name: "schema",
-        initializer: `${JSON.stringify(zeroSchema, null, 2)} as unknown as ${typename}`,
+        initializer: `${stringifiedSchema} as ${typename}`,
       },
     ],
   });
 
-  await zeroSchemaGenerated.save();
-  const file = await drizzleZeroOutputProject
-    .getFileSystem()
-    .readFile(defaultOutputFile, "utf-8");
+  zeroSchemaGenerated.formatText();
 
-  return `
-/* eslint-disable */
+  const file = zeroSchemaGenerated.getText();
+
+  return `/* eslint-disable */
 /* tslint:disable */
 /* noinspection JSUnusedGlobalSymbols */
 /* @ts-nocheck */
@@ -161,13 +140,14 @@ ${file}`;
 
 export interface GeneratorOptions {
   config?: string;
-  format?: boolean;
+  tsConfigPath?: string;
 }
 
 async function main(opts: GeneratorOptions = {}) {
-  const { config, format } = { ...opts };
+  const { config, tsConfigPath } = { ...opts };
 
   const configFilePath = config ?? (await findConfigFile());
+  const resolvedTsConfigPath = tsConfigPath ?? defaultTsConfigFile;
 
   const fullConfigPath = path.resolve(process.cwd(), configFilePath);
 
@@ -182,35 +162,17 @@ async function main(opts: GeneratorOptions = {}) {
 
   const { default: zeroConfig } = await tsImport(fullConfigPath, __filename);
 
-  const zeroSchemaDefs = await getZeroSchemaDefsFromConfig(fullConfigPath);
-  const zeroSchemaType = getZeroSchemaTypeFromDefs(zeroSchemaDefs);
+  const zeroSchemaType = await getZeroSchemaDefsFromConfig({
+    configPath: fullConfigPath,
+    tsConfigPath: resolvedTsConfigPath,
+  });
 
   const zeroSchemaGenerated = await getGeneratedSchema(
     zeroConfig,
     zeroSchemaType,
   );
 
-  const zeroSchemaFormatted = format
-    ? await (async () => {
-        try {
-          const { default: prettier } = await import("prettier");
-
-          const formatted = await prettier.format(zeroSchemaGenerated, {
-            parser: "typescript",
-          });
-
-          return formatted;
-        } catch (error) {
-          console.error(
-            "⚠️  drizzle-zero: error formatting Zero schema with prettier - did you install it?",
-            error,
-          );
-          return zeroSchemaGenerated;
-        }
-      })()
-    : zeroSchemaGenerated;
-
-  return zeroSchemaFormatted;
+  return zeroSchemaGenerated;
 }
 
 async function cli() {
@@ -231,13 +193,17 @@ async function cli() {
       `Path to the generated output file`,
       defaultOutputFile,
     )
-    .option("-f, --format", "Format the output using prettier", false)
+    .option(
+      "-t, --tsconfig <tsconfig-file>",
+      `Path to the custom tsconfig file`,
+      defaultTsConfigFile,
+    )
     .action(async (command) => {
       console.log(`⚙️  Generating zero schema from ${command.config}...`);
 
       const zeroSchema = await main({
         config: command.config,
-        format: command.format,
+        tsConfigPath: command.tsConfigPath,
       });
 
       if (command.output) {
