@@ -20,10 +20,22 @@ async function findConfigFile() {
   return configFile;
 }
 
+async function createTempDir() {
+  // Try primary temp directory
+  try {
+    return await fs.mkdtemp(path.join(os.tmpdir(), "drizzle-zero-"));
+  } catch (error) {
+    // If primary temp directory fails, try current directory
+    const cwdTempDir = path.join(process.cwd(), ".drizzle-zero-temp");
+    await fs.mkdir(cwdTempDir, { recursive: true });
+    return await fs.mkdtemp(path.join(cwdTempDir, "drizzle-zero-"));
+  }
+}
+
 async function getZeroSchemaDefsFromConfig(
   configPath: string,
 ): Promise<string> {
-  const tempOutDir = await fs.mkdtemp(os.tmpdir());
+  const tempOutDir = await createTempDir();
   const drizzleZeroConfigProject = new Project({
     compilerOptions: {
       declaration: true,
