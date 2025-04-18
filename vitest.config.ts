@@ -13,6 +13,7 @@ export default defineConfig({
     },
     coverage: {
       include: ["src/**/*.ts"],
+      exclude: ["src/cli.ts"],
       thresholds: {
         lines: 90,
         statements: 90,

@@ -16,6 +16,7 @@ import {
   type DrizzleDataTypeToZeroType,
   drizzleDataTypeToZeroType,
   type ZeroTypeToTypescriptType,
+  type ReadonlyJSONValue,
 } from "./drizzle-to-zero";
 import type {
   ColumnNames,
@@ -26,6 +27,8 @@ import type {
 } from "./types";
 import { debugLog, typedEntries } from "./util";
 import { toCamelCase, toSnakeCase } from "drizzle-orm/casing";
+
+export type { ColumnBuilder, TableBuilderWithColumns, Casing, ReadonlyJSONValue };
 
 /**
  * Represents a column definition from a Drizzle table, filtered by column name.
