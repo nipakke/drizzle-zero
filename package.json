@@ -8,7 +8,7 @@
     "clean": "rm -rf dist node_modules coverage && cd integration && rm -rf node_modules",
     "build": "rm -rf dist && tsx build.ts && chmod +x dist/bin.cjs",
     "release": "pnpm run build && pnpm publish",
-    "test": "vitest run --typecheck --coverage --typecheck.tsconfig tsconfig.test.json",
+    "test": "vitest run --typecheck --coverage",
     "test:types": "tsc --noEmit",
     "test:ui": "vitest --ui"
   },
