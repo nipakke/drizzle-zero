@@ -89,4 +89,4 @@ export const schema = {
     },
   },
   relationships: {},
-} as Schema;
+} as unknown as Schema;

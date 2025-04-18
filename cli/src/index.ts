@@ -3,8 +3,9 @@ import * as path from "node:path";
 import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import prettier from "prettier";
-import { Command } from "commander";
 import { Project, type ts, type Type, VariableDeclarationKind } from "ts-morph";
+import { tsImport } from "tsx/esm/api";
+import { Command } from "commander";
 
 async function findConfigFile() {
   const files = await fs.readdir(process.cwd());
@@ -86,7 +87,7 @@ async function getGeneratedSchema(
     declarations: [
       {
         name: "schema",
-        initializer: `${JSON.stringify(zeroSchema, null, 2)} as ${typename}`,
+        initializer: `${JSON.stringify(zeroSchema, null, 2)} as unknown as ${typename}`,
       },
     ],
   });
@@ -127,7 +128,10 @@ async function main(opts: GeneratorOptions = {}) {
   const configFilePath = config ?? (await findConfigFile());
 
   const fullConfigPath = path.resolve(process.cwd(), configFilePath);
-  const { default: zeroSchema } = await import(fullConfigPath);
+  const { default: zeroSchema } = await tsImport(
+    fullConfigPath,
+    import.meta.url,
+  );
 
   const zeroSchemaDefs = await getZeroSchemaDefsFromConfig(fullConfigPath);
   const zeroSchemaType = getZeroSchemaTypeFromDefs(zeroSchemaDefs);

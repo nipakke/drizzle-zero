@@ -1,5 +1,5 @@
 import * as drizzleSchema from "./drizzle-schema";
-import { createZeroSchema } from "drizzle-zero";
+import { createZeroSchema } from "../../src/index";
 
 export default createZeroSchema(drizzleSchema, {
   tables: {

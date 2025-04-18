@@ -4,26 +4,34 @@
   "description": "Generate Zero schemas from Drizzle ORM schemas",
   "type": "module",
   "scripts": {
+    "dev:cli": "tsx --watch cli/src/index.ts -c cli/test/drizzle-zero.config.ts -o cli/test/zero-schema.gen.ts",
     "clean": "rm -rf dist node_modules coverage && cd integration && rm -rf node_modules",
-    "build": "tsup src/index.ts src/pg/index.ts src/build.ts cli/index.ts --format cjs,esm --dts",
+    "build": "rimraf dist && pnpm run build:lib && pnpm run build:cli",
+    "build:lib": "tsup-node src/index.ts --format esm,cjs --dts --outDir dist",
+    "build:cli": "tsup-node cli/src/index.ts --tsconfig cli/tsconfig.json --outDir dist/cli --format esm --dts",
     "cli": "node dist/build.js",
     "release": "pnpm run build && pnpm publish",
-    "test": "vitest run --typecheck --coverage",
-    "test:types": "cd tests && tsc --noEmit",
+    "test": "vitest run --typecheck --coverage --typecheck.tsconfig tsconfig.test.json",
+    "test:types": "tsc --noEmit",
     "test:ui": "vitest --ui"
   },
   "bin": {
-    "drizzle-zero": "./dist/cli/index.js"
+    "drizzle-zero": "./dist/cli/src/index.js"
   },
-  "main": "dist/src/index.cjs",
-  "module": "dist/src/index.js",
-  "types": "dist/src/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/src/index.js",
-      "require": "./dist/src/index.cjs"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BriefHQ/drizzle-zero.git"
@@ -48,9 +56,14 @@
   "bugs": {
     "url": "https://github.com/BriefHQ/drizzle-zero/issues"
   },
+  "dependencies": {
+    "commander": "^13.1.0",
+    "drizzle-orm": ">=0.36.0",
+    "ts-morph": "^25.0.1",
+    "tsx": "^4.19.3"
+  },
   "peerDependencies": {
-    "@rocicorp/zero": ">=0.13.2025013101",
-    "drizzle-orm": ">=0.36.0"
+    "@rocicorp/zero": ">=0.13.2025013101"
   },
   "devDependencies": {
     "@rocicorp/zero": "^0.18.2025040300",
@@ -61,6 +74,7 @@
     "esbuild": "^0.25.2",
     "jsdom": "^26.1.0",
     "prettier": "^3.5.3",
+    "rimraf": "^6.0.1",
     "tsup": "^8.4.0",
     "typescript": "^5.8.3",
     "vite-tsconfig-paths": "^5.1.4",
@@ -69,7 +83,8 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",
-      "msw"
+      "msw",
+      "protobufjs"
     ]
   },
   "packageManager": "pnpm@10.8.1+sha256.d8b2ebbc65cf02c349eca6b45c9640b910f16b6adebdb7b926e9db440e47cac7"

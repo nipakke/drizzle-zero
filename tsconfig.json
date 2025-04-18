@@ -1,32 +1,37 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "verbatimModuleSyntax": true,
+    /* Base Options: */
     "esModuleInterop": true,
-    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
     "moduleDetection": "force",
+    "verbatimModuleSyntax": true,
+
+    /* Strictness */
     "strict": true,
-    "exactOptionalPropertyTypes": true,
-    "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "strictNullChecks": true,
-    "declarationMap": true,
+
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "sourceMap": true,
+    "declarationMap": true,
     "declaration": true,
     "noEmit": true,
+
+    "lib": ["ES2022"],
+
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
     "forceConsistentCasingInFileNames": true,
-    "allowJs": true,
     "preserveSymlinks": true,
-    "types": ["node", "vitest"],
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "lib": ["dom", "ESNext"],
-    "jsx": "react-jsx",
-    "outDir": "out"
+
+    "outDir": "./dist",
+    "rootDir": "."
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "integration/**/*.ts"]
+  "include": ["src", "cli", "tests", "integration"]
 }
