@@ -23,7 +23,6 @@ jobs:
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
-          version: 9
           run_install: false
 
       - name: Use Node.js ${{ matrix.node-version }}
@@ -41,6 +40,9 @@ jobs:
 
       - name: Build
         run: pnpm run build
+
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Type check tests
         run: pnpm run test:types
