@@ -53,11 +53,6 @@
   "bugs": {
     "url": "https://github.com/BriefHQ/drizzle-zero/issues"
   },
-  "dependencies": {
-    "commander": "^13.1.0",
-    "ts-morph": "^25.0.1",
-    "tsx": "^4.19.3"
-  },
   "peerDependencies": {
     "@rocicorp/zero": ">=0.13.2025013101",
     "drizzle-orm": ">=0.36.0"
