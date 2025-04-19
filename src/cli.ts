@@ -156,7 +156,7 @@ async function getGeneratedSchema({
     });
   }
 
-  // add import for ReadonlyJSONValue type from zero
+  // add wrapper for simplify type
   if (containsCustomJsonType) {
     zeroSchemaGenerated.addTypeAlias({
       name: "Simplify",
