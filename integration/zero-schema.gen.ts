@@ -18,6 +18,7 @@
 
 import type { ReadonlyJSONValue } from "@rocicorp/zero";
 
+export type Simplify<T> = { [K in keyof T]: T[K] } & {};
 export type Schema = {
   readonly tables: {
     user: {
@@ -57,7 +58,9 @@ export type Schema = {
         readonly customTypeJson: {
           optional: false;
           type: "json";
-          customType: import("drizzle-zero-custom-types").CustomJsonType;
+          customType: Simplify<
+            import("drizzle-zero-custom-types").CustomJsonType
+          >;
           serverName: string;
         };
       };

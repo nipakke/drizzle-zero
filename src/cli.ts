@@ -124,18 +124,28 @@ async function getGeneratedSchema({
     { overwrite: true },
   );
 
-  const containsReadonlyJSONValue = zeroSchemaTypeNode
-    .getText()
-    .includes('import("drizzle-zero").ReadonlyJSONValue');
-
   const originalZeroSchemaTypeText = zeroSchemaTypeNode.getText();
 
-  const zeroSchemaTypeText = containsReadonlyJSONValue
+  const containsReadonlyJSONValue = originalZeroSchemaTypeText.includes(
+    'import("drizzle-zero").ReadonlyJSONValue',
+  );
+  const containsCustomJsonType = originalZeroSchemaTypeText.includes(
+    "customType: import(",
+  );
+
+  const replacedReadonlyJSONValue = containsReadonlyJSONValue
     ? originalZeroSchemaTypeText.replaceAll(
         'import("drizzle-zero").ReadonlyJSONValue',
         "ReadonlyJSONValue",
       )
     : originalZeroSchemaTypeText;
+
+  const zeroSchemaTypeText = containsCustomJsonType
+    ? replacedReadonlyJSONValue.replace(
+        /customType: (import\(.*?\)[^;]*);/g,
+        "customType: Simplify<$1>;",
+      )
+    : replacedReadonlyJSONValue;
 
   // add import for ReadonlyJSONValue type from zero
   if (containsReadonlyJSONValue) {
@@ -143,6 +153,16 @@ async function getGeneratedSchema({
       isTypeOnly: true,
       namedImports: ["ReadonlyJSONValue"],
       moduleSpecifier: "@rocicorp/zero",
+    });
+  }
+
+  // add wrapper for simplify type
+  if (containsCustomJsonType) {
+    zeroSchemaGenerated.addTypeAlias({
+      name: "Simplify",
+      typeParameters: ["T"],
+      isExported: true,
+      type: "{ [K in keyof T]: T[K] } & {}",
     });
   }
 
