@@ -4,12 +4,13 @@
   "type": "module",
   "scripts": {
     "db:generate": "drizzle-kit generate",
-    "drizzle-zero:generate": "drizzle-zero generate",
+    "drizzle-zero:generate": "drizzle-zero generate -f",
     "test": "vitest run"
   },
   "dependencies": {
     "drizzle-orm": "^0.42.0",
-    "drizzle-zero": "workspace:*"
+    "drizzle-zero": "workspace:*",
+    "drizzle-zero-custom-types": "workspace:*"
   },
   "devDependencies": {
     "@testcontainers/postgresql": "^10.24.2",

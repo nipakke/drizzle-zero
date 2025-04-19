@@ -1,10 +1,8 @@
 import * as esbuild from "esbuild";
 import * as tsup from "tsup";
-import pkg from "./package.json";
 
 const main = async () => {
   await tsup.build({
-    entryPoints: ["./src/index.ts"],
     outDir: "./dist",
     splitting: false,
     dts: true,
@@ -19,10 +17,7 @@ const main = async () => {
     format: "cjs",
     target: "node16",
     platform: "node",
-    external: ["esbuild", "tsx"],
-    define: {
-      "process.env.DRIZZLE_ZERO_VERSION": `"${pkg.version}"`,
-    },
+    external: ["esbuild", "tsx", "prettier", "typescript"],
     banner: {
       js: `#!/usr/bin/env node`,
     },

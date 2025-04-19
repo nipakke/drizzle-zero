@@ -1,5 +1,5 @@
 {
-  "id": "d9fbc1ce-c6bb-4ef8-a21f-6795e0a9abc0",
+  "id": "e0aadef1-1ca2-466a-acd2-8ee51eef2e04",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -495,6 +495,12 @@
         "email": {
           "name": "email",
           "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "custom_type_json": {
+          "name": "custom_type_json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         }

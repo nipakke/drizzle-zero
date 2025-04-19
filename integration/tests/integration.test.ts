@@ -29,6 +29,10 @@ describe("relationships", () => {
     expect(user[0]?.name).toBe("James");
     expect(user[0]?.id).toBe("1");
     expect(user[0]?.email).toBe("james@example.com");
+    expect(user[0]?.customTypeJson).toStrictEqual({
+      id: "1",
+      custom: "this-is-imported-from-custom-types",
+    });
 
     preloadedUsers.cleanup();
   });
