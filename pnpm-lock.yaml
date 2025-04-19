@@ -8,15 +8,9 @@ importers:
 
   .:
     dependencies:
-      '@rocicorp/zero':
-        specifier: ^0.18.2025040300
-        version: 0.18.2025040300
       commander:
         specifier: ^13.1.0
         version: 13.1.0
-      drizzle-orm:
-        specifier: '>=0.36.0'
-        version: 0.42.0(@opentelemetry/api@1.9.0)(@types/pg@8.11.13)(pg@8.14.1)(postgres@3.4.5)
       ts-morph:
         specifier: ^25.0.1
         version: 25.0.1
@@ -24,6 +18,12 @@ importers:
         specifier: ^4.19.3
         version: 4.19.3
     devDependencies:
+      '@rocicorp/zero':
+        specifier: ^0.18.2025040300
+        version: 0.18.2025040300
+      '@ts-morph/common':
+        specifier: ^0.26.1
+        version: 0.26.1
       '@types/node':
         specifier: ^22.14.1
         version: 22.14.1
@@ -33,6 +33,12 @@ importers:
       '@vitest/ui':
         specifier: ^3.1.1
         version: 3.1.1(vitest@3.1.1)
+      drizzle-orm:
+        specifier: ^0.42.0
+        version: 0.42.0(@opentelemetry/api@1.9.0)(@types/pg@8.11.13)(pg@8.14.1)(postgres@3.4.5)
+      esbuild:
+        specifier: ^0.25.2
+        version: 0.25.2
       jsdom:
         specifier: ^26.1.0
         version: 26.1.0
