@@ -7,6 +7,7 @@ import {
   number as zeroNumber,
   string as zeroString,
   table as zeroTable,
+  type ReadonlyJSONValue,
 } from "@rocicorp/zero";
 import { getTableColumns, getTableName, Table } from "drizzle-orm";
 import { getTableConfigForDatabase } from "./db";
@@ -15,7 +16,6 @@ import {
   drizzleColumnTypeToZeroType,
   type DrizzleDataTypeToZeroType,
   drizzleDataTypeToZeroType,
-  type ReadonlyJSONValue,
   type ZeroTypeToTypescriptType,
 } from "./drizzle-to-zero";
 import type {

@@ -1,7 +1,7 @@
 import { drizzleZeroConfig } from "drizzle-zero";
 import * as drizzleSchema from "./drizzle/schema";
 
-export default drizzleZeroConfig(drizzleSchema, {
+export const schema = drizzleZeroConfig(drizzleSchema, {
   tables: {
     user: {
       createdAt: true,
@@ -10,6 +10,7 @@ export default drizzleZeroConfig(drizzleSchema, {
       name: true,
       partner: true,
       email: true,
+      customTypeJson: true,
     },
     medium: {
       createdAt: true,

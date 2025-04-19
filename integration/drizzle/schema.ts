@@ -22,6 +22,7 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import type { CustomJsonType } from "drizzle-zero-custom-types";
 
 const sharedColumns = {
   createdAt: timestamp("createdAt", {
@@ -47,6 +48,9 @@ export const user = pgTable("user", {
   name: text("name").notNull(),
   partner: boolean("partner").notNull(),
   email: text("email").$type<`${string}@${string}`>().notNull(),
+  customTypeJson: jsonb("custom_type_json")
+    .$type<CustomJsonType>()
+    .notNull(),
 });
 
 export const userRelations = relations(user, ({ many }) => ({

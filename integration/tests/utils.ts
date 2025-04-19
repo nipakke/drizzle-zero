@@ -47,6 +47,10 @@ export const seed = async () => {
       name: "James",
       partner: true,
       email: "james@example.com",
+      customTypeJson: {
+        id: "1",
+        custom: "this-is-imported-from-custom-types",
+      },
     });
   await db
     .insert(user)
@@ -55,6 +59,10 @@ export const seed = async () => {
       name: "John",
       partner: false,
       email: "john@example.com",
+      customTypeJson: {
+        id: "2",
+        custom: "this-is-imported-from-custom-types",
+      },
     });
   await db
     .insert(user)
@@ -63,6 +71,10 @@ export const seed = async () => {
       name: "Jane",
       partner: false,
       email: "jane@example.com",
+      customTypeJson: {
+        id: "3",
+        custom: "this-is-imported-from-custom-types",
+      },
     });
 
   await db.insert(message).values({
