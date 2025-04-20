@@ -78,6 +78,7 @@ export default drizzleZeroConfig(drizzleSchema, {
     users: {
       id: true,
       name: true,
+      email: true,
     },
     posts: {
       // or this can be set to false
