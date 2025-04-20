@@ -162,7 +162,7 @@ async function getGeneratedSchema({
       name: "Simplify",
       typeParameters: ["T"],
       isExported: true,
-      type: "{ [K in keyof T]: T[K] } & {}",
+      type: "T & {}",
     });
   }
 
