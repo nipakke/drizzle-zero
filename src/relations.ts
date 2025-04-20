@@ -423,6 +423,8 @@ const createZeroSchema = <
 
     /**
      * Hidden option for internal use by the CLI.
+     *
+     * @internal
      */
     readonly "~__cli"?: boolean;
   },
