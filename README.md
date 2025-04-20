@@ -109,6 +109,9 @@ You can then add the schema generation script to your `package.json`:
 This command will, by default, output your schema to `zero-schema.gen.ts`.
 You can customize this config file path with `-o, --output <output-file>`.
 
+If you have Prettier installed, you can use it to format the generated output
+with `-f, --format`.
+
 To specify a custom tsconfig file, use `-t, --tsconfig <tsconfig-file>`.
 It will, by default, look for one in the current directory.
 
