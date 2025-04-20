@@ -18,7 +18,7 @@
 
 import type { ReadonlyJSONValue } from "@rocicorp/zero";
 
-export type Simplify<T> = { [K in keyof T]: T[K] } & {};
+export type Simplify<T> = T & {};
 export type Schema = {
   readonly tables: {
     user: {
