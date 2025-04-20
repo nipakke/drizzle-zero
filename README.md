@@ -122,11 +122,10 @@ and define permissions on top of it.
 
 ```ts
 import { type Row, definePermissions } from "@rocicorp/zero";
-import { schema } from "./zero-schema.gen";
+import { schema, type Schema } from "./zero-schema.gen";
 
-export { schema };
+export { schema, type Schema };
 
-export type Schema = typeof schema;
 export type User = Row<typeof schema.tables.user>;
 //            ^ {
 //                readonly id: string;
