@@ -5,7 +5,6 @@
   "scripts": {
     "db:generate": "drizzle-kit generate",
     "drizzle-zero:generate": "drizzle-zero generate -f",
-    "postinstall": "pnpm drizzle-zero:generate",
     "pretest": "pnpm drizzle-zero:generate",
     "test": "vitest run"
   },
