@@ -58,6 +58,9 @@ export const seed = async () => {
     testType: {
       nameType: "custom-inline-type",
     },
+    testExportedType: {
+      nameType: "custom-inline-type",
+    },
   });
   await db.insert(user).values({
     id: "2",
@@ -77,6 +80,9 @@ export const seed = async () => {
     testType: {
       nameType: "custom-inline-type",
     },
+    testExportedType: {
+      nameType: "custom-inline-type",
+    },
   });
   await db.insert(user).values({
     id: "3",
@@ -94,6 +100,9 @@ export const seed = async () => {
       nameInterface: "custom-inline-interface",
     },
     testType: {
+      nameType: "custom-inline-type",
+    },
+    testExportedType: {
       nameType: "custom-inline-type",
     },
   });

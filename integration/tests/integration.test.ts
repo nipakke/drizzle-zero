@@ -112,6 +112,7 @@ describe("relationships", () => {
     expect(user?.customTypeJson?.custom).toBe(
       "this-is-imported-from-custom-types",
     );
+    expect(user?.testExportedType.nameType).toBe("custom-inline-type");
 
     preloadedUsers.cleanup();
   });

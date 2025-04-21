@@ -14,6 +14,7 @@ export const schema = drizzleZeroConfig(drizzleSchema, {
       customInterfaceJson: true,
       testInterface: true,
       testType: true,
+      testExportedType: true,
     },
     medium: {
       createdAt: true,

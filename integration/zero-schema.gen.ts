@@ -76,8 +76,14 @@ export type Schema = {
         readonly testType: {
           optional: false;
           type: "json";
+          customType: { nameType: "custom-inline-type" };
+          serverName: string;
+        };
+        readonly testExportedType: {
+          optional: false;
+          type: "json";
           customType: Simplify<
-            import("/Users/chase/git/transparency/drizzle-zero/integration/node_modules/.cache/drizzle-zero/drizzle/schema").TestType
+            import("/Users/chase/git/transparency/drizzle-zero/integration/node_modules/.cache/drizzle-zero/drizzle/schema").TestExportedType
           >;
           serverName: string;
         };
@@ -468,6 +474,7 @@ export type Schema = {
             | "customInterfaceJson"
             | "testInterface"
             | "testType"
+            | "testExportedType"
           )[];
           readonly destSchema: "user";
           readonly cardinality: "many";
@@ -497,6 +504,7 @@ export type Schema = {
             | "customInterfaceJson"
             | "testInterface"
             | "testType"
+            | "testExportedType"
           )[];
           readonly destSchema: "user";
           readonly cardinality: "one";
@@ -920,6 +928,12 @@ export const schema = {
           optional: false,
           customType: null as unknown,
           serverName: "test_type",
+        },
+        testExportedType: {
+          type: "json",
+          optional: false,
+          customType: null as unknown,
+          serverName: "test_exported_type",
         },
       },
       primaryKey: ["id"],

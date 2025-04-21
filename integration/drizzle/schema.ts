@@ -31,7 +31,11 @@ export interface TestInterface {
   nameInterface: "custom-inline-interface";
 }
 
-export type TestType = {
+export type TestExportedType = {
+  nameType: "custom-inline-type";
+};
+
+type TestType = {
   nameType: "custom-inline-type";
 };
 
@@ -65,6 +69,9 @@ export const user = pgTable("user", {
     .notNull(),
   testInterface: jsonb("test_interface").$type<TestInterface>().notNull(),
   testType: jsonb("test_type").$type<TestType>().notNull(),
+  testExportedType: jsonb("test_exported_type")
+    .$type<TestExportedType>()
+    .notNull(),
 });
 
 export const userRelations = relations(user, ({ many }) => ({
