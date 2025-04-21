@@ -20,7 +20,6 @@
     "noEmit": true,
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
-    "preserveSymlinks": true,
     "types": ["node", "vitest"],
     "resolveJsonModule": true,
     "skipLibCheck": true,

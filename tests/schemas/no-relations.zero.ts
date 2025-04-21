@@ -1,8 +1,8 @@
 import { ANYONE_CAN, definePermissions, type Schema } from "@rocicorp/zero";
-import { createZeroSchema } from "../../src";
+import { drizzleZeroConfig } from "../../src";
 import * as noRelations from "./no-relations.schema";
 
-export const schema = createZeroSchema(noRelations, {
+export const schema = drizzleZeroConfig(noRelations, {
   tables: {
     users: {
       id: true,

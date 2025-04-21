@@ -44,9 +44,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Type check tests
-        run: pnpm run test:types
-
       - name: Run tests
         run: pnpm test
 
@@ -55,3 +52,6 @@ jobs:
 
       - name: Run integration tests (PG 17)
         run: cd integration && PG_VERSION=17 pnpm test
+
+      - name: Type check tests
+        run: pnpm run test:types

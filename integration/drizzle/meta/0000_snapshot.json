@@ -1,5 +1,5 @@
 {
-  "id": "e0aadef1-1ca2-466a-acd2-8ee51eef2e04",
+  "id": "f2a0f444-b1f1-4445-9be5-69a6e4814e58",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -500,6 +500,30 @@
         },
         "custom_type_json": {
           "name": "custom_type_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "custom_interface_json": {
+          "name": "custom_interface_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "test_interface": {
+          "name": "test_interface",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "test_type": {
+          "name": "test_type",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "test_exported_type": {
+          "name": "test_exported_type",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": true

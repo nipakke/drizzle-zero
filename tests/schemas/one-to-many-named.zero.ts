@@ -1,8 +1,8 @@
 import { ANYONE_CAN, definePermissions, type Schema } from "@rocicorp/zero";
-import { createZeroSchema } from "../../src";
+import { drizzleZeroConfig } from "../../src";
 import * as oneToManyNamed from "./one-to-many-named.schema";
 
-export const schema = createZeroSchema(oneToManyNamed, {
+export const schema = drizzleZeroConfig(oneToManyNamed, {
   tables: {
     users: {
       id: true,

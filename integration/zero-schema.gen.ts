@@ -16,14 +16,16 @@
  * ------------------------------------------------------------
  */
 
-import type { ReadonlyJSONValue } from "@rocicorp/zero";
-
 export type Simplify<T> = T & {};
+/**
+ * Represents the schema configuration for Zero.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
 export type Schema = {
   readonly tables: {
-    user: {
+    readonly user: {
       name: "user";
-      primaryKey: any;
+      primaryKey: readonly [string, ...string[]] & ["id"];
       columns: {
         readonly createdAt: {
           type: "number";
@@ -35,16 +37,8 @@ export type Schema = {
           customType: number;
           optional: true;
         };
-        readonly id: {
-          optional: false;
-          type: "string";
-          customType: string;
-        };
-        readonly name: {
-          optional: false;
-          type: "string";
-          customType: string;
-        };
+        readonly id: { optional: false; type: "string"; customType: string };
+        readonly name: { optional: false; type: "string"; customType: string };
         readonly partner: {
           optional: false;
           type: "boolean";
@@ -59,15 +53,45 @@ export type Schema = {
           optional: false;
           type: "json";
           customType: Simplify<
-            import("drizzle-zero-custom-types").CustomJsonType
+            import("/Users/chase/git/transparency/drizzle-zero/integration/node_modules/drizzle-zero-custom-types/index").CustomJsonType
+          >;
+          serverName: string;
+        };
+        readonly customInterfaceJson: {
+          optional: false;
+          type: "json";
+          customType: Simplify<
+            import("/Users/chase/git/transparency/drizzle-zero/integration/node_modules/drizzle-zero-custom-types/index").CustomJsonInterface
+          >;
+          serverName: string;
+        };
+        readonly testInterface: {
+          optional: false;
+          type: "json";
+          customType: Simplify<
+            import("/Users/chase/git/transparency/drizzle-zero/integration/node_modules/.cache/drizzle-zero/drizzle/schema").TestInterface
+          >;
+          serverName: string;
+        };
+        readonly testType: {
+          optional: false;
+          type: "json";
+          customType: { nameType: "custom-inline-type" };
+          serverName: string;
+        };
+        readonly testExportedType: {
+          optional: false;
+          type: "json";
+          customType: Simplify<
+            import("/Users/chase/git/transparency/drizzle-zero/integration/node_modules/.cache/drizzle-zero/drizzle/schema").TestExportedType
           >;
           serverName: string;
         };
       };
     };
-    message: {
+    readonly message: {
       name: "message";
-      primaryKey: any;
+      primaryKey: readonly [string, ...string[]] & ["id"];
       columns: {
         readonly createdAt: {
           type: "number";
@@ -79,11 +103,7 @@ export type Schema = {
           customType: number;
           optional: true;
         };
-        readonly id: {
-          optional: false;
-          type: "string";
-          customType: string;
-        };
+        readonly id: { optional: false; type: "string"; customType: string };
         readonly senderId: {
           type: "string";
           customType: string;
@@ -94,23 +114,17 @@ export type Schema = {
           customType: string;
           optional: true;
         };
-        readonly body: {
-          optional: false;
-          type: "string";
-          customType: string;
-        };
+        readonly body: { optional: false; type: "string"; customType: string };
         readonly metadata: {
           optional: false;
           type: "json";
-          customType: {
-            key: string;
-          };
+          customType: { key: string };
         };
       };
     };
-    medium: {
+    readonly medium: {
       name: "medium";
-      primaryKey: any;
+      primaryKey: readonly [string, ...string[]] & ["id"];
       columns: {
         readonly createdAt: {
           type: "number";
@@ -122,21 +136,14 @@ export type Schema = {
           customType: number;
           optional: true;
         };
-        readonly id: {
-          optional: false;
-          type: "string";
-          customType: string;
-        };
-        readonly name: {
-          optional: false;
-          type: "string";
-          customType: string;
-        };
+        readonly id: { optional: false; type: "string"; customType: string };
+        readonly name: { optional: false; type: "string"; customType: string };
       };
     };
-    friendship: {
+    readonly friendship: {
       name: "friendship";
-      primaryKey: any;
+      primaryKey: readonly [string, ...string[]] &
+        ["requestingId", "acceptingId"];
       columns: {
         readonly acceptingId: {
           optional: false;
@@ -155,15 +162,11 @@ export type Schema = {
         };
       };
     };
-    allTypes: {
+    readonly allTypes: {
       name: "allTypes";
-      primaryKey: any;
+      primaryKey: readonly [string, ...string[]] & ["id"];
       columns: {
-        readonly id: {
-          optional: false;
-          type: "string";
-          customType: string;
-        };
+        readonly id: { optional: false; type: "string"; customType: string };
         readonly createdAt: {
           type: "number";
           customType: number;
@@ -303,22 +306,23 @@ export type Schema = {
         readonly jsonField: {
           optional: false;
           type: "json";
-          customType: ReadonlyJSONValue;
+          customType: Simplify<
+            import("/Users/chase/git/transparency/drizzle-zero/integration/node_modules/drizzle-zero/node_modules/@rocicorp/zero/out/shared/src/json").ReadonlyJSONValue
+          >;
           serverName: string;
         };
         readonly jsonbField: {
           optional: false;
           type: "json";
-          customType: ReadonlyJSONValue;
+          customType: Simplify<
+            import("/Users/chase/git/transparency/drizzle-zero/integration/node_modules/drizzle-zero/node_modules/@rocicorp/zero/out/shared/src/json").ReadonlyJSONValue
+          >;
           serverName: string;
         };
         readonly typedJsonField: {
           optional: false;
           type: "json";
-          customType: {
-            theme: string;
-            fontSize: number;
-          };
+          customType: { theme: string; fontSize: number };
           serverName: string;
         };
         readonly statusField: {
@@ -383,7 +387,9 @@ export type Schema = {
         };
         readonly optionalJson: {
           type: "json";
-          customType: ReadonlyJSONValue;
+          customType: Simplify<
+            import("/Users/chase/git/transparency/drizzle-zero/integration/node_modules/drizzle-zero/node_modules/@rocicorp/zero/out/shared/src/json").ReadonlyJSONValue
+          >;
           optional: true;
           serverName: string;
         };
@@ -409,14 +415,14 @@ export type Schema = {
     };
   };
   readonly relationships: {
-    user: {
+    readonly user: {
       messages: [
         {
           readonly sourceField: string[];
           readonly destField: (
+            | "id"
             | "createdAt"
             | "updatedAt"
-            | "id"
             | "senderId"
             | "mediumId"
             | "body"
@@ -431,9 +437,9 @@ export type Schema = {
         {
           readonly sourceField: string[];
           readonly destField: (
+            | "id"
             | "createdAt"
             | "updatedAt"
-            | "id"
             | "senderId"
             | "mediumId"
             | "body"
@@ -444,7 +450,7 @@ export type Schema = {
         },
         {
           readonly sourceField: string[];
-          readonly destField: ("createdAt" | "updatedAt" | "name" | "id")[];
+          readonly destField: ("id" | "createdAt" | "updatedAt" | "name")[];
           readonly destSchema: "medium";
           readonly cardinality: "many";
         },
@@ -459,24 +465,28 @@ export type Schema = {
         {
           readonly sourceField: string[];
           readonly destField: (
+            | "id"
             | "createdAt"
             | "updatedAt"
             | "name"
-            | "id"
             | "partner"
             | "email"
             | "customTypeJson"
+            | "customInterfaceJson"
+            | "testInterface"
+            | "testType"
+            | "testExportedType"
           )[];
           readonly destSchema: "user";
           readonly cardinality: "many";
         },
       ];
     };
-    message: {
+    readonly message: {
       medium: [
         {
           readonly sourceField: string[];
-          readonly destField: ("createdAt" | "updatedAt" | "name" | "id")[];
+          readonly destField: ("id" | "createdAt" | "updatedAt" | "name")[];
           readonly destSchema: "medium";
           readonly cardinality: "one";
         },
@@ -485,27 +495,31 @@ export type Schema = {
         {
           readonly sourceField: string[];
           readonly destField: (
+            | "id"
             | "createdAt"
             | "updatedAt"
             | "name"
-            | "id"
             | "partner"
             | "email"
             | "customTypeJson"
+            | "customInterfaceJson"
+            | "testInterface"
+            | "testType"
+            | "testExportedType"
           )[];
           readonly destSchema: "user";
           readonly cardinality: "one";
         },
       ];
     };
-    medium: {
+    readonly medium: {
       messages: [
         {
           readonly sourceField: string[];
           readonly destField: (
+            | "id"
             | "createdAt"
             | "updatedAt"
-            | "id"
             | "senderId"
             | "mediumId"
             | "body"
@@ -897,6 +911,30 @@ export const schema = {
           optional: false,
           customType: null as unknown,
           serverName: "custom_type_json",
+        },
+        customInterfaceJson: {
+          type: "json",
+          optional: false,
+          customType: null as unknown,
+          serverName: "custom_interface_json",
+        },
+        testInterface: {
+          type: "json",
+          optional: false,
+          customType: null as unknown,
+          serverName: "test_interface",
+        },
+        testType: {
+          type: "json",
+          optional: false,
+          customType: null as unknown,
+          serverName: "test_type",
+        },
+        testExportedType: {
+          type: "json",
+          optional: false,
+          customType: null as unknown,
+          serverName: "test_exported_type",
         },
       },
       primaryKey: ["id"],

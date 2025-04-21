@@ -1,8 +1,8 @@
 import { ANYONE_CAN, definePermissions, type Schema } from "@rocicorp/zero";
-import { createZeroSchema } from "../../src";
+import { drizzleZeroConfig } from "../../src";
 import * as manyToManySelfReferential from "./many-to-many-self-referential.schema";
 
-export const schema = createZeroSchema(manyToManySelfReferential, {
+export const schema = drizzleZeroConfig(manyToManySelfReferential, {
   tables: {
     user: {
       id: true,

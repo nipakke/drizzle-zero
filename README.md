@@ -40,18 +40,10 @@ export const usersRelations = relations(users, ({ many }) => ({
   posts: many(posts),
 }));
 
-// Types can be imported or defined in the file (must be exported)
-export interface PostMeta {
-  source?: string
-  tags?: string[]
-}
-
 export const posts = pgTable("post", {
   id: text("id").primaryKey(),
   // this JSON type will be passed to Zero
   content: jsonb("content").$type<{ textValue: string }>().notNull(),
-  // this type must be exported if defined in the file
-  meta: jsonb("meta").$type<PostMeta>().notNull(),
   authorId: text("author_id").references(() => users.id),
 });
 
@@ -62,6 +54,10 @@ export const postsRelations = relations(posts, ({ one }) => ({
   }),
 }));
 ```
+
+See the [integration test's `schema.ts`](integration/drizzle/schema.ts)
+for an example of defining types in the Drizzle schema file
+itself - interfaces *must* be exported for Typescript to resolve them.
 
 ### Add `drizzle-zero.config.ts`
 

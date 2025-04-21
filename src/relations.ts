@@ -14,7 +14,7 @@ import {
   type ZeroTableBuilderSchema,
 } from "./tables";
 import type {
-  Columns,
+  ColumnIndexKeys,
   FindRelationsForTable,
   FindTableByKey,
   FindTableByName,
@@ -24,14 +24,6 @@ import type {
   TableColumnsConfig,
 } from "./types";
 import { debugLog, typedEntries } from "./util";
-
-/**
- * Gets the keys of columns that can be used as indexes.
- * @template TTable - The table to get index keys from
- */
-type ColumnIndexKeys<TTable extends Table> = {
-  [K in keyof Columns<TTable>]: K;
-}[keyof Columns<TTable>];
 
 /**
  * Extracts the table name from a configuration object or string.
@@ -246,7 +238,7 @@ type CreateZeroSchema<
   TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
 > = {
   readonly tables: {
-    [K in keyof TDrizzleSchema &
+    readonly [K in keyof TDrizzleSchema &
       keyof TColumnConfig as TDrizzleSchema[K] extends Table<any>
       ? TColumnConfig[K] extends object
         ? K
@@ -262,7 +254,7 @@ type CreateZeroSchema<
       : never;
   };
   readonly relationships: {
-    [K in keyof TDrizzleSchema &
+    readonly [K in keyof TDrizzleSchema &
       keyof TColumnConfig as TDrizzleSchema[K] extends Table<any>
       ? TColumnConfig[K] extends object
         ? [
@@ -310,9 +302,9 @@ type CreateZeroSchema<
  *
  * @param schema - The Drizzle schema to create a Zero schema from. This should be your complete Drizzle schema object
  *                containing all your table definitions and relationships.
- * @param schemaConfig - Configuration object for the Zero schema generation
- * @param schemaConfig.tables - Specify which tables and columns to include in sync
- * @param schemaConfig.manyToMany - Optional configuration for many-to-many relationships through junction tables
+ * @param config - Configuration object for the Zero schema generation
+ * @param config.tables - Specify which tables and columns to include in sync
+ * @param config.manyToMany - Optional configuration for many-to-many relationships through junction tables
  *
  * @returns A Zero schema containing tables and their relationships
  *
@@ -369,13 +361,14 @@ const createZeroSchema = <
    * The Drizzle schema to create a Zero schema from.
    */
   schema: TDrizzleSchema,
+
   /**
    * The configuration for the Zero schema.
    *
-   * @param schemaConfig.tables - The tables to include in the Zero schema.
-   * @param schemaConfig.many - Configuration for many-to-many relationships.
+   * @param config.tables - The tables to include in the Zero schema.
+   * @param config.many - Configuration for many-to-many relationships.
    */
-  schemaConfig: {
+  config: {
     /**
      * Specify the tables to include in the Zero schema.
      * This can include type overrides for columns, using `column.json()` for example.
@@ -396,6 +389,7 @@ const createZeroSchema = <
      * ```
      */
     readonly tables: TColumnConfig;
+
     /**
      * Configuration for many-to-many relationships.
      * Organized by source table, with each relationship specifying a tuple of [junction table name, destination table name].
@@ -431,7 +425,7 @@ const createZeroSchema = <
 ): Flatten<CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig>> => {
   let tables: any[] = [];
 
-  if (!schemaConfig["~__cli"]) {
+  if (!config["~__cli"]) {
     console.warn(
       "🚨 drizzle-zero: importing drizzle-zero directly from a project will be deprecated in a future 1.x.x version. Please migrate to use the CLI instead: https://github.com/BriefHQ/drizzle-zero.",
     );
@@ -441,12 +435,12 @@ const createZeroSchema = <
     if (is(tableOrRelations, Table)) {
       const table = tableOrRelations;
 
-      const tableConfig = schemaConfig.tables[tableName as keyof TColumnConfig];
+      const tableConfig = config.tables[tableName as keyof TColumnConfig];
 
       // skip tables that don't have a config
       if (!tableConfig) {
         debugLog(
-          schemaConfig.debug,
+          config.debug,
           `Skipping table ${String(tableName)} - no config provided`,
         );
         continue;
@@ -463,14 +457,14 @@ const createZeroSchema = <
   }
 
   let relationships = {} as Record<
-    keyof typeof schemaConfig.tables,
+    keyof typeof config.tables,
     Record<string, Array<unknown>>
   >;
 
   // Map many-to-many relationships
-  if (schemaConfig.manyToMany) {
+  if (config.manyToMany) {
     for (const [sourceTableName, manyConfig] of Object.entries(
-      schemaConfig.manyToMany,
+      config.manyToMany,
     )) {
       if (!manyConfig) continue;
 
@@ -534,18 +528,12 @@ const createZeroSchema = <
           }
 
           if (
-            !schemaConfig.tables[
-              junctionTableName as keyof typeof schemaConfig.tables
-            ] ||
-            !schemaConfig.tables[
-              sourceTableName as keyof typeof schemaConfig.tables
-            ] ||
-            !schemaConfig.tables[
-              destTableName as keyof typeof schemaConfig.tables
-            ]
+            !config.tables[junctionTableName as keyof typeof config.tables] ||
+            !config.tables[sourceTableName as keyof typeof config.tables] ||
+            !config.tables[destTableName as keyof typeof config.tables]
           ) {
             debugLog(
-              schemaConfig.debug,
+              config.debug,
               `Skipping many-to-many relationship - tables not in schema config:`,
               { junctionTable, sourceTableName, destTableName },
             );
@@ -572,7 +560,7 @@ const createZeroSchema = <
             ],
           };
 
-          debugLog(schemaConfig.debug, `Added many-to-many relationship:`, {
+          debugLog(config.debug, `Added many-to-many relationship:`, {
             sourceTable: sourceTableName,
             relationName,
             relationship:
@@ -606,15 +594,9 @@ const createZeroSchema = <
           }
 
           if (
-            !schemaConfig.tables[
-              junctionTableName as keyof typeof schemaConfig.tables
-            ] ||
-            !schemaConfig.tables[
-              sourceTableName as keyof typeof schemaConfig.tables
-            ] ||
-            !schemaConfig.tables[
-              destTableName as keyof typeof schemaConfig.tables
-            ]
+            !config.tables[junctionTableName as keyof typeof config.tables] ||
+            !config.tables[sourceTableName as keyof typeof config.tables] ||
+            !config.tables[destTableName as keyof typeof config.tables]
           ) {
             // skip if any of the tables are not defined in the schema config
             continue;
@@ -698,7 +680,7 @@ const createZeroSchema = <
 
         if (!sourceFieldNames.length || !destFieldNames.length) {
           throw new Error(
-            `drizzle-zero: No relationship found for: ${relation.fieldName} (${is(relation, One) ? "One" : "Many"} from ${String(tableName)} to ${relation.referencedTableName}). Did you forget to define foreign keys${relation.relationName ? ` for named relation "${relation.relationName}"` : ""}?`,
+            `drizzle-zero: No relationship found for: ${relation.fieldName} (${is(relation, One) ? "One" : "Many"} from ${String(tableName)} to ${relation.referencedTableName}). Did you forget to define ${relation.relationName ? `a named relation "${relation.relationName}"` : `an opposite ${is(relation, One) ? "Many" : "One"} relation`}?`,
           );
         }
 
@@ -708,13 +690,11 @@ const createZeroSchema = <
         });
 
         if (
-          !schemaConfig.tables[tableName as keyof typeof schemaConfig.tables] ||
-          !schemaConfig.tables[
-            referencedTableKey as keyof typeof schemaConfig.tables
-          ]
+          !config.tables[tableName as keyof typeof config.tables] ||
+          !config.tables[referencedTableKey as keyof typeof config.tables]
         ) {
           debugLog(
-            schemaConfig.debug,
+            config.debug,
             `Skipping relation - tables not in schema config:`,
             {
               sourceTable: tableName,
@@ -765,7 +745,7 @@ const createZeroSchema = <
   >;
 
   debugLog(
-    schemaConfig.debug,
+    config.debug,
     "Output Zero schema",
     JSON.stringify(finalSchema, null, 2),
   );
@@ -957,9 +937,9 @@ const getDrizzleKeyFromTableName = ({
  *
  * @param schema - The Drizzle schema to create a Zero schema from. This should be your complete Drizzle schema object
  *                containing all your table definitions and relationships.
- * @param schemaConfig - Configuration object for the Zero schema generation
- * @param schemaConfig.tables - Specify which tables and columns to include in sync
- * @param schemaConfig.manyToMany - Optional configuration for many-to-many relationships through junction tables
+ * @param config - Configuration object for the Zero schema generation
+ * @param config.tables - Specify which tables and columns to include in sync
+ * @param config.manyToMany - Optional configuration for many-to-many relationships through junction tables
  *
  * @returns A configuration object for the Zero schema CLI.
  *

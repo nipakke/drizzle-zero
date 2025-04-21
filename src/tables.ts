@@ -1,5 +1,6 @@
 import {
   type ColumnBuilder,
+  type ReadonlyJSONValue,
   type TableBuilderWithColumns,
   boolean as zeroBoolean,
   enumeration as zeroEnumeration,
@@ -7,7 +8,6 @@ import {
   number as zeroNumber,
   string as zeroString,
   table as zeroTable,
-  type ReadonlyJSONValue,
 } from "@rocicorp/zero";
 import { getTableColumns, getTableName, Table } from "drizzle-orm";
 import { getTableConfigForDatabase } from "./db";
@@ -18,12 +18,7 @@ import {
   drizzleDataTypeToZeroType,
   type ZeroTypeToTypescriptType,
 } from "./drizzle-to-zero";
-import type {
-  ColumnNames,
-  Columns,
-  FindPrimaryKeyFromTable,
-  Flatten,
-} from "./types";
+import type { ColumnNames, Columns, FindPrimaryKeyFromTable, Flatten } from "./types";
 import { debugLog, typedEntries } from "./util";
 
 export type { ColumnBuilder, ReadonlyJSONValue, TableBuilderWithColumns };
@@ -179,7 +174,9 @@ export type ZeroTableBuilderSchema<
   TColumnConfig extends ColumnsConfig<TTable>,
 > = {
   name: TTableName;
-  primaryKey: any; // FindPrimaryKeyFromTable<TTable>;
+  primaryKey: FindPrimaryKeyFromTable<TTable> extends [never]
+    ? readonly [string, ...string[]]
+    : readonly [string, ...string[]] & FindPrimaryKeyFromTable<TTable>;
   columns: Flatten<ZeroColumns<TTable, TColumnConfig>>;
 }; // Zero does not support this properly yet: & (TTable['_']['name'] extends TTableName ? {} : { serverName: string });
 
@@ -350,9 +347,11 @@ const createZeroTableBuilder = <
 
   return zeroBuilderWithFrom
     .columns(columnsMapped)
-    .primaryKey(
-      ...(primaryKeys as unknown as FindPrimaryKeyFromTable<TTable>),
-    ) as ZeroTableBuilder<TTableName, TTable, TColumnConfig>;
+    .primaryKey(...primaryKeys) as ZeroTableBuilder<
+    TTableName,
+    TTable,
+    TColumnConfig
+  >;
 };
 
 /**
