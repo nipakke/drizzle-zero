@@ -14,7 +14,7 @@ import {
   type ZeroTableBuilderSchema,
 } from "./tables";
 import type {
-  Columns,
+  ColumnIndexKeys,
   FindRelationsForTable,
   FindTableByKey,
   FindTableByName,
@@ -24,14 +24,6 @@ import type {
   TableColumnsConfig,
 } from "./types";
 import { debugLog, typedEntries } from "./util";
-
-/**
- * Gets the keys of columns that can be used as indexes.
- * @template TTable - The table to get index keys from
- */
-type ColumnIndexKeys<TTable extends Table> = {
-  [K in keyof Columns<TTable>]: K;
-}[keyof Columns<TTable>];
 
 /**
  * Extracts the table name from a configuration object or string.
@@ -246,7 +238,7 @@ type CreateZeroSchema<
   TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
 > = {
   readonly tables: {
-    [K in keyof TDrizzleSchema &
+    readonly [K in keyof TDrizzleSchema &
       keyof TColumnConfig as TDrizzleSchema[K] extends Table<any>
       ? TColumnConfig[K] extends object
         ? K
@@ -262,7 +254,7 @@ type CreateZeroSchema<
       : never;
   };
   readonly relationships: {
-    [K in keyof TDrizzleSchema &
+    readonly [K in keyof TDrizzleSchema &
       keyof TColumnConfig as TDrizzleSchema[K] extends Table<any>
       ? TColumnConfig[K] extends object
         ? [

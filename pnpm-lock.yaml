@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@rocicorp/zero':
-        specifier: ^0.18.2025040300
-        version: 0.18.2025040300
+        specifier: ^0.19.2025041602
+        version: 0.19.2025041602(typescript@5.8.3)
       '@ts-morph/common':
         specifier: ^0.26.1
         version: 0.26.1
@@ -515,6 +515,9 @@ packages:
   '@fastify/websocket@11.0.2':
     resolution: {integrity: sha512-1oyJkNSZNJGjo/A5fXvlpEcm1kTBD91nRAN9lA7RNVsVNsyC5DuhOXdNL9/4UawVe7SKvzPT/QVI4RdtE9ylnA==}
 
+  '@gerrit0/mini-shiki@3.2.3':
+    resolution: {integrity: sha512-yemSYr0Oiqk5NAQRfbD5DKUTlThiZw1MxTMx/YpQTg6m4QRJDtV2JTYSuNevgx1ayy/O7x+uwDjh3IgECGFY/Q==}
+
   '@google-cloud/precise-date@4.0.0':
     resolution: {integrity: sha512-1TUx3KdaU3cN7nfCdNf+UVqA/PSX29Cjcox3fZZBtINlRrXVTmUkQnCKv2MbBUbCopbK4olAT1IHl76uZyCiVA==}
     engines: {node: '>=14.0.0'}
@@ -817,8 +820,8 @@ packages:
     resolution: {integrity: sha512-bm+VUdF4CnKVjUj/dSCmVu0hjcyXaF/nKkw2rNhZUjGeBOMRy/hh8z/32h311es4dxCVvcZ3+QHQHMxF2YG5Kw==}
     hasBin: true
 
-  '@rocicorp/zero@0.18.2025040300':
-    resolution: {integrity: sha512-4RRHLdqhofF353gHqaQLffEdFPDHJldpdGfSdjXd+ncby6PPUXsF8eDTXAhzJbdwiSGq3jtXDgS9qrq1aKzLwQ==}
+  '@rocicorp/zero@0.19.2025041602':
+    resolution: {integrity: sha512-4s4pTG/hNLW3ylda/GIX0Spj6YG6LXLxt+OZBCtW8xPQO6VDDE2ETq+aFtLi/WCo8mAWriATrOW7BqJ19LhZtw==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -922,6 +925,21 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@shikijs/engine-oniguruma@3.2.2':
+    resolution: {integrity: sha512-vyXRnWVCSvokwbaUD/8uPn6Gqsf5Hv7XwcW4AgiU4Z2qwy19sdr6VGzMdheKKN58tJOOe5MIKiNb901bgcUXYQ==}
+
+  '@shikijs/langs@3.2.2':
+    resolution: {integrity: sha512-NY0Urg2dV9ETt3JIOWoMPuoDNwte3geLZ4M1nrPHbkDS8dWMpKcEwlqiEIGqtwZNmt5gKyWpR26ln2Bg2ecPgw==}
+
+  '@shikijs/themes@3.2.2':
+    resolution: {integrity: sha512-Zuq4lgAxVKkb0FFdhHSdDkALuRpsj1so1JdihjKNQfgM78EHxV2JhO10qPsMrm01FkE3mDRTdF68wfmsqjt6HA==}
+
+  '@shikijs/types@3.2.2':
+    resolution: {integrity: sha512-a5TiHk7EH5Lso8sHcLHbVNNhWKP0Wi3yVnXnu73g86n3WoDgEra7n3KszyeCGuyoagspQ2fzvy4cpSc8pKhb0A==}
+
+  '@shikijs/vscode-textmate@10.0.2':
+    resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
+
   '@testcontainers/postgresql@10.24.2':
     resolution: {integrity: sha512-s4k/QVSmpXFzxNBeft84x172Hx5tNiGeDRWwU8iOAHjtcnyXd4aBORF0GruNojTo7TOIuAM0ArBZUMqRBLJKwQ==}
 
@@ -950,6 +968,9 @@ packages:
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
 
+  '@types/hast@3.0.4':
+    resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
+
   '@types/node@18.19.86':
     resolution: {integrity: sha512-fifKayi175wLyKyc5qUfyENhQ1dCNI1UNjp653d8kuYcPQN5JhX3dGuP/XmvPTg/xRBn1VTLpbmi+H/Mr7tLfQ==}
 
@@ -970,6 +991,9 @@ packages:
 
   '@types/ssh2@1.15.5':
     resolution: {integrity: sha512-N1ASjp/nXH3ovBHddRJpli4ozpk6UdDYIX4RJWFa9L1YKnzdhTlVmiGHm4DZnj/jLbqZpes4aeR30EFGQtvhQQ==}
+
+  '@types/unist@3.0.3':
+    resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
@@ -1094,6 +1118,9 @@ packages:
   archiver@7.0.1:
     resolution: {integrity: sha512-ZcbTaIqJOfCc03QwD468Unz/5Ir8ATtvAHsK+FdXbDIbGfihqh9mrvdcYunQzqn4HrvWWaFyaxJhGZagaJJpPQ==}
     engines: {node: '>= 14'}
+
+  argparse@2.0.1:
+    resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
 
   aria-query@5.3.0:
     resolution: {integrity: sha512-b0P0sZPKtyu8HkeRAfCq0IfURZK+SuwMjY1UXGBU27wpAiTwQAIlq56IbIO+ytk/JjS1fMR14ee5WBBfKi5J6A==}
@@ -1814,6 +1841,9 @@ packages:
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
+  linkify-it@5.0.0:
+    resolution: {integrity: sha512-5aHCbzQRADcdP+ATqnDuhhJ/MRIqDkZX5pyjFHRRysS8vZ5AbqGEoFIb6pYHPZ+L/OC2Lc+xT8uHVVR5CAK/wQ==}
+
   load-tsconfig@0.2.5:
     resolution: {integrity: sha512-IXO6OCs9yg8tMKzfPZ1YmheJbZCiEsnBdcB03l0OcfK9prKnJb96siuHCr5Fl37/yo9DnKU+TLpxzTUspw9shg==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -1836,6 +1866,9 @@ packages:
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
 
+  lunr@2.3.9:
+    resolution: {integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==}
+
   lz-string@1.5.0:
     resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
     hasBin: true
@@ -1849,6 +1882,13 @@ packages:
   make-dir@4.0.0:
     resolution: {integrity: sha512-hXdUTZYIVOt1Ex//jAQi+wTZZpUpwBj/0QsOzqegb3rGMMeJiSEu5xLHnYfBrRV4RH2+OCSOO95Is/7x1WJ4bw==}
     engines: {node: '>=10'}
+
+  markdown-it@14.1.0:
+    resolution: {integrity: sha512-a54IwgWPaeBCAAsv13YgmALOF1elABB08FxO9i+r4VFk5Vl4pKokRPeX8u5TCgSsPi6ec1otfLjdOpVcgbpshg==}
+    hasBin: true
+
+  mdurl@2.0.0:
+    resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
 
   merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
@@ -2163,6 +2203,10 @@ packages:
 
   pump@3.0.2:
     resolution: {integrity: sha512-tUPXtzlGM8FE3P0ZL6DVs/3P58k9nk8/jZeQCurTJylQA8qFYzHFfhBJkuqyE0FifOsQ0uKWekiZ5g8wtr28cw==}
+
+  punycode.js@2.3.1:
+    resolution: {integrity: sha512-uxFIHU0YlHYhDQtV4R9J6a52SLx28BCjT+4ieh7IGbgwVJWO+km431c4yRlREUAsAmt/uMjQUyQHNEPf0M39CA==}
+    engines: {node: '>=6'}
 
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
@@ -2551,6 +2595,19 @@ packages:
   tweetnacl@0.14.5:
     resolution: {integrity: sha512-KXXFFdAbFXY4geFIwoyNK+f5Z1b7swfXABfL7HXCmoIWMKU3dmS26672A4EeQtDzLKy7SXmfBu51JolvEKwtGA==}
 
+  typedoc-plugin-markdown@4.6.2:
+    resolution: {integrity: sha512-JVCIoK7FDN3t3PSLkwDyrBFyjtDznqDCJotP9evxhLyb6bEZTqhAGB0tPy1RmgHuY2WoAONMrsWs8LfLsD+A6A==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      typedoc: 0.28.x
+
+  typedoc@0.28.3:
+    resolution: {integrity: sha512-5svOCTfXvVSh6zbZKSQluZhR8yN2tKpTeHZxlmWpE6N5vc3R8k/jhg9nnD6n5tN9/ObuQTojkONrOxFdUFUG9w==}
+    engines: {node: '>= 18', pnpm: '>= 10'}
+    hasBin: true
+    peerDependencies:
+      typescript: 5.0.x || 5.1.x || 5.2.x || 5.3.x || 5.4.x || 5.5.x || 5.6.x || 5.7.x || 5.8.x
+
   typescript@5.8.3:
     resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
     engines: {node: '>=14.17'}
@@ -2559,6 +2616,9 @@ packages:
   typical@7.3.0:
     resolution: {integrity: sha512-ya4mg/30vm+DOWfBg4YK3j2WD6TWtRkCbasOJr40CseYENzCUby/7rIvXA99JGsQHeNxLbnXdyLLxKSv3tauFw==}
     engines: {node: '>=12.17'}
+
+  uc.micro@2.1.0:
+    resolution: {integrity: sha512-ARDJmphmdvUk6Glw7y9DQ2bFkKBHwQHLi2lsaH6PPmz/Ka9sFOBsBluozhDltWmnv9u/cF6Rt87znRTPV+yp/A==}
 
   undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
@@ -3044,6 +3104,14 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
+  '@gerrit0/mini-shiki@3.2.3':
+    dependencies:
+      '@shikijs/engine-oniguruma': 3.2.2
+      '@shikijs/langs': 3.2.2
+      '@shikijs/themes': 3.2.2
+      '@shikijs/types': 3.2.2
+      '@shikijs/vscode-textmate': 10.0.2
+
   '@google-cloud/precise-date@4.0.0': {}
 
   '@grpc/grpc-js@1.13.3':
@@ -3380,7 +3448,7 @@ snapshots:
       bindings: 1.5.0
       prebuild-install: 7.1.3
 
-  '@rocicorp/zero@0.18.2025040300':
+  '@rocicorp/zero@0.19.2025041602(typescript@5.8.3)':
     dependencies:
       '@badrap/valita': 0.3.11
       '@databases/escape-identifier': 1.0.3
@@ -3418,12 +3486,15 @@ snapshots:
       prettier: 3.5.3
       semver: 7.7.1
       tsx: 4.19.3
+      typedoc: 0.28.3(typescript@5.8.3)
+      typedoc-plugin-markdown: 4.6.2(typedoc@0.28.3(typescript@5.8.3))
       url-pattern: 1.0.3
       ws: 8.18.1
     transitivePeerDependencies:
       - '@75lb/nature'
       - bufferutil
       - supports-color
+      - typescript
       - utf-8-validate
 
   '@rollup/rollup-android-arm-eabi@4.40.0':
@@ -3486,6 +3557,26 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.40.0':
     optional: true
 
+  '@shikijs/engine-oniguruma@3.2.2':
+    dependencies:
+      '@shikijs/types': 3.2.2
+      '@shikijs/vscode-textmate': 10.0.2
+
+  '@shikijs/langs@3.2.2':
+    dependencies:
+      '@shikijs/types': 3.2.2
+
+  '@shikijs/themes@3.2.2':
+    dependencies:
+      '@shikijs/types': 3.2.2
+
+  '@shikijs/types@3.2.2':
+    dependencies:
+      '@shikijs/vscode-textmate': 10.0.2
+      '@types/hast': 3.0.4
+
+  '@shikijs/vscode-textmate@10.0.2': {}
+
   '@testcontainers/postgresql@10.24.2':
     dependencies:
       testcontainers: 10.24.2
@@ -3529,6 +3620,10 @@ snapshots:
 
   '@types/estree@1.0.7': {}
 
+  '@types/hast@3.0.4':
+    dependencies:
+      '@types/unist': 3.0.3
+
   '@types/node@18.19.86':
     dependencies:
       undici-types: 5.26.5
@@ -3557,6 +3652,8 @@ snapshots:
   '@types/ssh2@1.15.5':
     dependencies:
       '@types/node': 18.19.86
+
+  '@types/unist@3.0.3': {}
 
   '@types/ws@8.18.1':
     dependencies:
@@ -3708,6 +3805,8 @@ snapshots:
       readdir-glob: 1.1.3
       tar-stream: 3.1.7
       zip-stream: 6.0.1
+
+  argparse@2.0.1: {}
 
   aria-query@5.3.0:
     dependencies:
@@ -4381,6 +4480,10 @@ snapshots:
 
   lines-and-columns@1.2.4: {}
 
+  linkify-it@5.0.0:
+    dependencies:
+      uc.micro: 2.1.0
+
   load-tsconfig@0.2.5: {}
 
   lodash.camelcase@4.3.0: {}
@@ -4394,6 +4497,8 @@ snapshots:
   loupe@3.1.3: {}
 
   lru-cache@10.4.3: {}
+
+  lunr@2.3.9: {}
 
   lz-string@1.5.0: {}
 
@@ -4410,6 +4515,17 @@ snapshots:
   make-dir@4.0.0:
     dependencies:
       semver: 7.7.1
+
+  markdown-it@14.1.0:
+    dependencies:
+      argparse: 2.0.1
+      entities: 4.5.0
+      linkify-it: 5.0.0
+      mdurl: 2.0.0
+      punycode.js: 2.3.1
+      uc.micro: 2.1.0
+
+  mdurl@2.0.0: {}
 
   merge-stream@2.0.0: {}
 
@@ -4691,6 +4807,8 @@ snapshots:
     dependencies:
       end-of-stream: 1.4.4
       once: 1.4.0
+
+  punycode.js@2.3.1: {}
 
   punycode@2.3.1: {}
 
@@ -5125,9 +5243,24 @@ snapshots:
 
   tweetnacl@0.14.5: {}
 
+  typedoc-plugin-markdown@4.6.2(typedoc@0.28.3(typescript@5.8.3)):
+    dependencies:
+      typedoc: 0.28.3(typescript@5.8.3)
+
+  typedoc@0.28.3(typescript@5.8.3):
+    dependencies:
+      '@gerrit0/mini-shiki': 3.2.3
+      lunr: 2.3.9
+      markdown-it: 14.1.0
+      minimatch: 9.0.5
+      typescript: 5.8.3
+      yaml: 2.7.1
+
   typescript@5.8.3: {}
 
   typical@7.3.0: {}
+
+  uc.micro@2.1.0: {}
 
   undici-types@5.26.5: {}
 

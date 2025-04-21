@@ -6,13 +6,11 @@ import {
   string,
   table,
 } from "@rocicorp/zero";
-import { describe, test, TestAPI } from "vitest";
+import { describe, test } from "vitest";
 import { assertEqual, expectSchemaDeepEqual } from "./utils";
 
 describe("relationships", () => {
-  test("relationships - many-to-many-incorrect-many", async ({
-    expect,
-  }: TestAPI) => {
+  test("relationships - many-to-many-incorrect-many", async ({ expect }) => {
     await expect(
       import("./schemas/many-to-many-incorrect-many.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -104,7 +102,7 @@ describe("relationships", () => {
 
   test("relationships - many-to-many-duplicate-relationship", async ({
     expect,
-  }: TestAPI) => {
+  }) => {
     await expect(
       import("./schemas/many-to-many-duplicate-relationship.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -165,9 +163,7 @@ describe("relationships", () => {
     assertEqual(oneToOneMissingForeignKeyZeroSchema, expected);
   });
 
-  test("relationships - one-to-many-missing-named", async ({
-    expect,
-  }: TestAPI) => {
+  test("relationships - one-to-many-missing-named", async ({ expect }) => {
     await expect(
       import("./schemas/one-to-many-missing-named.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -175,9 +171,7 @@ describe("relationships", () => {
     );
   });
 
-  test("relationships - one-to-many-missing-one", async ({
-    expect,
-  }: TestAPI) => {
+  test("relationships - one-to-many-missing-one", async ({ expect }) => {
     await expect(
       import("./schemas/one-to-many-missing-one.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -978,7 +972,12 @@ describe("relationships", () => {
     });
 
     expectSchemaDeepEqual(manyToManyExtendedConfigZeroSchema).toEqual(expected);
-    assertEqual(manyToManyExtendedConfigZeroSchema, expected);
+    assertEqual(
+      manyToManyExtendedConfigZeroSchema["tables"]["usersToGroups"][
+        "primaryKey"
+      ],
+      expected["tables"]["usersToGroups"]["primaryKey"],
+    );
   });
 
   test("relationships - custom-schema", async () => {

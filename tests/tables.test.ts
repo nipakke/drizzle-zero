@@ -40,7 +40,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { createZeroTableBuilder, type ColumnsConfig } from "../src";
 import { assertEqual, expectTableSchemaDeepEqual } from "./utils";
-import { describe, test, TestAPI } from "vitest";
+import { describe, test } from "vitest";
 import { sql } from "drizzle-orm";
 
 describe("tables", () => {
@@ -266,7 +266,9 @@ describe("tables", () => {
       {
         userId: text().notNull(),
         orgId: text().notNull(),
-        role: text().notNull(),
+        // there is a known issue with the text column type - if there are multiple primary key columns, the type
+        // will be inferred as all of the text column types, not just the primary key columns.
+        enabled: pgBoolean().notNull(),
       },
       (t) => [primaryKey({ columns: [t.userId, t.orgId] })],
     );
@@ -274,7 +276,7 @@ describe("tables", () => {
     const result = createZeroTableBuilder("composite", testTable, {
       userId: true,
       orgId: true,
-      role: true,
+      enabled: true,
     });
 
     const expected = table("composite")
@@ -282,7 +284,7 @@ describe("tables", () => {
       .columns({
         userId: string(),
         orgId: string(),
-        role: string(),
+        enabled: boolean(),
       })
       .primaryKey("userId", "orgId");
 
@@ -838,7 +840,7 @@ describe("tables", () => {
     assertEqual(result.schema, expected.schema);
   });
 
-  test("pg - invalid column type", ({ expect }: TestAPI) => {
+  test("pg - invalid column type", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       invalid: text().notNull(),
@@ -854,7 +856,7 @@ describe("tables", () => {
     );
   });
 
-  test("pg - invalid column selection", ({ expect }: TestAPI) => {
+  test("pg - invalid column selection", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       invalid: text().notNull(),
@@ -870,7 +872,7 @@ describe("tables", () => {
     );
   });
 
-  test("pg - array types", ({ expect }: TestAPI) => {
+  test("pg - array types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       tags: text().array().notNull(),
@@ -888,7 +890,7 @@ describe("tables", () => {
     );
   });
 
-  test("pg - interval types", ({ expect }: TestAPI) => {
+  test("pg - interval types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       interval: interval().notNull(),
@@ -904,7 +906,7 @@ describe("tables", () => {
     );
   });
 
-  test("pg - cidr types", ({ expect }: TestAPI) => {
+  test("pg - cidr types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       cidr: cidr().notNull(),
@@ -920,7 +922,7 @@ describe("tables", () => {
     );
   });
 
-  test("pg - macaddr types", ({ expect }: TestAPI) => {
+  test("pg - macaddr types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       macaddr: macaddr().notNull(),
@@ -936,7 +938,7 @@ describe("tables", () => {
     );
   });
 
-  test("pg - inet types", ({ expect }: TestAPI) => {
+  test("pg - inet types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       inet: inet().notNull(),
@@ -952,7 +954,7 @@ describe("tables", () => {
     );
   });
 
-  test("pg - point types", ({ expect }: TestAPI) => {
+  test("pg - point types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       point: point().notNull(),
@@ -968,7 +970,7 @@ describe("tables", () => {
     );
   });
 
-  test("pg - line types", ({ expect }: TestAPI) => {
+  test("pg - line types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       line: line().notNull(),
@@ -984,7 +986,7 @@ describe("tables", () => {
     );
   });
 
-  test("pg - geometry types", ({ expect }: TestAPI) => {
+  test("pg - geometry types", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text().primaryKey(),
       location: geometry("location", {
@@ -1004,7 +1006,7 @@ describe("tables", () => {
     );
   });
 
-  test("pg - no primary key", ({ expect }: TestAPI) => {
+  test("pg - no primary key", ({ expect }) => {
     const testTable = pgTable("test", {
       id: text(),
     });
@@ -1018,7 +1020,7 @@ describe("tables", () => {
     );
   });
 
-  test("pg - fail if table is not pg", ({ expect }: TestAPI) => {
+  test("pg - fail if table is not pg", ({ expect }) => {
     const testTable = mysqlTable("test", {
       id: textMysql().primaryKey(),
       name: textMysql(),

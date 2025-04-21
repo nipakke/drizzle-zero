@@ -2,6 +2,7 @@ import {
   ANYONE_CAN,
   definePermissions,
   type ExpressionBuilder,
+  type InsertValue,
   type Row,
 } from "@rocicorp/zero";
 import { schema, type Schema } from "./zero-schema.gen";
@@ -11,6 +12,8 @@ export { schema, type Schema };
 export type Message = Row<Schema["tables"]["message"]>;
 export type Medium = Row<Schema["tables"]["medium"]>;
 export type User = Row<Schema["tables"]["user"]>;
+
+export type InsertUser = InsertValue<typeof schema.tables.user>;
 
 // The contents of your decoded JWT.
 type AuthData = {

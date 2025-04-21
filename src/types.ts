@@ -2,6 +2,14 @@ import type { Relations, Table } from "drizzle-orm";
 import type { ColumnsConfig } from "./tables";
 
 /**
+ * Gets the keys of columns that can be used as indexes.
+ * @template TTable - The table to get index keys from
+ */
+export type ColumnIndexKeys<TTable extends Table> = {
+  [K in keyof Columns<TTable>]: K;
+}[keyof Columns<TTable>];
+
+/**
  * Configuration type for specifying which tables and columns to include in the Zero schema.
  * @template TDrizzleSchema - The complete Drizzle schema
  */
@@ -22,13 +30,6 @@ export type TableColumnsConfig<TDrizzleSchema extends Record<string, unknown>> =
  * @template TTable The Drizzle table type
  */
 export type TableName<TTable extends Table> = TTable["_"]["name"];
-
-// /**
-//  * Extracts the column name from a Drizzle column type.
-//  * @template TColumn The Drizzle column type
-//  */
-// export type ColumnName<TColumn extends ColumnBuilderBase> =
-//   TColumn["_"]["name"];
 
 /**
  * Gets all columns from a Drizzle table type.
@@ -55,16 +56,31 @@ type PrimaryKeyColumns<T extends Table> = {
 }[keyof Columns<T>];
 
 /**
- * Finds the primary key(s) from a table. Returns either:
- * - A readonly tuple of the primary key column name if one exists
- * - A readonly array of at least one string if no primary key is defined
+ * Gets the keys of text columns from a Drizzle table type.
+ *
+ * This is a workaround for a fallback for compound primary keys that are not
+ * typed strongly by Drizzle ORM.
+ *
+ * @template TTable The Drizzle table type
+ */
+export type TextColumnKeys<TTable extends Table> = {
+  [K in keyof Columns<TTable>]: Columns<TTable>[K]["_"] extends {
+    notNull: true;
+    columnType: "PgText" | "PgChar" | "PgVarchar";
+  }
+    ? K
+    : never;
+}[keyof Columns<TTable>];
+
+/**
+ * Finds the primary key(s) from a table.
  * @template T The Drizzle table type
  */
 export type FindPrimaryKeyFromTable<T extends Table> = [
   PrimaryKeyColumns<T>,
 ] extends [never]
-  ? Readonly<AtLeastOne<string>>
-  : readonly [PrimaryKeyColumns<T>];
+  ? UnionToTuple<TextColumnKeys<T>>
+  : [PrimaryKeyColumns<T>];
 
 /**
  * Finds relations defined for a specific table in the Drizzle schema.
@@ -173,7 +189,7 @@ export type Flatten<T> = {
  * Utility type that ensures an array has at least one element.
  * @template T The type of elements in the array
  */
-type AtLeastOne<T> = [T, ...T[]];
+export type AtLeastOne<T> = readonly [T, ...T[]];
 
 /**
  * Utility type that converts a union to a tuple.
