@@ -40,42 +40,63 @@ export const seed = async () => {
   await db.insert(medium).values({ id: "3", name: "sms" });
   await db.insert(medium).values({ id: "4", name: "whatsapp" });
 
-  await db
-    .insert(user)
-    .values({
+  await db.insert(user).values({
+    id: "1",
+    name: "James",
+    partner: true,
+    email: "james@example.com",
+    customTypeJson: {
       id: "1",
-      name: "James",
-      partner: true,
-      email: "james@example.com",
-      customTypeJson: {
-        id: "1",
-        custom: "this-is-imported-from-custom-types",
-      },
-    });
-  await db
-    .insert(user)
-    .values({
+      custom: "this-is-imported-from-custom-types",
+    },
+    customInterfaceJson: {
+      custom: "this-interface-is-imported-from-custom-types",
+    },
+    testInterface: {
+      nameInterface: "custom-inline-interface",
+    },
+    testType: {
+      nameType: "custom-inline-type",
+    },
+  });
+  await db.insert(user).values({
+    id: "2",
+    name: "John",
+    partner: false,
+    email: "john@example.com",
+    customTypeJson: {
       id: "2",
-      name: "John",
-      partner: false,
-      email: "john@example.com",
-      customTypeJson: {
-        id: "2",
-        custom: "this-is-imported-from-custom-types",
-      },
-    });
-  await db
-    .insert(user)
-    .values({
+      custom: "this-is-imported-from-custom-types",
+    },
+    customInterfaceJson: {
+      custom: "this-interface-is-imported-from-custom-types",
+    },
+    testInterface: {
+      nameInterface: "custom-inline-interface",
+    },
+    testType: {
+      nameType: "custom-inline-type",
+    },
+  });
+  await db.insert(user).values({
+    id: "3",
+    name: "Jane",
+    partner: false,
+    email: "jane@example.com",
+    customTypeJson: {
       id: "3",
-      name: "Jane",
-      partner: false,
-      email: "jane@example.com",
-      customTypeJson: {
-        id: "3",
-        custom: "this-is-imported-from-custom-types",
-      },
-    });
+      custom: "this-is-imported-from-custom-types",
+    },
+    customInterfaceJson: {
+      custom: "this-interface-is-imported-from-custom-types",
+    },
+    testInterface: {
+      nameInterface: "custom-inline-interface",
+    },
+    testType: {
+      nameType: "custom-inline-type",
+    },
+  });
 
   await db.insert(message).values({
     id: "1",

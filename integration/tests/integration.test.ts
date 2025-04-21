@@ -102,8 +102,16 @@ describe("relationships", () => {
     const user = await q.one().run();
 
     expect(user?.mediums).toHaveLength(2);
-    expect(user?.mediums[0]?.name).toBe("email");
-    expect(user?.mediums[1]?.name).toBe("whatsapp");
+    expect(user?.mediums?.[0]?.name).toBe("email");
+    expect(user?.mediums?.[1]?.name).toBe("whatsapp");
+    expect(user?.testInterface?.nameInterface).toBe("custom-inline-interface");
+    expect(user?.testType?.nameType).toBe("custom-inline-type");
+    expect(user?.customInterfaceJson?.custom).toBe(
+      "this-interface-is-imported-from-custom-types",
+    );
+    expect(user?.customTypeJson?.custom).toBe(
+      "this-is-imported-from-custom-types",
+    );
 
     preloadedUsers.cleanup();
   });

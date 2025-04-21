@@ -171,7 +171,17 @@ describe("relationships", () => {
     await expect(
       import("./schemas/one-to-many-missing-named.zero"),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: drizzle-zero: No relationship found for: author (Many from users to posts). Did you forget to define foreign keys for named relation "author"?]`,
+      `[Error: drizzle-zero: No relationship found for: author (Many from users to posts). Did you forget to define a named relation "author"?]`,
+    );
+  });
+
+  test("relationships - one-to-many-missing-one", async ({
+    expect,
+  }: TestAPI) => {
+    await expect(
+      import("./schemas/one-to-many-missing-one.zero"),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[Error: drizzle-zero: No relationship found for: author (Many from users to posts). Did you forget to define an opposite One relation?]`,
     );
   });
 

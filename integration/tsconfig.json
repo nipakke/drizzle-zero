@@ -25,8 +25,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "lib": ["dom", "ESNext"],
-    "jsx": "react-jsx",
-    "outDir": "out"
+    "jsx": "react-jsx"
   },
   "include": ["**/*.ts"]
 }

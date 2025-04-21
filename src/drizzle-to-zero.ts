@@ -24,7 +24,7 @@ export const drizzleDataTypeToZeroType = {
 export type DrizzleDataTypeToZeroType = typeof drizzleDataTypeToZeroType;
 
 /**
- * Represents specific Postgres column types supported by Drizzle ORM.
+ * Represents specific Postgres column types supported by Zero.
  */
 type DrizzleColumnType =
   | "PgText"

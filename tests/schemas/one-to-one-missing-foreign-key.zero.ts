@@ -1,8 +1,8 @@
 import { ANYONE_CAN, definePermissions, type Schema } from "@rocicorp/zero";
-import { createZeroSchema } from "../../src";
+import { drizzleZeroConfig } from "../../src";
 import * as oneToOneMissingForeignKey from "./one-to-one-missing-foreign-key.schema";
 
-export const schema = createZeroSchema(oneToOneMissingForeignKey, {
+export const schema = drizzleZeroConfig(oneToOneMissingForeignKey, {
   tables: {
     users: {
       id: true,

@@ -8,11 +8,13 @@ import {
   Project,
   QuoteKind,
   type ts,
+  TypeFormatFlags,
   TypeNode,
   VariableDeclarationKind,
 } from "ts-morph";
 import { tsImport } from "tsx/esm/api";
 
+const outputEmitDir = "node_modules/.cache/drizzle-zero";
 const defaultConfigFile = "drizzle-zero.config.ts";
 const defaultOutputFile = "zero-schema.gen.ts";
 const defaultTsConfigFile = "tsconfig.json";
@@ -27,6 +29,14 @@ async function findConfigFile() {
   }
 
   return configFile;
+}
+
+async function clearOutputDir() {
+  try {
+    await fs.rm(outputEmitDir, { recursive: true, force: true });
+  } catch (error) {
+    console.warn("❌  drizzle-zero: Failed to clear output directory", error);
+  }
 }
 
 async function getZeroSchemaDefsFromConfig({
@@ -44,15 +54,23 @@ async function getZeroSchemaDefsFromConfig({
       noEmit: false,
       declarationMap: false,
       sourceMap: false,
+      incremental: false,
+      outDir: outputEmitDir,
     },
   });
 
   const fileName = configPath.slice(configPath.lastIndexOf("/") + 1);
   const resolvedOutputFileName = fileName.replace(".ts", ".d.ts");
 
-  const emittedFiles = await drizzleZeroConfigProject.emitToMemory();
+  await drizzleZeroConfigProject.emit({
+    emitOnlyDtsFiles: true,
+  });
 
-  // load into a new project to get the type
+  const emittedFiles = await drizzleZeroConfigProject.emitToMemory({
+    emitOnlyDtsFiles: true,
+  });
+
+  // load into a new project to get the type and save to cache
   const emitProject = new Project({
     tsConfigFilePath: tsConfigPath,
     skipAddingFilesFromTsConfig: true,
@@ -124,52 +142,49 @@ async function getGeneratedSchema({
     { overwrite: true },
   );
 
-  const originalZeroSchemaTypeText = zeroSchemaTypeNode.getText();
+  const originalZeroSchemaTypeText = zeroSchemaTypeNode
+    .getType()
+    .getText(
+      undefined,
+      TypeFormatFlags.UseFullyQualifiedType |
+        TypeFormatFlags.NoTruncation |
+        TypeFormatFlags.NoTypeReduction,
+    );
 
-  const containsReadonlyJSONValue = originalZeroSchemaTypeText.includes(
-    'import("drizzle-zero").ReadonlyJSONValue',
-  );
   const containsCustomJsonType = originalZeroSchemaTypeText.includes(
     "customType: import(",
   );
 
-  const replacedReadonlyJSONValue = containsReadonlyJSONValue
-    ? originalZeroSchemaTypeText.replaceAll(
-        'import("drizzle-zero").ReadonlyJSONValue',
-        "ReadonlyJSONValue",
-      )
-    : originalZeroSchemaTypeText;
-
   const zeroSchemaTypeText = containsCustomJsonType
-    ? replacedReadonlyJSONValue.replace(
+    ? originalZeroSchemaTypeText.replace(
         /customType: (import\(.*?\)[^;]*);/g,
         "customType: Simplify<$1>;",
       )
-    : replacedReadonlyJSONValue;
-
-  // add import for ReadonlyJSONValue type from zero
-  if (containsReadonlyJSONValue) {
-    zeroSchemaGenerated.addImportDeclaration({
-      isTypeOnly: true,
-      namedImports: ["ReadonlyJSONValue"],
-      moduleSpecifier: "@rocicorp/zero",
-    });
-  }
+    : originalZeroSchemaTypeText;
 
   // add wrapper for simplify type
   if (containsCustomJsonType) {
-    zeroSchemaGenerated.addTypeAlias({
+    const simplifyTypeAlias = zeroSchemaGenerated.addTypeAlias({
       name: "Simplify",
       typeParameters: ["T"],
       isExported: true,
       type: "T & {}",
     });
+
+    simplifyTypeAlias.addJsDoc({
+      description: "\nHelper to simplify custom type configurations.",
+    });
   }
 
-  zeroSchemaGenerated.addTypeAlias({
+  const schemaTypeAlias = zeroSchemaGenerated.addTypeAlias({
     name: typename,
     isExported: true,
     type: zeroSchemaTypeText,
+  });
+
+  schemaTypeAlias.addJsDoc({
+    description:
+      "\nRepresents the schema configuration for Zero.\nThis type is auto-generated from your Drizzle schema definition.",
   });
 
   const stringifiedSchema = JSON.stringify(zeroSchema, null, 2).replaceAll(
@@ -274,6 +289,8 @@ async function main(opts: GeneratorOptions = {}) {
     );
     process.exit(1);
   }
+
+  await clearOutputDir();
 
   const zeroSchemaTypeNode = await getZeroSchemaDefsFromConfig({
     configPath: fullConfigPath,

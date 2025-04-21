@@ -4,14 +4,13 @@ import {
   type ExpressionBuilder,
   type Row,
 } from "@rocicorp/zero";
-import { schema } from "./zero-schema.gen";
+import { schema, type Schema } from "./zero-schema.gen";
 
-export { schema };
+export { schema, type Schema };
 
-export type Schema = typeof schema;
-export type Message = Row<typeof schema.tables.message>;
-export type Medium = Row<typeof schema.tables.medium>;
-export type User = Row<typeof schema.tables.user>;
+export type Message = Row<Schema["tables"]["message"]>;
+export type Medium = Row<Schema["tables"]["medium"]>;
+export type User = Row<Schema["tables"]["user"]>;
 
 // The contents of your decoded JWT.
 type AuthData = {

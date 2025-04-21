@@ -22,7 +22,18 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import type { CustomJsonType } from "drizzle-zero-custom-types";
+import type {
+  CustomJsonType,
+  CustomJsonInterface,
+} from "drizzle-zero-custom-types";
+
+export interface TestInterface {
+  nameInterface: "custom-inline-interface";
+}
+
+export type TestType = {
+  nameType: "custom-inline-type";
+};
 
 const sharedColumns = {
   createdAt: timestamp("createdAt", {
@@ -48,9 +59,12 @@ export const user = pgTable("user", {
   name: text("name").notNull(),
   partner: boolean("partner").notNull(),
   email: text("email").$type<`${string}@${string}`>().notNull(),
-  customTypeJson: jsonb("custom_type_json")
-    .$type<CustomJsonType>()
+  customTypeJson: jsonb("custom_type_json").$type<CustomJsonType>().notNull(),
+  customInterfaceJson: jsonb("custom_interface_json")
+    .$type<CustomJsonInterface>()
     .notNull(),
+  testInterface: jsonb("test_interface").$type<TestInterface>().notNull(),
+  testType: jsonb("test_type").$type<TestType>().notNull(),
 });
 
 export const userRelations = relations(user, ({ many }) => ({

@@ -1,8 +1,8 @@
 import { ANYONE_CAN, definePermissions, type Schema } from "@rocicorp/zero";
-import { createZeroSchema } from "../../src";
+import { drizzleZeroConfig } from "../../src";
 import * as customSchema from "./custom-schema.schema";
 
-export const schema = createZeroSchema(customSchema, {
+export const schema = drizzleZeroConfig(customSchema, {
   tables: {
     users: {
       id: true,
