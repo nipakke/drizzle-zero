@@ -1,7 +1,7 @@
 import { drizzleZeroConfig } from "drizzle-zero";
-import * as drizzleSchema from "../drizzle/schema";
+import * as drizzleSchema from "./drizzle/schema";
 
-export default drizzleZeroConfig(drizzleSchema, {
+export const schema = drizzleZeroConfig(drizzleSchema, {
   tables: {
     user: {
       createdAt: true,
