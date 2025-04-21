@@ -987,7 +987,77 @@ const getDrizzleKeyFromTableName = ({
  * );
  * ```
  */
-const drizzleZeroConfig: typeof createZeroSchema = (schema, config) =>
-  createZeroSchema(schema, { ...config, "~__cli": true });
+const drizzleZeroConfig = <
+  const TDrizzleSchema extends { [K in string]: unknown },
+  const TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
+  const TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
+>(
+  /**
+   * The Drizzle schema to create a Zero schema from.
+   */
+  schema: TDrizzleSchema,
+
+  /**
+   * The configuration for the Zero schema.
+   *
+   * @param config.tables - The tables to include in the Zero schema.
+   * @param config.many - Configuration for many-to-many relationships.
+   */
+  config: {
+    /**
+     * Specify the tables to include in the Zero schema.
+     * This can include type overrides for columns, using `column.json()` for example.
+     *
+     * @example
+     * ```ts
+     * {
+     *   user: {
+     *     id: true,
+     *     name: true,
+     *   },
+     *   profile_info: {
+     *     id: true,
+     *     user_id: true,
+     *     metadata: column.json(),
+     *   },
+     * }
+     * ```
+     */
+    readonly tables: TColumnConfig;
+
+    /**
+     * Configuration for many-to-many relationships.
+     * Organized by source table, with each relationship specifying a tuple of [junction table name, destination table name].
+     *
+     * @example
+     * ```ts
+     * {
+     *   user: {
+     *     comments: ['message', 'comment']
+     *   }
+     * }
+     * ```
+     */
+    readonly manyToMany?: TManyConfig;
+
+    /**
+     * Whether to enable debug mode.
+     *
+     * @example
+     * ```ts
+     * { debug: true }
+     * ```
+     */
+    readonly debug?: boolean;
+  },
+): Flatten<CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig>> => {
+  const zeroSchema = createZeroSchema(schema, { ...config, "~__cli": true });
+
+  return zeroSchema as CreateZeroSchema<
+    TDrizzleSchema,
+    TColumnConfig,
+    TManyConfig
+  >;
+};
 
 export { createZeroSchema, drizzleZeroConfig, type CreateZeroSchema };

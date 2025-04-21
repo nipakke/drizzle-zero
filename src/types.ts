@@ -79,7 +79,7 @@ export type TextColumnKeys<TTable extends Table> = {
 export type FindPrimaryKeyFromTable<T extends Table> = [
   PrimaryKeyColumns<T>,
 ] extends [never]
-  ? UnionToTuple<TextColumnKeys<T>>
+  ? [never]
   : [PrimaryKeyColumns<T>];
 
 /**

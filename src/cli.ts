@@ -4,8 +4,8 @@ import * as path from "node:path";
 import { pathToFileURL } from "node:url";
 import {
   Project,
-  VariableDeclaration,
-  VariableDeclarationKind
+  VariableDeclarationKind,
+  type ExportedDeclarations
 } from "ts-morph";
 import { tsImport } from "tsx/esm/api";
 
@@ -28,9 +28,11 @@ async function findConfigFile() {
 async function getZeroSchemaDefsFromConfig({
   tsProject,
   configPath,
+  exportName,
 }: {
   tsProject: Project;
   configPath: string;
+  exportName: string;
 }) {
   const fileName = configPath.slice(configPath.lastIndexOf("/") + 1);
 
@@ -42,17 +44,22 @@ async function getZeroSchemaDefsFromConfig({
     );
   }
 
-  const zeroSchemaTypeDecl =
-    sourceFile.getVariableDeclaration("_default") ??
-    sourceFile.getVariableDeclaration("schema");
+  const exportDeclarations = sourceFile.getExportedDeclarations();
 
-  if (!zeroSchemaTypeDecl) {
-    throw new Error(
-      "❌ drizzle-zero: No config type found in the config file - did you export `default` or `schema`?",
-    );
+  for (const [name, declarations] of exportDeclarations.entries()) {
+    for (const declaration of declarations) {
+      if (exportName === name) {
+        return [name, declaration] as const;
+      }
+    }
   }
 
-  return zeroSchemaTypeDecl;
+  throw new Error(
+    `❌ drizzle-zero: No config type found in the config file - did you export \`default\` or \`schema\`? Found: ${sourceFile
+      .getVariableDeclarations()
+      .map((v) => v.getName())
+      .join(", ")}`,
+  );
 }
 
 async function getGeneratedSchema({
@@ -63,7 +70,7 @@ async function getGeneratedSchema({
 }: {
   tsProject: Project;
   zeroSchema: unknown;
-  zeroSchemaTypeDecl: VariableDeclaration;
+  zeroSchemaTypeDecl: readonly [string, ExportedDeclarations];
   outputFilePath: string;
 }) {
   const typename = "Schema";
@@ -74,14 +81,14 @@ async function getGeneratedSchema({
 
   const moduleSpecifier =
     zeroSchemaGenerated.getRelativePathAsModuleSpecifierTo(
-      zeroSchemaTypeDecl.getSourceFile(),
+      zeroSchemaTypeDecl[1].getSourceFile(),
     );
 
   // Add import for DrizzleConfigSchema
   zeroSchemaGenerated.addImportDeclaration({
     moduleSpecifier,
     namedImports: [
-      { name: zeroSchemaTypeDecl.getName(), alias: "DrizzleConfigSchema" },
+      { name: zeroSchemaTypeDecl[0], alias: "DrizzleConfigSchema" },
     ],
     isTypeOnly: true,
   });
@@ -198,6 +205,7 @@ async function main(opts: GeneratorOptions = {}) {
   }
 
   const zeroConfigImport = await tsImport(fullConfigPath, __filename);
+  const exportName = zeroConfigImport?.default ? "default" : "schema";
   const zeroConfig = zeroConfigImport?.default ?? zeroConfigImport?.schema;
 
   if (!zeroConfig) {
@@ -214,6 +222,7 @@ async function main(opts: GeneratorOptions = {}) {
   const zeroSchemaTypeDecl = await getZeroSchemaDefsFromConfig({
     tsProject,
     configPath: fullConfigPath,
+    exportName,
   });
 
   let zeroSchemaGenerated = await getGeneratedSchema({
