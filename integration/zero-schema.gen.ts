@@ -16,13 +16,7 @@
  * ------------------------------------------------------------
  */
 
-import type { default as DrizzleConfigSchema } from "./config/drizzle-zero.config";
-
-/**
- * Represents the Zero schema type.
- * This type is auto-generated from your Drizzle schema definition.
- */
-export type Schema = typeof DrizzleConfigSchema;
+import type { schema as DrizzleConfigSchema } from "./drizzle-zero.config";
 
 /**
  * The Zero schema object.
@@ -36,244 +30,285 @@ export const schema = {
         createdAt: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["createdAt"]["customType"],
         },
         updatedAt: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["updatedAt"]["customType"],
         },
         id: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["id"]["customType"],
         },
         smallintField: {
           type: "number",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["smallintField"]["customType"],
           serverName: "smallint",
         },
         integerField: {
           type: "number",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["integerField"]["customType"],
           serverName: "integer",
         },
         bigintField: {
           type: "number",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["bigintField"]["customType"],
           serverName: "bigint",
         },
         bigintNumberField: {
           type: "number",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["bigintNumberField"]["customType"],
           serverName: "bigint_number",
         },
         smallSerialField: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["smallSerialField"]["customType"],
           serverName: "smallserial",
         },
         serialField: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["serialField"]["customType"],
           serverName: "serial",
         },
         bigSerialField: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["bigSerialField"]["customType"],
           serverName: "bigserial",
         },
         numericField: {
           type: "number",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["numericField"]["customType"],
           serverName: "numeric",
         },
         decimalField: {
           type: "number",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["decimalField"]["customType"],
           serverName: "decimal",
         },
         realField: {
           type: "number",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["realField"]["customType"],
           serverName: "real",
         },
         doublePrecisionField: {
           type: "number",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["doublePrecisionField"]["customType"],
           serverName: "double_precision",
         },
         textField: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["textField"]["customType"],
           serverName: "text",
         },
         charField: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["charField"]["customType"],
           serverName: "char",
         },
         uuidField: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["uuidField"]["customType"],
           serverName: "uuid",
         },
         varcharField: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["varcharField"]["customType"],
           serverName: "varchar",
         },
         booleanField: {
           type: "boolean",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["booleanField"]["customType"],
           serverName: "boolean",
         },
         timestampField: {
           type: "number",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["timestampField"]["customType"],
           serverName: "timestamp",
         },
         timestampTzField: {
           type: "number",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["timestampTzField"]["customType"],
           serverName: "timestamp_tz",
         },
         timestampModeString: {
           type: "number",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["timestampModeString"]["customType"],
           serverName: "timestamp_mode_string",
         },
         timestampModeDate: {
           type: "number",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["timestampModeDate"]["customType"],
           serverName: "timestamp_mode_date",
         },
         dateField: {
           type: "number",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["dateField"]["customType"],
           serverName: "date",
         },
         jsonField: {
           type: "json",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["jsonField"]["customType"],
           serverName: "json",
         },
         jsonbField: {
           type: "json",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["jsonbField"]["customType"],
           serverName: "jsonb",
         },
         typedJsonField: {
           type: "json",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["typedJsonField"]["customType"],
           serverName: "typed_json",
         },
         statusField: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["statusField"]["customType"],
           serverName: "status",
         },
         optionalSmallint: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["optionalSmallint"]["customType"],
           serverName: "optional_smallint",
         },
         optionalInteger: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["optionalInteger"]["customType"],
           serverName: "optional_integer",
         },
         optionalBigint: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["optionalBigint"]["customType"],
           serverName: "optional_bigint",
         },
         optionalNumeric: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["optionalNumeric"]["customType"],
           serverName: "optional_numeric",
         },
         optionalReal: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["optionalReal"]["customType"],
           serverName: "optional_real",
         },
         optionalDoublePrecision: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["optionalDoublePrecision"]["customType"],
           serverName: "optional_double_precision",
         },
         optionalText: {
           type: "string",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["optionalText"]["customType"],
           serverName: "optional_text",
         },
         optionalBoolean: {
           type: "boolean",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["optionalBoolean"]["customType"],
           serverName: "optional_boolean",
         },
         optionalTimestamp: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["optionalTimestamp"]["customType"],
           serverName: "optional_timestamp",
         },
         optionalJson: {
           type: "json",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["optionalJson"]["customType"],
           serverName: "optional_json",
         },
         optionalEnum: {
           type: "string",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["optionalEnum"]["customType"],
           serverName: "optional_enum",
         },
         optionalVarchar: {
           type: "string",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["optionalVarchar"]["customType"],
           serverName: "optional_varchar",
         },
         optionalUuid: {
           type: "string",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["allTypes"]["columns"]["optionalUuid"]["customType"],
           serverName: "optional_uuid",
         },
       },
@@ -286,17 +321,20 @@ export const schema = {
         requestingId: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["friendship"]["columns"]["requestingId"]["customType"],
         },
         acceptingId: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["friendship"]["columns"]["acceptingId"]["customType"],
         },
         accepted: {
           type: "boolean",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["friendship"]["columns"]["accepted"]["customType"],
         },
       },
       primaryKey: ["requestingId", "acceptingId"],
@@ -307,22 +345,26 @@ export const schema = {
         createdAt: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["medium"]["columns"]["createdAt"]["customType"],
         },
         updatedAt: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["medium"]["columns"]["updatedAt"]["customType"],
         },
         id: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["medium"]["columns"]["id"]["customType"],
         },
         name: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["medium"]["columns"]["name"]["customType"],
         },
       },
       primaryKey: ["id"],
@@ -333,37 +375,44 @@ export const schema = {
         createdAt: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["message"]["columns"]["createdAt"]["customType"],
         },
         updatedAt: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["message"]["columns"]["updatedAt"]["customType"],
         },
         id: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["message"]["columns"]["id"]["customType"],
         },
         senderId: {
           type: "string",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["message"]["columns"]["senderId"]["customType"],
         },
         mediumId: {
           type: "string",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["message"]["columns"]["mediumId"]["customType"],
         },
         body: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["message"]["columns"]["body"]["customType"],
         },
         metadata: {
           type: "json",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["message"]["columns"]["metadata"]["customType"],
         },
       },
       primaryKey: ["id"],
@@ -374,61 +423,72 @@ export const schema = {
         createdAt: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["user"]["columns"]["createdAt"]["customType"],
         },
         updatedAt: {
           type: "number",
           optional: true,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["user"]["columns"]["updatedAt"]["customType"],
         },
         id: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["user"]["columns"]["id"]["customType"],
         },
         name: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["user"]["columns"]["name"]["customType"],
         },
         partner: {
           type: "boolean",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["user"]["columns"]["partner"]["customType"],
         },
         email: {
           type: "string",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["user"]["columns"]["email"]["customType"],
         },
         customTypeJson: {
           type: "json",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["user"]["columns"]["customTypeJson"]["customType"],
           serverName: "custom_type_json",
         },
         customInterfaceJson: {
           type: "json",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["user"]["columns"]["customInterfaceJson"]["customType"],
           serverName: "custom_interface_json",
         },
         testInterface: {
           type: "json",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["user"]["columns"]["testInterface"]["customType"],
           serverName: "test_interface",
         },
         testType: {
           type: "json",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["user"]["columns"]["testType"]["customType"],
           serverName: "test_type",
         },
         testExportedType: {
           type: "json",
           optional: false,
-          customType: null as unknown,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["user"]["columns"]["testExportedType"]["customType"],
           serverName: "test_exported_type",
         },
       },
@@ -503,4 +563,10 @@ export const schema = {
       ],
     },
   },
-} as Schema;
+} as const;
+
+/**
+ * Represents the Zero schema type.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type Schema = typeof schema;

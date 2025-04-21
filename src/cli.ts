@@ -5,7 +5,7 @@ import { pathToFileURL } from "node:url";
 import {
   Project,
   VariableDeclarationKind,
-  type ExportedDeclarations
+  type ExportedDeclarations,
 } from "ts-morph";
 import { tsImport } from "tsx/esm/api";
 
@@ -73,6 +73,8 @@ async function getGeneratedSchema({
   zeroSchemaTypeDecl: readonly [string, ExportedDeclarations];
   outputFilePath: string;
 }) {
+  const schemaObjectName = "schema";
+  const aliasName = "DrizzleConfigSchema";
   const typename = "Schema";
 
   const zeroSchemaGenerated = tsProject.createSourceFile(outputFilePath, "", {
@@ -87,35 +89,73 @@ async function getGeneratedSchema({
   // Add import for DrizzleConfigSchema
   zeroSchemaGenerated.addImportDeclaration({
     moduleSpecifier,
-    namedImports: [
-      { name: zeroSchemaTypeDecl[0], alias: "DrizzleConfigSchema" },
-    ],
+    namedImports: [{ name: zeroSchemaTypeDecl[0], alias: aliasName }],
     isTypeOnly: true,
   });
-
-  const schemaTypeAlias = zeroSchemaGenerated.addTypeAlias({
-    name: typename,
-    isExported: true,
-    type: "typeof DrizzleConfigSchema",
-  });
-
-  schemaTypeAlias.addJsDoc({
-    description:
-      "\nRepresents the Zero schema type.\nThis type is auto-generated from your Drizzle schema definition.",
-  });
-
-  const stringifiedSchema = JSON.stringify(zeroSchema, null, 2).replaceAll(
-    `"customType": null`,
-    `"customType": null as unknown`,
-  );
 
   const schemaVariable = zeroSchemaGenerated.addVariableStatement({
     declarationKind: VariableDeclarationKind.Const,
     isExported: true,
     declarations: [
       {
-        name: "schema",
-        initializer: `${stringifiedSchema} as ${typename}`,
+        name: schemaObjectName,
+        initializer: (writer) => {
+          const writeValue = (
+            value: unknown,
+            keys: string[] = [],
+            indent = 0,
+          ) => {
+            const indentStr = " ".repeat(indent);
+
+            if (
+              !value ||
+              typeof value === "string" ||
+              typeof value === "number" ||
+              typeof value === "boolean" ||
+              Array.isArray(value)
+            ) {
+              writer.write(JSON.stringify(value));
+            } else if (typeof value === "object" && value !== null) {
+              writer.write("{");
+
+              const entries = Object.entries(value);
+
+              if (entries.length > 0) {
+                writer.newLine();
+
+                for (let i = 0; i < entries.length; i++) {
+                  const [key, propValue] = entries[i] ?? [];
+
+                  if (!key) {
+                    continue;
+                  }
+
+                  writer.write(indentStr + "  " + JSON.stringify(key) + ": ");
+
+                  // Special handling for customType: null
+                  if (key === "customType" && propValue === null) {
+                    writer.write(`null as typeof ${aliasName}${([...keys, "customType"].map(k => `["${k}"]`).join(""))}`);
+                  } else {
+                    writeValue(propValue, [...keys, key], indent + 2);
+                  }
+
+                  if (i < entries.length - 1) {
+                    writer.write(",");
+                  }
+
+                  writer.newLine();
+                }
+
+                writer.write(indentStr);
+              }
+
+              writer.write("}");
+            }
+          };
+
+          writeValue(zeroSchema);
+          writer.write(` as const`);
+        },
       },
     ],
   });
@@ -123,6 +163,17 @@ async function getGeneratedSchema({
   schemaVariable.addJsDoc({
     description:
       "\nThe Zero schema object.\nThis type is auto-generated from your Drizzle schema definition.",
+  });
+
+  const schemaTypeAlias = zeroSchemaGenerated.addTypeAlias({
+    name: typename,
+    isExported: true,
+    type: `typeof ${schemaObjectName}`,
+  });
+
+  schemaTypeAlias.addJsDoc({
+    description:
+      "\nRepresents the Zero schema type.\nThis type is auto-generated from your Drizzle schema definition.",
   });
 
   zeroSchemaGenerated.formatText();

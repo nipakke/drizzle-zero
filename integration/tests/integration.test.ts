@@ -29,10 +29,20 @@ describe("relationships", () => {
     expect(user[0]?.name).toBe("James");
     expect(user[0]?.id).toBe("1");
     expect(user[0]?.email).toBe("james@example.com");
-    expect(user[0]?.customTypeJson).toStrictEqual({
-      id: "1",
-      custom: "this-is-imported-from-custom-types",
-    });
+    expect(
+      user[0]?.customTypeJson.custom === "this-is-imported-from-custom-types",
+    ).toBe(true);
+    expect(
+      user[0]?.customInterfaceJson.custom ===
+        "this-interface-is-imported-from-custom-types",
+    ).toBe(true);
+    expect(user[0]?.testExportedType.nameType === "custom-inline-type").toBe(
+      true,
+    );
+    expect(
+      user[0]?.testInterface.nameInterface === "custom-inline-interface",
+    ).toBe(true);
+    expect(user[0]?.testType.nameType === "custom-inline-type").toBe(true);
 
     preloadedUsers.cleanup();
   });
