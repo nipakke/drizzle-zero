@@ -40,10 +40,18 @@ export const usersRelations = relations(users, ({ many }) => ({
   posts: many(posts),
 }));
 
+// Types can be imported or defined in-line (must be exported)
+export interface PostMeta {
+  source?: string
+  tags?: string[]
+}
+
 export const posts = pgTable("post", {
   id: text("id").primaryKey(),
   // this JSON type will be passed to Zero
   content: jsonb("content").$type<{ textValue: string }>().notNull(),
+  // this type MUST be exported
+  meta: jsonb("meta").$type<PostMeta>().notNull(),
   authorId: text("author_id").references(() => users.id),
 });
 
