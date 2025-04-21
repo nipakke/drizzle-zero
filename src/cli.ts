@@ -3,21 +3,15 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { pathToFileURL } from "node:url";
 import {
-  IndentationText,
-  NewLineKind,
   Project,
-  QuoteKind,
-  type ts,
-  TypeFormatFlags,
-  TypeNode,
-  VariableDeclarationKind,
+  VariableDeclaration,
+  VariableDeclarationKind
 } from "ts-morph";
 import { tsImport } from "tsx/esm/api";
 
-const outputEmitDir = "node_modules/.cache/drizzle-zero";
-const defaultConfigFile = "drizzle-zero.config.ts";
-const defaultOutputFile = "zero-schema.gen.ts";
-const defaultTsConfigFile = "tsconfig.json";
+const defaultConfigFile = "./drizzle-zero.config.ts";
+const defaultOutputFile = "./zero-schema.gen.ts";
+const defaultTsConfigFile = "./tsconfig.json";
 
 async function findConfigFile() {
   const files = await fs.readdir(process.cwd());
@@ -31,61 +25,20 @@ async function findConfigFile() {
   return configFile;
 }
 
-async function clearOutputDir() {
-  try {
-    await fs.rm(outputEmitDir, { recursive: true, force: true });
-  } catch (error) {
-    console.warn("❌  drizzle-zero: Failed to clear output directory", error);
-  }
-}
-
 async function getZeroSchemaDefsFromConfig({
+  tsProject,
   configPath,
-  tsConfigPath,
 }: {
+  tsProject: Project;
   configPath: string;
-  tsConfigPath: string;
 }) {
-  const drizzleZeroConfigProject = new Project({
-    tsConfigFilePath: tsConfigPath,
-    compilerOptions: {
-      emitDeclarationOnly: true,
-      declaration: true,
-      noEmit: false,
-      declarationMap: false,
-      sourceMap: false,
-      incremental: false,
-      outDir: outputEmitDir,
-    },
-  });
-
   const fileName = configPath.slice(configPath.lastIndexOf("/") + 1);
-  const resolvedOutputFileName = fileName.replace(".ts", ".d.ts");
 
-  await drizzleZeroConfigProject.emit({
-    emitOnlyDtsFiles: true,
-  });
-
-  const emittedFiles = await drizzleZeroConfigProject.emitToMemory({
-    emitOnlyDtsFiles: true,
-  });
-
-  // load into a new project to get the type and save to cache
-  const emitProject = new Project({
-    tsConfigFilePath: tsConfigPath,
-    skipAddingFilesFromTsConfig: true,
-  });
-  for (const file of emittedFiles.getFiles()) {
-    emitProject.createSourceFile(file.filePath, file.text, {
-      overwrite: true,
-    });
-  }
-
-  const sourceFile = emitProject.getSourceFile(resolvedOutputFileName);
+  const sourceFile = tsProject.getSourceFile(fileName);
 
   if (!sourceFile) {
     throw new Error(
-      `❌ drizzle-zero: Failed to find type definitions for ${resolvedOutputFileName}`,
+      `❌ drizzle-zero: Failed to find type definitions for ${fileName}`,
     );
   }
 
@@ -99,92 +52,49 @@ async function getZeroSchemaDefsFromConfig({
     );
   }
 
-  const zeroSchemaType = zeroSchemaTypeDecl.getTypeNode();
-
-  if (!zeroSchemaType) {
-    throw new Error(
-      "❌ drizzle-zero: No config type found in the config file.",
-    );
-  }
-
-  // format the type node
-  zeroSchemaType.formatText();
-
-  return zeroSchemaType;
+  return zeroSchemaTypeDecl;
 }
 
 async function getGeneratedSchema({
+  tsProject,
   zeroSchema,
-  zeroSchemaTypeNode,
-  tsConfigPath,
+  zeroSchemaTypeDecl,
+  outputFilePath,
 }: {
+  tsProject: Project;
   zeroSchema: unknown;
-  zeroSchemaTypeNode: TypeNode<ts.TypeNode>;
-  tsConfigPath: string;
+  zeroSchemaTypeDecl: VariableDeclaration;
+  outputFilePath: string;
 }) {
-  const inMemoryOutputFile = "zero.ts";
-
   const typename = "Schema";
 
-  const drizzleZeroOutputProject = new Project({
-    tsConfigFilePath: tsConfigPath,
-    skipAddingFilesFromTsConfig: true,
-    manipulationSettings: {
-      indentationText: IndentationText.TwoSpaces,
-      newLineKind: NewLineKind.LineFeed,
-      quoteKind: QuoteKind.Single,
-    },
+  const zeroSchemaGenerated = tsProject.createSourceFile(outputFilePath, "", {
+    overwrite: true,
   });
 
-  const zeroSchemaGenerated = drizzleZeroOutputProject.createSourceFile(
-    inMemoryOutputFile,
-    "",
-    { overwrite: true },
-  );
-
-  const originalZeroSchemaTypeText = zeroSchemaTypeNode
-    .getType()
-    .getText(
-      undefined,
-      TypeFormatFlags.UseFullyQualifiedType |
-        TypeFormatFlags.NoTruncation |
-        TypeFormatFlags.NoTypeReduction,
+  const moduleSpecifier =
+    zeroSchemaGenerated.getRelativePathAsModuleSpecifierTo(
+      zeroSchemaTypeDecl.getSourceFile(),
     );
 
-  const containsCustomJsonType = originalZeroSchemaTypeText.includes(
-    "customType: import(",
-  );
-
-  const zeroSchemaTypeText = containsCustomJsonType
-    ? originalZeroSchemaTypeText.replace(
-        /customType: (import\(.*?\)[^;]*);/g,
-        "customType: Simplify<$1>;",
-      )
-    : originalZeroSchemaTypeText;
-
-  // add wrapper for simplify type
-  if (containsCustomJsonType) {
-    const simplifyTypeAlias = zeroSchemaGenerated.addTypeAlias({
-      name: "Simplify",
-      typeParameters: ["T"],
-      isExported: true,
-      type: "T & {}",
-    });
-
-    simplifyTypeAlias.addJsDoc({
-      description: "\nHelper to simplify custom type configurations.",
-    });
-  }
+  // Add import for DrizzleConfigSchema
+  zeroSchemaGenerated.addImportDeclaration({
+    moduleSpecifier,
+    namedImports: [
+      { name: zeroSchemaTypeDecl.getName(), alias: "DrizzleConfigSchema" },
+    ],
+    isTypeOnly: true,
+  });
 
   const schemaTypeAlias = zeroSchemaGenerated.addTypeAlias({
     name: typename,
     isExported: true,
-    type: zeroSchemaTypeText,
+    type: "typeof DrizzleConfigSchema",
   });
 
   schemaTypeAlias.addJsDoc({
     description:
-      "\nRepresents the schema configuration for Zero.\nThis type is auto-generated from your Drizzle schema definition.",
+      "\nRepresents the Zero schema type.\nThis type is auto-generated from your Drizzle schema definition.",
   });
 
   const stringifiedSchema = JSON.stringify(zeroSchema, null, 2).replaceAll(
@@ -192,7 +102,7 @@ async function getGeneratedSchema({
     `"customType": null as unknown`,
   );
 
-  zeroSchemaGenerated.addVariableStatement({
+  const schemaVariable = zeroSchemaGenerated.addVariableStatement({
     declarationKind: VariableDeclarationKind.Const,
     isExported: true,
     declarations: [
@@ -201,6 +111,11 @@ async function getGeneratedSchema({
         initializer: `${stringifiedSchema} as ${typename}`,
       },
     ],
+  });
+
+  schemaVariable.addJsDoc({
+    description:
+      "\nThe Zero schema object.\nThis type is auto-generated from your Drizzle schema definition.",
   });
 
   zeroSchemaGenerated.formatText();
@@ -261,13 +176,15 @@ export interface GeneratorOptions {
   config?: string;
   tsConfigPath?: string;
   format?: boolean;
+  outputFilePath?: string;
 }
 
 async function main(opts: GeneratorOptions = {}) {
-  const { config, tsConfigPath, format } = { ...opts };
+  const { config, tsConfigPath, format, outputFilePath } = { ...opts };
 
   const configFilePath = config ?? (await findConfigFile());
   const resolvedTsConfigPath = tsConfigPath ?? defaultTsConfigFile;
+  const resolvedOutputFilePath = outputFilePath ?? defaultOutputFile;
 
   const fullConfigPath = path.resolve(process.cwd(), configFilePath);
 
@@ -290,17 +207,20 @@ async function main(opts: GeneratorOptions = {}) {
     process.exit(1);
   }
 
-  await clearOutputDir();
+  const tsProject = new Project({
+    tsConfigFilePath: resolvedTsConfigPath,
+  });
 
-  const zeroSchemaTypeNode = await getZeroSchemaDefsFromConfig({
+  const zeroSchemaTypeDecl = await getZeroSchemaDefsFromConfig({
+    tsProject,
     configPath: fullConfigPath,
-    tsConfigPath: resolvedTsConfigPath,
   });
 
   let zeroSchemaGenerated = await getGeneratedSchema({
+    tsProject,
     zeroSchema: zeroConfig,
-    zeroSchemaTypeNode,
-    tsConfigPath: resolvedTsConfigPath,
+    zeroSchemaTypeDecl,
+    outputFilePath: resolvedOutputFilePath,
   });
 
   if (format) {
@@ -341,6 +261,7 @@ async function cli() {
         config: command.config,
         tsConfigPath: command.tsconfig,
         format: command.format,
+        outputFilePath: command.output,
       });
 
       if (command.output) {
