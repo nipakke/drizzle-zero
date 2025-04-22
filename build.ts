@@ -11,7 +11,7 @@ const main = async () => {
   });
 
   esbuild.buildSync({
-    entryPoints: ["./src/cli.ts"],
+    entryPoints: ["./src/cli/index.ts"],
     bundle: true,
     outfile: "dist/bin.cjs",
     format: "cjs",
