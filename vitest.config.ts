@@ -3,7 +3,6 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    environment: "jsdom",
     testTimeout: 15000,
     include: ["tests/**/*.test.ts"],
     typecheck: {
@@ -13,7 +12,7 @@ export default defineConfig({
     },
     coverage: {
       include: ["src/**/*.ts"],
-      exclude: ["src/cli.ts"],
+      exclude: ["src/cli/index.ts"],
       thresholds: {
         lines: 90,
         statements: 90,

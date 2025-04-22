@@ -6,6 +6,7 @@ import {
   string,
   table,
 } from "@rocicorp/zero";
+import { sql } from "drizzle-orm";
 import { mysqlTable, text as textMysql } from "drizzle-orm/mysql-core";
 import {
   bigint,
@@ -38,10 +39,9 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import { describe, test } from "vitest";
 import { createZeroTableBuilder, type ColumnsConfig } from "../src";
 import { assertEqual, expectTableSchemaDeepEqual } from "./utils";
-import { describe, test } from "vitest";
-import { sql } from "drizzle-orm";
 
 describe("tables", () => {
   test("pg - basic", () => {

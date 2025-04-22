@@ -18,7 +18,12 @@ import {
   drizzleDataTypeToZeroType,
   type ZeroTypeToTypescriptType,
 } from "./drizzle-to-zero";
-import type { ColumnNames, Columns, FindPrimaryKeyFromTable, Flatten } from "./types";
+import type {
+  ColumnNames,
+  Columns,
+  FindPrimaryKeyFromTable,
+  Flatten,
+} from "./types";
 import { debugLog, typedEntries } from "./util";
 
 export type { ColumnBuilder, ReadonlyJSONValue, TableBuilderWithColumns };
