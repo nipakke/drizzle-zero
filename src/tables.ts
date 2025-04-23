@@ -415,6 +415,5 @@ const getDrizzleColumnKeyFromColumnName = ({
 export {
   createZeroTableBuilder,
   getDrizzleColumnKeyFromColumnName,
-  type ZeroTableBuilder
+  type ZeroTableBuilder,
 };
-
