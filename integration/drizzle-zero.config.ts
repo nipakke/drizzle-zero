@@ -97,4 +97,5 @@ export const schema = drizzleZeroConfig(drizzleSchema, {
       ],
     },
   },
+  casing: "snake_case",
 });

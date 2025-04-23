@@ -20,6 +20,7 @@ export const schema = drizzleZeroConfig(oneToMany, {
       authorId: true,
     },
   },
+  casing: "snake_case",
 });
 
 export const permissions = definePermissions<{}, Schema>(schema, () => {

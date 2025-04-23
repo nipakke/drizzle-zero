@@ -975,6 +975,93 @@ describe("relationships", () => {
     // assertEqual(manyToManyExtendedConfigZeroSchema, expected);
   });
 
+  test("relationships - one-to-many-casing", async () => {
+    const { schema: oneToManyCasingZeroSchema } = await import(
+      "./schemas/one-to-many-casing.zero"
+    );
+
+    const expectedUsers = table("users")
+      .from("user")
+      .columns({
+        id: string(),
+        name: string().optional(),
+      })
+
+      .primaryKey("id");
+
+    const expectedComments = table("comments")
+      .from("comment")
+      .columns({
+        id: string(),
+        text: string().optional(),
+        authorId: string().from("author_id").optional(),
+        postId: string().from("post_id").optional(),
+      })
+      .primaryKey("id");
+
+    const expectedPosts = table("posts")
+      .from("post")
+      .columns({
+        id: string(),
+        content: string().optional(),
+        authorId: string().from("author_id").optional(),
+      })
+      .primaryKey("id");
+
+    const expectedUsersRelationships = relationships(
+      expectedUsers,
+      ({ many }) => ({
+        posts: many({
+          sourceField: ["id"],
+          destField: ["authorId"],
+          destSchema: expectedPosts,
+        }),
+      }),
+    );
+
+    const expectedCommentsRelationships = relationships(
+      expectedComments,
+      ({ one }) => ({
+        post: one({
+          sourceField: ["postId"],
+          destField: ["id"],
+          destSchema: expectedPosts,
+        }),
+        author: one({
+          sourceField: ["authorId"],
+          destField: ["id"],
+          destSchema: expectedUsers,
+        }),
+      }),
+    );
+
+    const expectedPostsRelationships = relationships(
+      expectedPosts,
+      ({ one }) => ({
+        author: one({
+          sourceField: ["authorId"],
+          destField: ["id"],
+          destSchema: expectedUsers,
+        }),
+      }),
+    );
+
+    const expected = createSchema({
+      tables: [expectedUsers, expectedPosts, expectedComments],
+      relationships: [
+        expectedUsersRelationships,
+        expectedPostsRelationships,
+        expectedCommentsRelationships,
+      ],
+    });
+
+    expectSchemaDeepEqual(oneToManyCasingZeroSchema).toEqual(expected);
+    assertEqual(
+      oneToManyCasingZeroSchema.tables.posts.columns.authorId,
+      expected.tables.posts.columns.authorId,
+    );
+  });
+
   test("relationships - custom-schema", async () => {
     const { schema: customSchemaZeroSchema } = await import(
       "./schemas/custom-schema.zero"

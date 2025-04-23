@@ -12,6 +12,7 @@ import {
   createZeroTableBuilder,
   getDrizzleColumnKeyFromColumnName,
   type ZeroTableBuilderSchema,
+  type ZeroTableCasing,
 } from "./tables";
 import type {
   ColumnIndexKeys,
@@ -236,6 +237,7 @@ type CreateZeroSchema<
   TDrizzleSchema extends { [K in string]: unknown },
   TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
   TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
+  TCasing extends ZeroTableCasing,
 > = {
   readonly tables: {
     readonly [K in keyof TDrizzleSchema &
@@ -248,7 +250,8 @@ type CreateZeroSchema<
           ZeroTableBuilderSchema<
             K & string,
             TDrizzleSchema[K],
-            TColumnConfig[K]
+            TColumnConfig[K],
+            TCasing
           >
         >
       : never;
@@ -356,6 +359,7 @@ const createZeroSchema = <
   const TDrizzleSchema extends { [K in string]: unknown },
   const TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
   const TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
+  const TCasing extends ZeroTableCasing,
 >(
   /**
    * The Drizzle schema to create a Zero schema from.
@@ -416,13 +420,25 @@ const createZeroSchema = <
     readonly debug?: boolean;
 
     /**
+     * The casing to use for the table name.
+     *
+     * @example
+     * ```ts
+     * { casing: 'snake_case' }
+     * ```
+     */
+    readonly casing?: TCasing;
+
+    /**
      * Hidden option for internal use by the CLI.
      *
      * @internal
      */
     readonly "~__cli"?: boolean;
   },
-): Flatten<CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig>> => {
+): Flatten<
+  CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig, TCasing>
+> => {
   let tables: any[] = [];
 
   if (!config["~__cli"]) {
@@ -450,6 +466,8 @@ const createZeroSchema = <
         String(tableName),
         table,
         tableConfig,
+        config.debug,
+        config.casing,
       );
 
       tables.push(tableSchema);
@@ -741,7 +759,8 @@ const createZeroSchema = <
   } as any) as unknown as CreateZeroSchema<
     TDrizzleSchema,
     TColumnConfig,
-    TManyConfig
+    TManyConfig,
+    TCasing
   >;
 
   debugLog(
@@ -991,6 +1010,7 @@ const drizzleZeroConfig = <
   const TDrizzleSchema extends { [K in string]: unknown },
   const TColumnConfig extends TableColumnsConfig<TDrizzleSchema>,
   const TManyConfig extends ManyConfig<TDrizzleSchema, TColumnConfig>,
+  const TCasing extends ZeroTableCasing = ZeroTableCasing,
 >(
   /**
    * The Drizzle schema to create a Zero schema from.
@@ -1041,6 +1061,16 @@ const drizzleZeroConfig = <
     readonly manyToMany?: TManyConfig;
 
     /**
+     * The casing to use for the table name.
+     *
+     * @example
+     * ```ts
+     * { casing: 'snake_case' }
+     * ```
+     */
+    readonly casing?: TCasing;
+
+    /**
      * Whether to enable debug mode.
      *
      * @example
@@ -1050,13 +1080,16 @@ const drizzleZeroConfig = <
      */
     readonly debug?: boolean;
   },
-): Flatten<CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig>> => {
+): Flatten<
+  CreateZeroSchema<TDrizzleSchema, TColumnConfig, TManyConfig, TCasing>
+> => {
   const zeroSchema = createZeroSchema(schema, { ...config, "~__cli": true });
 
   return zeroSchema as CreateZeroSchema<
     TDrizzleSchema,
     TColumnConfig,
-    TManyConfig
+    TManyConfig,
+    TCasing
   >;
 };
 

@@ -57,7 +57,7 @@ export const postsRelations = relations(posts, ({ one }) => ({
 
 See the [integration test's `schema.ts`](integration/drizzle/schema.ts)
 for an example of defining types in the Drizzle schema file
-itself - interfaces *must* be exported for Typescript to resolve them.
+itself - interfaces _must_ be exported for Typescript to resolve them.
 
 ### Add `drizzle-zero.config.ts`
 
@@ -93,6 +93,13 @@ export default drizzleZeroConfig(drizzleSchema, {
       authorId: true,
     },
   },
+
+  // Specify the casing style to use for the schema.
+  // This is useful for when you want to use a different casing style than the default.
+  // This works in the same way as the `casing` option in the Drizzle ORM.
+  //
+  // @example
+  // casing: "snake_case",
 });
 ```
 
