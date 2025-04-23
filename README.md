@@ -93,6 +93,13 @@ export default drizzleZeroConfig(drizzleSchema, {
       authorId: true,
     },
   },
+
+  // Specify the casing style to use for the schema.
+  // This is useful for when you want to use a different casing style than the default.
+  // This works in the same way as the `casing` option in the Drizzle ORM.
+  //
+  // @example
+  // casing: "snake_case",
 });
 ```
 

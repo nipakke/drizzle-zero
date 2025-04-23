@@ -1,5 +1,5 @@
 {
-  "id": "f2a0f444-b1f1-4445-9be5-69a6e4814e58",
+  "id": "382e52e7-6a60-492b-87f1-8dfdf68a5da0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -271,14 +271,14 @@
       "name": "friendship",
       "schema": "",
       "columns": {
-        "requestingId": {
-          "name": "requestingId",
+        "requesting_id": {
+          "name": "requesting_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "acceptingId": {
-          "name": "acceptingId",
+        "accepting_id": {
+          "name": "accepting_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -292,12 +292,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "friendship_requestingId_user_id_fk": {
-          "name": "friendship_requestingId_user_id_fk",
+        "friendship_requesting_id_user_id_fk": {
+          "name": "friendship_requesting_id_user_id_fk",
           "tableFrom": "friendship",
           "tableTo": "user",
           "columnsFrom": [
-            "requestingId"
+            "requesting_id"
           ],
           "columnsTo": [
             "id"
@@ -305,12 +305,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "friendship_acceptingId_user_id_fk": {
-          "name": "friendship_acceptingId_user_id_fk",
+        "friendship_accepting_id_user_id_fk": {
+          "name": "friendship_accepting_id_user_id_fk",
           "tableFrom": "friendship",
           "tableTo": "user",
           "columnsFrom": [
-            "acceptingId"
+            "accepting_id"
           ],
           "columnsTo": [
             "id"
@@ -320,11 +320,11 @@
         }
       },
       "compositePrimaryKeys": {
-        "friendship_requestingId_acceptingId_pk": {
-          "name": "friendship_requestingId_acceptingId_pk",
+        "friendship_requesting_id_accepting_id_pk": {
+          "name": "friendship_requesting_id_accepting_id_pk",
           "columns": [
-            "requestingId",
-            "acceptingId"
+            "requesting_id",
+            "accepting_id"
           ]
         }
       },

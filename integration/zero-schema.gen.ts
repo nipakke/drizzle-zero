@@ -323,12 +323,14 @@ export const schema = {
           optional: false,
           customType:
             null as (typeof DrizzleConfigSchema)["tables"]["friendship"]["columns"]["requestingId"]["customType"],
+          serverName: "requesting_id",
         },
         acceptingId: {
           type: "string",
           optional: false,
           customType:
             null as (typeof DrizzleConfigSchema)["tables"]["friendship"]["columns"]["acceptingId"]["customType"],
+          serverName: "accepting_id",
         },
         accepted: {
           type: "boolean",

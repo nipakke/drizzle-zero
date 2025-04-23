@@ -10,6 +10,7 @@ import {
   table as zeroTable,
 } from "@rocicorp/zero";
 import { getTableColumns, getTableName, Table } from "drizzle-orm";
+import { toCamelCase, toSnakeCase } from "drizzle-orm/casing";
 import { getTableConfigForDatabase } from "./db";
 import {
   type DrizzleColumnTypeToZeroType,
@@ -23,6 +24,7 @@ import type {
   Columns,
   FindPrimaryKeyFromTable,
   Flatten,
+  HasCapital,
 } from "./types";
 import { debugLog, typedEntries } from "./util";
 
@@ -119,6 +121,7 @@ type ZeroMappedCustomType<
 type ZeroColumnDefinition<
   TTable extends Table,
   KColumn extends ColumnNames<TTable>,
+  TCasing extends ZeroTableCasing,
   CD extends ColumnDefinition<TTable, KColumn>["_"] = ColumnDefinition<
     TTable,
     KColumn
@@ -143,7 +146,17 @@ type ZeroColumnDefinition<
   : CD extends { notNull: true }
     ? BaseDefinition
     : Omit<BaseDefinition, "optional"> & { optional: true }) &
-  (CD extends { name: KColumn } ? {} : { serverName: string });
+  (CD extends { name: KColumn }
+    ? TCasing extends "snake_case"
+      ? HasCapital<CD["name"]> extends true
+        ? { serverName: string }
+        : {}
+      : TCasing extends "camelCase"
+        ? HasCapital<CD["name"]> extends false
+          ? { serverName: string }
+          : {}
+        : {}
+    : { serverName: string });
 
 /**
  * Maps the columns configuration to their Zero schema definitions.
@@ -153,6 +166,7 @@ type ZeroColumnDefinition<
 export type ZeroColumns<
   TTable extends Table,
   TColumnConfig extends ColumnsConfig<TTable>,
+  TCasing extends ZeroTableCasing,
 > = {
   [KColumn in keyof TColumnConfig as TColumnConfig[KColumn] extends
     | true
@@ -162,7 +176,7 @@ export type ZeroColumns<
     ? TColumnConfig[KColumn] extends ColumnBuilder<any>
       ? TColumnConfig[KColumn]["schema"]
       : TColumnConfig[KColumn] extends true
-        ? Flatten<ZeroColumnDefinition<TTable, KColumn>>
+        ? Flatten<ZeroColumnDefinition<TTable, KColumn, TCasing>>
         : never
     : never;
 };
@@ -177,12 +191,13 @@ export type ZeroTableBuilderSchema<
   TTableName extends string,
   TTable extends Table,
   TColumnConfig extends ColumnsConfig<TTable>,
+  TCasing extends ZeroTableCasing,
 > = {
   name: TTableName;
   primaryKey: FindPrimaryKeyFromTable<TTable> extends [never]
     ? readonly [string, ...string[]]
     : readonly [string, ...string[]] & FindPrimaryKeyFromTable<TTable>;
-  columns: Flatten<ZeroColumns<TTable, TColumnConfig>>;
+  columns: Flatten<ZeroColumns<TTable, TColumnConfig, TCasing>>;
 }; // Zero does not support this properly yet: & (TTable['_']['name'] extends TTableName ? {} : { serverName: string });
 
 /**
@@ -195,9 +210,15 @@ type ZeroTableBuilder<
   TTableName extends string,
   TTable extends Table,
   TColumnConfig extends ColumnsConfig<TTable>,
+  TCasing extends ZeroTableCasing,
 > = TableBuilderWithColumns<
-  Readonly<ZeroTableBuilderSchema<TTableName, TTable, TColumnConfig>>
+  Readonly<ZeroTableBuilderSchema<TTableName, TTable, TColumnConfig, TCasing>>
 >;
+
+/**
+ * Casing for the Zero table builder.
+ */
+export type ZeroTableCasing = "snake_case" | "camelCase" | undefined;
 
 /**
  * Creates a Zero schema from a Drizzle table definition.
@@ -209,6 +230,7 @@ const createZeroTableBuilder = <
   TTableName extends string,
   TTable extends Table,
   TColumnConfig extends ColumnsConfig<TTable>,
+  TCasing extends ZeroTableCasing = ZeroTableCasing,
 >(
   /**
    * The mapped name of the table
@@ -226,7 +248,11 @@ const createZeroTableBuilder = <
    * Whether to enable debug mode.
    */
   debug?: boolean,
-): ZeroTableBuilder<TTableName, TTable, TColumnConfig> => {
+  /**
+   * The casing to use for the table name.
+   */
+  casing?: TCasing,
+): ZeroTableBuilder<TTableName, TTable, TColumnConfig, TCasing> => {
   const actualTableName = getTableName(table);
   const tableColumns = getTableColumns(table);
   const tableConfig = getTableConfigForDatabase(table);
@@ -246,7 +272,13 @@ const createZeroTableBuilder = <
         return acc;
       }
 
-      const resolvedColumnName = column.name;
+      // From https://github.com/drizzle-team/drizzle-orm/blob/e5c63db0df0eaff5cae8321d97a77e5b47c5800d/drizzle-kit/src/serializer/utils.ts#L5
+      const resolvedColumnName =
+        !column.keyAsName || casing === undefined
+          ? column.name
+          : casing === "camelCase"
+            ? toCamelCase(column.name)
+            : toSnakeCase(column.name);
 
       if (
         typeof columnConfig !== "boolean" &&
@@ -355,7 +387,8 @@ const createZeroTableBuilder = <
     .primaryKey(...primaryKeys) as ZeroTableBuilder<
     TTableName,
     TTable,
-    TColumnConfig
+    TColumnConfig,
+    TCasing
   >;
 };
 
@@ -382,5 +415,6 @@ const getDrizzleColumnKeyFromColumnName = ({
 export {
   createZeroTableBuilder,
   getDrizzleColumnKeyFromColumnName,
-  type ZeroTableBuilder,
+  type ZeroTableBuilder
 };
+
