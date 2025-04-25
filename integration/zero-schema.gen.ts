@@ -315,6 +315,31 @@ export const schema = {
       primaryKey: ["id"],
       serverName: "all_types",
     },
+    filters: {
+      name: "filters",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["filters"]["columns"]["id"]["customType"],
+        },
+        name: {
+          type: "string",
+          optional: true,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["filters"]["columns"]["name"]["customType"],
+        },
+        parentId: {
+          type: "string",
+          optional: true,
+          customType:
+            null as (typeof DrizzleConfigSchema)["tables"]["filters"]["columns"]["parentId"]["customType"],
+          serverName: "parent_id",
+        },
+      },
+      primaryKey: ["id"],
+    },
     friendship: {
       name: "friendship",
       columns: {
@@ -532,6 +557,24 @@ export const schema = {
           sourceField: ["id"],
           destField: ["senderId"],
           destSchema: "message",
+          cardinality: "many",
+        },
+      ],
+    },
+    filters: {
+      parent: [
+        {
+          sourceField: ["parentId"],
+          destField: ["id"],
+          destSchema: "filters",
+          cardinality: "one",
+        },
+      ],
+      children: [
+        {
+          sourceField: ["id"],
+          destField: ["parentId"],
+          destSchema: "filters",
           cardinality: "many",
         },
       ],

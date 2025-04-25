@@ -177,3 +177,17 @@ export const friendship = pgTable(
   },
   (t) => [primaryKey({ columns: [t.requestingId, t.acceptingId] })],
 );
+
+export const filters = pgTable("filters", {
+  id: text("id").primaryKey(),
+  name: text("name"),
+  parentId: text("parent_id"),
+});
+
+export const filtersRelations = relations(filters, ({ one, many }) => ({
+  parent: one(filters, {
+    fields: [filters.parentId],
+    references: [filters.id],
+  }),
+  children: many(filters),
+}));

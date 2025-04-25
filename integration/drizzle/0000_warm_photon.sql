@@ -43,6 +43,12 @@ CREATE TABLE "all_types" (
 	"optional_uuid" uuid
 );
 --> statement-breakpoint
+CREATE TABLE "filters" (
+	"id" text PRIMARY KEY NOT NULL,
+	"name" text,
+	"parent_id" text
+);
+--> statement-breakpoint
 CREATE TABLE "friendship" (
 	"requesting_id" text NOT NULL,
 	"accepting_id" text NOT NULL,

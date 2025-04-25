@@ -47,6 +47,28 @@ describe("relationships", () => {
     preloadedUsers.cleanup();
   });
 
+  test("can query filters", async () => {
+    const zero = await getNewZero();
+
+    const q = zero.query.filters
+      .where((q) => q.cmp("id", "=", "1"))
+      .related("children", (q) => q.related("children").orderBy("id", "asc"));
+
+    const preloadedFilters = await q.preload();
+    await preloadedFilters.complete;
+
+    const filters = await q.run();
+
+    expect(filters).toHaveLength(1);
+    expect(filters[0]?.name).toBe("filter1");
+    expect(filters[0]?.children).toHaveLength(2);
+    expect(filters[0]?.children[0]?.name).toBe("filter2");
+    expect(filters[0]?.children[1]?.name).toBe("filter3");
+    expect(filters[0]?.children[0]?.children[0]?.name).toBeUndefined();
+
+    preloadedFilters.cleanup();
+  });
+
   test("can query messages", async () => {
     const zero = await getNewZero();
 
