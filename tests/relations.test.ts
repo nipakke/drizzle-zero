@@ -1062,6 +1062,45 @@ describe("relationships", () => {
     );
   });
 
+  test("relationships - one-to-many-parent-child", async () => {
+    const { schema: oneToManyParentChildZeroSchema } = await import(
+      "./schemas/one-to-many-parent-child.zero"
+    );
+
+    const expectedFilters = table("filters")
+      .from("filter")
+      .columns({
+        id: string(),
+        name: string().optional(),
+        parentId: string().from("parent_id").optional(),
+      })
+      .primaryKey("id");
+
+    const expectedFiltersRelationships = relationships(
+      expectedFilters,
+      ({ many, one }) => ({
+        parent: one({
+          sourceField: ["parentId"],
+          destField: ["id"],
+          destSchema: expectedFilters,
+        }),
+        children: many({
+          sourceField: ["id"],
+          destField: ["parentId"],
+          destSchema: expectedFilters,
+        }),
+      }),
+    );
+
+    const expected = createSchema({
+      tables: [expectedFilters],
+      relationships: [expectedFiltersRelationships],
+    });
+
+    expectSchemaDeepEqual(oneToManyParentChildZeroSchema).toEqual(expected);
+    assertEqual(oneToManyParentChildZeroSchema, expected);
+  });
+
   test("relationships - custom-schema", async () => {
     const { schema: customSchemaZeroSchema } = await import(
       "./schemas/custom-schema.zero"

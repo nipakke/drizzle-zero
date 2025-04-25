@@ -76,9 +76,11 @@ export function expectRelationsSchemaDeepEqual<S extends RelationshipsSchema>(
           for (let i = 0; i < expectedRelations.length; i++) {
             expect({
               __testKey: "expectedRelations",
+              key,
               sourceField: actualRelations[i],
             }).toStrictEqual({
               __testKey: "expectedRelations",
+              key,
               sourceField: expectedRelations[i],
             });
           }

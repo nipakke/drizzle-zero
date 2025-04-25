@@ -773,6 +773,28 @@ const createZeroSchema = <
 };
 
 /**
+ * Returns the table name that the relation points to, independently of
+ * whether it is One or Many.
+ */
+const getReferencedTableName = (
+  rel:
+    | One
+    | Many<any>
+    | {
+        sourceTable: Table;
+        referencedTableName?: string;
+      },
+) => {
+  if ("referencedTableName" in rel && rel.referencedTableName) {
+    return rel.referencedTableName; // One
+  }
+  if ("referencedTable" in rel && rel.referencedTable) {
+    return getTableName(rel.referencedTable); // Many
+  }
+  return undefined;
+};
+
+/**
  * Helper function to find source and destination fields for foreign key relationships.
  * @param schema - The complete Drizzle schema
  * @param relation - The One or Many relation to find fields for
@@ -780,24 +802,63 @@ const createZeroSchema = <
  */
 const findRelationSourceAndDestFields = (
   schema: Record<string, unknown>,
-  relation: {
-    sourceTable: Table;
-    referencedTableName: string;
-  },
+  relation:
+    | {
+        sourceTable: Table;
+        referencedTableName?: string;
+      }
+    | One
+    | Many<any>,
 ) => {
   const sourceTableName = getTableName(relation.sourceTable);
+  const referencedTableName = getReferencedTableName(relation);
 
-  // Search through all relations in the schema
+  // We search through all relations in the schema
   for (const tableOrRelations of Object.values(schema)) {
     if (is(tableOrRelations, Relations)) {
       const relationsConfig = getRelationsConfig(tableOrRelations);
 
       for (const relationConfig of Object.values(relationsConfig)) {
-        // Check if this is a One relation from source table to referenced table
+        if (!is(relationConfig, One)) continue;
+
+        const foundSourceName = getTableName(relationConfig.sourceTable);
+        const foundReferencedName = getReferencedTableName(relationConfig);
+
+        // We check  the relation where the source table is the referenced table
+        // and the referenced table is the source table
         if (
-          is(relationConfig, One) &&
-          getTableName(relationConfig.sourceTable) === sourceTableName &&
-          relationConfig.referencedTableName === relation.referencedTableName
+          foundSourceName === referencedTableName &&
+          foundReferencedName === sourceTableName
+        ) {
+          const sourceFieldNames =
+            relationConfig.config?.references?.map((f) =>
+              getDrizzleColumnKeyFromColumnName({
+                columnName: f.name,
+                table: f.table,
+              }),
+            ) ?? [];
+
+          const destFieldNames =
+            relationConfig.config?.fields?.map((f) =>
+              getDrizzleColumnKeyFromColumnName({
+                columnName: f.name,
+                table: f.table,
+              }),
+            ) ?? [];
+
+          if (sourceFieldNames.length && destFieldNames.length) {
+            return {
+              sourceFieldNames,
+              destFieldNames,
+            };
+          }
+        }
+
+        // Check if this is a One relation from source table to referenced table
+        // with the correct fields
+        if (
+          foundSourceName === sourceTableName &&
+          foundReferencedName === referencedTableName
         ) {
           const sourceFieldNames =
             relationConfig.config?.fields?.map((f) =>
@@ -820,42 +881,6 @@ const findRelationSourceAndDestFields = (
               sourceFieldNames,
               destFieldNames,
             };
-          }
-        }
-
-        // For a Many relation, find the opposite One relation
-        // (When the referenced table has a One relation back to the source table)
-        if (
-          is(relationConfig, One) &&
-          getTableName(relationConfig.sourceTable) ===
-            relation.referencedTableName &&
-          relationConfig.referencedTableName === sourceTableName
-        ) {
-          // Only access config fields if it's a One relation with config
-          if (
-            relationConfig.config?.fields &&
-            relationConfig.config?.references
-          ) {
-            const sourceFieldNames = relationConfig.config.references.map((f) =>
-              getDrizzleColumnKeyFromColumnName({
-                columnName: f.name,
-                table: f.table,
-              }),
-            );
-
-            const destFieldNames = relationConfig.config.fields.map((f) =>
-              getDrizzleColumnKeyFromColumnName({
-                columnName: f.name,
-                table: f.table,
-              }),
-            );
-
-            if (sourceFieldNames.length && destFieldNames.length) {
-              return {
-                sourceFieldNames,
-                destFieldNames,
-              };
-            }
           }
         }
       }

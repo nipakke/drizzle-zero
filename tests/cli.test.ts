@@ -146,4 +146,17 @@ describe("getGeneratedSchema", () => {
       "
     `);
   });
+
+  it("should throw error when export is not found in config file", async () => {
+    // Try to get non-existent export
+    await expect(
+      getZeroSchemaDefsFromConfig({
+        tsProject,
+        configPath: schemaPath,
+        exportName: "nonExistentExport",
+      })
+    ).rejects.toThrow(
+      /❌ drizzle-zero: No config type found in the config file - did you export `default` or `schema`\?/
+    );
+  });
 });
