@@ -26,12 +26,5 @@
     "lib": ["dom", "ESNext"],
     "outDir": "out"
   },
-  "include": [
-    "tests/**/*",
-    "drizzle/**/*.ts",
-    "drizzle.config.ts",
-    "schema.ts",
-    "drizzle-zero.config.ts",
-    "drizzle/drizzle-schema.ts"
-  ]
+  "include": ["**/*.ts"]
 }
