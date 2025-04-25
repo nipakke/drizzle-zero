@@ -79,6 +79,11 @@ export const schema = drizzleZeroConfig(drizzleSchema, {
       requestingId: true,
       accepted: true,
     },
+    filters: {
+      id: true,
+      name: true,
+      parentId: true,
+    },
   },
   manyToMany: {
     user: {

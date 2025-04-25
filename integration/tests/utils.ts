@@ -7,7 +7,7 @@ import path from "path";
 import { Pool } from "pg";
 import { GenericContainer, Network, PullPolicy } from "testcontainers";
 import * as drizzleSchema from "../drizzle/schema";
-import { allTypes, friendship, medium, message, user } from "../drizzle/schema";
+import { allTypes, filters, friendship, medium, message, user } from "../drizzle/schema";
 import { schema } from "../schema";
 
 const PG_PORT = process.env.PG_VERSION === "17" ? 5732 : 5632;
@@ -40,6 +40,10 @@ export const seed = async () => {
   await db.insert(medium).values({ id: "2", name: "teams" });
   await db.insert(medium).values({ id: "3", name: "sms" });
   await db.insert(medium).values({ id: "4", name: "whatsapp" });
+
+  await db.insert(filters).values({ id: "1", name: "filter1" });
+  await db.insert(filters).values({ id: "2", name: "filter2", parentId: "1" });
+  await db.insert(filters).values({ id: "3", name: "filter3", parentId: "1" });
 
   await db.insert(user).values({
     id: "1",
