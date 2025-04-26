@@ -1066,4 +1066,43 @@ describe("tables", () => {
       `[Error: drizzle-zero: Unsupported table type: test. Only Postgres tables are supported.]`,
     );
   });
+
+  test("pg - column name conversion with explicit names", () => {
+    // Create a table with explicit snake_case column names
+    const testTable = pgTable("snake_case_table", {
+      id: text("user_id").primaryKey(),
+      firstName: text("first_name").notNull(),
+      lastName: text("last_name").notNull(),
+      createdAt: timestamp("created_at").notNull(),
+      updatedAt: timestamp("updated_at"),
+    });
+
+    const result = createZeroTableBuilder(
+      "camel_conversion",
+      testTable,
+      {
+        id: true,
+        firstName: true,
+        lastName: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      false,
+      "camelCase",
+    );
+
+    const expected = table("camel_conversion")
+      .from("snake_case_table")
+      .columns({
+        id: string().from("user_id"),
+        firstName: string().from("first_name"),
+        lastName: string().from("last_name"),
+        createdAt: number().from("created_at"),
+        updatedAt: number().from("updated_at").optional(),
+      })
+      .primaryKey("id");
+
+    expectTableSchemaDeepEqual(result.build()).toEqual(expected.build());
+    assertEqual(result.schema, expected.schema);
+  });
 });

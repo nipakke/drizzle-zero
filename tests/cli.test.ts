@@ -159,4 +159,56 @@ describe("getGeneratedSchema", () => {
       /❌ drizzle-zero: No config type found in the config file - did you export `default` or `schema`\?/
     );
   });
+
+  it("should throw error when source file is not found", async () => {
+    // Try to get schema from a non-existent file
+    const nonExistentPath = path.resolve(__dirname, "./schemas/does-not-exist.ts");
+    
+    await expect(
+      getZeroSchemaDefsFromConfig({
+        tsProject,
+        configPath: nonExistentPath,
+        exportName: "schema",
+      })
+    ).rejects.toThrow(
+      /❌ drizzle-zero: Failed to find type definitions for/
+    );
+  });
+
+  it("should handle schema with empty entries correctly", async () => {
+    const zeroSchemaTypeDecl = await getZeroSchemaDefsFromConfig({
+      tsProject,
+      configPath: schemaPath,
+      exportName: "schema",
+    });
+
+    // Create a schema with an empty entry to test handling
+    const schemaWithEmptyEntry = {
+      tables: {
+        users: {
+          columns: {
+            id: {
+              type: "number",
+              optional: false,
+            }
+          }
+        },
+        emptyTable: {
+          columns: {}
+        }
+      }
+    };
+
+    // Generate the schema
+    const generatedSchema = await getGeneratedSchema({
+      tsProject,
+      zeroSchema: schemaWithEmptyEntry,
+      zeroSchemaTypeDecl,
+      outputFilePath,
+    });
+
+    // Verify the empty entry was handled correctly
+    expect(generatedSchema).toContain('"emptyTable": {');
+    expect(generatedSchema).toContain('"columns": {}');
+  });
 });
