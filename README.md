@@ -56,7 +56,7 @@ export const postsRelations = relations(posts, ({ one }) => ({
 ```
 
 See the [integration test's `schema.ts`](integration/drizzle/schema.ts)
-for a more examples of how to define Drizzle schemas with custom types.
+for more examples of how to define Drizzle schemas with custom types.
 
 ### Add `drizzle-zero.config.ts`
 
