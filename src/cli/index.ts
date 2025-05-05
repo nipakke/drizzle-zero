@@ -80,7 +80,10 @@ async function main(opts: GeneratorOptions = {}) {
     process.exit(1);
   }
 
-  const zeroConfigImport = await tsImport(fullConfigPath, __filename);
+  const fullConfigUrl = pathToFileURL(fullConfigPath)
+  const zeroConfigImport = await tsImport(fullConfigUrl.href, {
+    parentURL: import.meta.url,
+  });
   const exportName = zeroConfigImport?.default ? "default" : "schema";
   const zeroConfig = zeroConfigImport?.default ?? zeroConfigImport?.schema;
 
